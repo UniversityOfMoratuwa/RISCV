@@ -1,0 +1,1183 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wave_config>
+   <wave_state>
+   </wave_state>
+   <db_ref_list>
+      <db_ref path="Test_RISCV_PROCESSOR_behav.wdb" id="1">
+         <top_modules>
+            <top_module name="Test_RISCV_PROCESSOR" />
+            <top_module name="glbl" />
+         </top_modules>
+      </db_ref>
+   </db_ref_list>
+   <zoom_setting>
+      <ZoomStartTime time="5928184678972fs"></ZoomStartTime>
+      <ZoomEndTime time="6044561064206fs"></ZoomEndTime>
+      <Cursor1Time time="6025165000000fs"></Cursor1Time>
+   </zoom_setting>
+   <column_width_setting>
+      <NameColumnWidth column_width="233"></NameColumnWidth>
+      <ValueColumnWidth column_width="120"></ValueColumnWidth>
+   </column_width_setting>
+   <WVObjectSize size="5" />
+   <wvobject type="group" fp_name="group3317">
+      <obj_property name="label">BHT</obj_property>
+      <obj_property name="DisplayName">label</obj_property>
+      <obj_property name="isExpanded"></obj_property>
+      <wvobject type="logic" fp_name="/Test_RISCV_PROCESSOR/uut/bht/CLK">
+         <obj_property name="ElementShortName">CLK</obj_property>
+         <obj_property name="ObjectShortName">CLK</obj_property>
+      </wvobject>
+      <wvobject type="array" fp_name="/Test_RISCV_PROCESSOR/uut/bht/branch_count">
+         <obj_property name="ElementShortName">branch_count[31:0]</obj_property>
+         <obj_property name="ObjectShortName">branch_count[31:0]</obj_property>
+         <obj_property name="Radix">UNSIGNEDDECRADIX</obj_property>
+      </wvobject>
+      <wvobject type="array" fp_name="/Test_RISCV_PROCESSOR/uut/bht/predicted_count">
+         <obj_property name="ElementShortName">predicted_count[31:0]</obj_property>
+         <obj_property name="ObjectShortName">predicted_count[31:0]</obj_property>
+         <obj_property name="Radix">UNSIGNEDDECRADIX</obj_property>
+      </wvobject>
+      <wvobject type="logic" fp_name="/Test_RISCV_PROCESSOR/uut/pipeline/CACHE_READY">
+         <obj_property name="ElementShortName">CACHE_READY</obj_property>
+         <obj_property name="ObjectShortName">CACHE_READY</obj_property>
+         <obj_property name="CustomSignalColor">#800000</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
+      </wvobject>
+      <wvobject type="logic" fp_name="/Test_RISCV_PROCESSOR/uut/bht/PREDICTED">
+         <obj_property name="ElementShortName">PREDICTED</obj_property>
+         <obj_property name="ObjectShortName">PREDICTED</obj_property>
+      </wvobject>
+      <wvobject type="logic" fp_name="/Test_RISCV_PROCESSOR/uut/pipeline/CACHE_READY_DATA">
+         <obj_property name="ElementShortName">CACHE_READY_DATA</obj_property>
+         <obj_property name="ObjectShortName">CACHE_READY_DATA</obj_property>
+         <obj_property name="CustomSignalColor">#800000</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
+      </wvobject>
+      <wvobject type="logic" fp_name="/Test_RISCV_PROCESSOR/uut/pipeline/exstage/flush_internal">
+         <obj_property name="ElementShortName">flush_internal</obj_property>
+         <obj_property name="ObjectShortName">flush_internal</obj_property>
+         <obj_property name="CustomSignalColor">#0000A0</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
+      </wvobject>
+      <wvobject type="array" fp_name="/Test_RISCV_PROCESSOR/uut/bht/PC">
+         <obj_property name="ElementShortName">PC[31:0]</obj_property>
+         <obj_property name="ObjectShortName">PC[31:0]</obj_property>
+      </wvobject>
+      <wvobject type="array" fp_name="/Test_RISCV_PROCESSOR/uut/bht/history[22]">
+         <obj_property name="ElementShortName">[22][1:0]</obj_property>
+         <obj_property name="ObjectShortName">[22][1:0]</obj_property>
+      </wvobject>
+      <wvobject type="array" fp_name="/Test_RISCV_PROCESSOR/uut/bht/RETURN_ADDR">
+         <obj_property name="ElementShortName">RETURN_ADDR[31:0]</obj_property>
+         <obj_property name="ObjectShortName">RETURN_ADDR[31:0]</obj_property>
+      </wvobject>
+      <wvobject type="logic" fp_name="/Test_RISCV_PROCESSOR/uut/bht/RETURN">
+         <obj_property name="ElementShortName">RETURN</obj_property>
+         <obj_property name="ObjectShortName">RETURN</obj_property>
+      </wvobject>
+      <wvobject type="array" fp_name="/Test_RISCV_PROCESSOR/uut/bht/EX_PC">
+         <obj_property name="ElementShortName">EX_PC[31:0]</obj_property>
+         <obj_property name="ObjectShortName">EX_PC[31:0]</obj_property>
+      </wvobject>
+      <wvobject type="array" fp_name="/Test_RISCV_PROCESSOR/uut/bht/ex_line_add">
+         <obj_property name="ElementShortName">ex_line_add[8:0]</obj_property>
+         <obj_property name="ObjectShortName">ex_line_add[8:0]</obj_property>
+         <obj_property name="Radix">UNSIGNEDDECRADIX</obj_property>
+      </wvobject>
+      <wvobject type="array" fp_name="/Test_RISCV_PROCESSOR/uut/bht/pc_line_add">
+         <obj_property name="ElementShortName">pc_line_add[8:0]</obj_property>
+         <obj_property name="ObjectShortName">pc_line_add[8:0]</obj_property>
+         <obj_property name="Radix">UNSIGNEDDECRADIX</obj_property>
+      </wvobject>
+      <wvobject type="array" fp_name="/Test_RISCV_PROCESSOR/uut/bht/return">
+         <obj_property name="ElementShortName">return[511:0]</obj_property>
+         <obj_property name="ObjectShortName">return[511:0]</obj_property>
+      </wvobject>
+      <wvobject type="logic" fp_name="/Test_RISCV_PROCESSOR/uut/bht/BRANCH">
+         <obj_property name="ElementShortName">BRANCH</obj_property>
+         <obj_property name="ObjectShortName">BRANCH</obj_property>
+      </wvobject>
+      <wvobject type="logic" fp_name="/Test_RISCV_PROCESSOR/uut/bht/BRANCH_TAKEN">
+         <obj_property name="ElementShortName">BRANCH_TAKEN</obj_property>
+         <obj_property name="ObjectShortName">BRANCH_TAKEN</obj_property>
+      </wvobject>
+      <wvobject type="array" fp_name="/Test_RISCV_PROCESSOR/uut/bht/BRANCH_ADDR">
+         <obj_property name="ElementShortName">BRANCH_ADDR[31:0]</obj_property>
+         <obj_property name="ObjectShortName">BRANCH_ADDR[31:0]</obj_property>
+      </wvobject>
+      <wvobject type="logic" fp_name="/Test_RISCV_PROCESSOR/uut/bht/PRD_VALID">
+         <obj_property name="ElementShortName">PRD_VALID</obj_property>
+         <obj_property name="ObjectShortName">PRD_VALID</obj_property>
+      </wvobject>
+      <wvobject type="array" fp_name="/Test_RISCV_PROCESSOR/uut/bht/PRD_ADDR">
+         <obj_property name="ElementShortName">PRD_ADDR[31:0]</obj_property>
+         <obj_property name="ObjectShortName">PRD_ADDR[31:0]</obj_property>
+      </wvobject>
+      <wvobject type="array" fp_name="/Test_RISCV_PROCESSOR/uut/bht/history">
+         <obj_property name="ElementShortName">history[0:511][1:0]</obj_property>
+         <obj_property name="ObjectShortName">history[0:511][1:0]</obj_property>
+      </wvobject>
+      <wvobject type="logic" fp_name="/Test_RISCV_PROCESSOR/uut/bht/prd_valid_reg">
+         <obj_property name="ElementShortName">prd_valid_reg</obj_property>
+         <obj_property name="ObjectShortName">prd_valid_reg</obj_property>
+      </wvobject>
+      <wvobject type="array" fp_name="/Test_RISCV_PROCESSOR/uut/bht/prd_addr_reg">
+         <obj_property name="ElementShortName">prd_addr_reg[31:0]</obj_property>
+         <obj_property name="ObjectShortName">prd_addr_reg[31:0]</obj_property>
+      </wvobject>
+   </wvobject>
+   <wvobject type="group" fp_name="group3295">
+      <obj_property name="label">pipeline</obj_property>
+      <obj_property name="DisplayName">label</obj_property>
+      <obj_property name="isExpanded"></obj_property>
+      <wvobject type="logic" fp_name="/Test_RISCV_PROCESSOR/uut/pipeline/decode_unit/undefined">
+         <obj_property name="ElementShortName">undefined</obj_property>
+         <obj_property name="ObjectShortName">undefined</obj_property>
+      </wvobject>
+      <wvobject type="logic" fp_name="/Test_RISCV_PROCESSOR/uut/pipeline/flush_e">
+         <obj_property name="ElementShortName">flush_e</obj_property>
+         <obj_property name="ObjectShortName">flush_e</obj_property>
+      </wvobject>
+      <wvobject type="array" fp_name="/Test_RISCV_PROCESSOR/uut/pipeline/decode_unit/reg_array/REGISTER">
+         <obj_property name="ElementShortName">REGISTER[1:31][31:0]</obj_property>
+         <obj_property name="ObjectShortName">REGISTER[1:31][31:0]</obj_property>
+      </wvobject>
+      <wvobject type="logic" fp_name="/Test_RISCV_PROCESSOR/uut/bht/RETURN">
+         <obj_property name="ElementShortName">RETURN</obj_property>
+         <obj_property name="ObjectShortName">RETURN</obj_property>
+      </wvobject>
+      <wvobject type="array" fp_name="/Test_RISCV_PROCESSOR/uut/bht/RETURN_ADDR">
+         <obj_property name="ElementShortName">RETURN_ADDR[31:0]</obj_property>
+         <obj_property name="ObjectShortName">RETURN_ADDR[31:0]</obj_property>
+      </wvobject>
+      <wvobject type="group" fp_name="group994">
+         <obj_property name="label">state</obj_property>
+         <obj_property name="DisplayName">label</obj_property>
+         <wvobject type="logic" fp_name="/Test_RISCV_PROCESSOR/uut/pipeline/CACHE_READY_DATA">
+            <obj_property name="ElementShortName">CACHE_READY_DATA</obj_property>
+            <obj_property name="ObjectShortName">CACHE_READY_DATA</obj_property>
+         </wvobject>
+         <wvobject type="logic" fp_name="/Test_RISCV_PROCESSOR/uut/pipeline/CACHE_READY">
+            <obj_property name="ElementShortName">CACHE_READY</obj_property>
+            <obj_property name="ObjectShortName">CACHE_READY</obj_property>
+         </wvobject>
+         <wvobject type="array" fp_name="/Test_RISCV_PROCESSOR/uut/pipeline/decode_unit/type">
+            <obj_property name="ElementShortName">type[2:0]</obj_property>
+            <obj_property name="ObjectShortName">type[2:0]</obj_property>
+         </wvobject>
+         <wvobject type="array" fp_name="/Test_RISCV_PROCESSOR/uut/pipeline/decode_unit/state_reg/RS1_SEL">
+            <obj_property name="ElementShortName">RS1_SEL[4:0]</obj_property>
+            <obj_property name="ObjectShortName">RS1_SEL[4:0]</obj_property>
+            <obj_property name="Radix">UNSIGNEDDECRADIX</obj_property>
+         </wvobject>
+         <wvobject type="array" fp_name="/Test_RISCV_PROCESSOR/uut/pipeline/decode_unit/state_reg/RS2_SEL">
+            <obj_property name="ElementShortName">RS2_SEL[4:0]</obj_property>
+            <obj_property name="ObjectShortName">RS2_SEL[4:0]</obj_property>
+            <obj_property name="Radix">UNSIGNEDDECRADIX</obj_property>
+         </wvobject>
+         <wvobject type="array" fp_name="/Test_RISCV_PROCESSOR/uut/pipeline/decode_unit/state_reg/RD_IN">
+            <obj_property name="ElementShortName">RD_IN[4:0]</obj_property>
+            <obj_property name="ObjectShortName">RD_IN[4:0]</obj_property>
+            <obj_property name="Radix">SIGNEDDECRADIX</obj_property>
+         </wvobject>
+         <wvobject type="array" fp_name="/Test_RISCV_PROCESSOR/uut/pipeline/decode_unit/state_reg/TYPE_IN">
+            <obj_property name="ElementShortName">TYPE_IN[1:0]</obj_property>
+            <obj_property name="ObjectShortName">TYPE_IN[1:0]</obj_property>
+         </wvobject>
+         <wvobject type="array" fp_name="/Test_RISCV_PROCESSOR/uut/pipeline/decode_unit/state_reg/MUX1_SELECT">
+            <obj_property name="ElementShortName">MUX1_SELECT[2:0]</obj_property>
+            <obj_property name="ObjectShortName">MUX1_SELECT[2:0]</obj_property>
+         </wvobject>
+         <wvobject type="array" fp_name="/Test_RISCV_PROCESSOR/uut/pipeline/decode_unit/state_reg/MUX2_SELECT">
+            <obj_property name="ElementShortName">MUX2_SELECT[2:0]</obj_property>
+            <obj_property name="ObjectShortName">MUX2_SELECT[2:0]</obj_property>
+         </wvobject>
+         <wvobject type="logic" fp_name="/Test_RISCV_PROCESSOR/uut/pipeline/decode_unit/state_reg/STALL_ENABLE">
+            <obj_property name="ElementShortName">STALL_ENABLE</obj_property>
+            <obj_property name="ObjectShortName">STALL_ENABLE</obj_property>
+         </wvobject>
+         <wvobject type="logic" fp_name="/Test_RISCV_PROCESSOR/uut/pipeline/decode_unit/state_reg/CLK">
+            <obj_property name="ElementShortName">CLK</obj_property>
+            <obj_property name="ObjectShortName">CLK</obj_property>
+         </wvobject>
+         <wvobject type="array" fp_name="/Test_RISCV_PROCESSOR/uut/pipeline/PC_IF_ID">
+            <obj_property name="ElementShortName">PC_IF_ID[31:0]</obj_property>
+            <obj_property name="ObjectShortName">PC_IF_ID[31:0]</obj_property>
+            <obj_property name="Radix">HEXRADIX</obj_property>
+         </wvobject>
+         <wvobject type="array" fp_name="/Test_RISCV_PROCESSOR/uut/pipeline/decode_unit/state_reg/reg_state">
+            <obj_property name="ElementShortName">reg_state[1:31][4:0]</obj_property>
+            <obj_property name="ObjectShortName">reg_state[1:31][4:0]</obj_property>
+            <obj_property name="isExpanded"></obj_property>
+         </wvobject>
+         <wvobject type="array" fp_name="/Test_RISCV_PROCESSOR/uut/pipeline/INS_IF_ID">
+            <obj_property name="ElementShortName">INS_IF_ID[31:0]</obj_property>
+            <obj_property name="ObjectShortName">INS_IF_ID[31:0]</obj_property>
+         </wvobject>
+         <wvobject type="logic" fp_name="/Test_RISCV_PROCESSOR/uut/pipeline/flush_e">
+            <obj_property name="ElementShortName">flush_e</obj_property>
+            <obj_property name="ObjectShortName">flush_e</obj_property>
+         </wvobject>
+      </wvobject>
+      <wvobject type="array" fp_name="/Test_RISCV_PROCESSOR/uut/pipeline/rs1_count">
+         <obj_property name="ElementShortName">rs1_count[2:0]</obj_property>
+         <obj_property name="ObjectShortName">rs1_count[2:0]</obj_property>
+      </wvobject>
+      <wvobject type="group" fp_name="group2500">
+         <obj_property name="label">fb</obj_property>
+         <obj_property name="DisplayName">label</obj_property>
+         <obj_property name="isExpanded"></obj_property>
+         <wvobject type="group" fp_name="group2549">
+            <obj_property name="label">TO_FB</obj_property>
+            <obj_property name="DisplayName">label</obj_property>
+            <obj_property name="isExpanded"></obj_property>
+            <wvobject type="array" fp_name="/Test_RISCV_PROCESSOR/uut/pipeline/rs1_count">
+               <obj_property name="ElementShortName">rs1_count[2:0]</obj_property>
+               <obj_property name="ObjectShortName">rs1_count[2:0]</obj_property>
+            </wvobject>
+            <wvobject type="array" fp_name="/Test_RISCV_PROCESSOR/uut/pipeline/rs2_count">
+               <obj_property name="ElementShortName">rs2_count[2:0]</obj_property>
+               <obj_property name="ObjectShortName">rs2_count[2:0]</obj_property>
+            </wvobject>
+            <wvobject type="array" fp_name="/Test_RISCV_PROCESSOR/uut/pipeline/rs1_type">
+               <obj_property name="ElementShortName">rs1_type[1:0]</obj_property>
+               <obj_property name="ObjectShortName">rs1_type[1:0]</obj_property>
+            </wvobject>
+            <wvobject type="array" fp_name="/Test_RISCV_PROCESSOR/uut/pipeline/rs2_type">
+               <obj_property name="ElementShortName">rs2_type[1:0]</obj_property>
+               <obj_property name="ObjectShortName">rs2_type[1:0]</obj_property>
+            </wvobject>
+            <wvobject type="array" fp_name="/Test_RISCV_PROCESSOR/uut/pipeline/rs1_type_fb">
+               <obj_property name="ElementShortName">rs1_type_fb[1:0]</obj_property>
+               <obj_property name="ObjectShortName">rs1_type_fb[1:0]</obj_property>
+            </wvobject>
+            <wvobject type="array" fp_name="/Test_RISCV_PROCESSOR/uut/pipeline/rs2_type_fb">
+               <obj_property name="ElementShortName">rs2_type_fb[1:0]</obj_property>
+               <obj_property name="ObjectShortName">rs2_type_fb[1:0]</obj_property>
+            </wvobject>
+            <wvobject type="logic" fp_name="/Test_RISCV_PROCESSOR/uut/pipeline/CACHE_READY">
+               <obj_property name="ElementShortName">CACHE_READY</obj_property>
+               <obj_property name="ObjectShortName">CACHE_READY</obj_property>
+               <obj_property name="CustomSignalColor">#800000</obj_property>
+               <obj_property name="UseCustomSignalColor">true</obj_property>
+            </wvobject>
+            <wvobject type="logic" fp_name="/Test_RISCV_PROCESSOR/uut/pipeline/CACHE_READY_DATA">
+               <obj_property name="ElementShortName">CACHE_READY_DATA</obj_property>
+               <obj_property name="ObjectShortName">CACHE_READY_DATA</obj_property>
+               <obj_property name="CustomSignalColor">#800000</obj_property>
+               <obj_property name="UseCustomSignalColor">true</obj_property>
+            </wvobject>
+            <wvobject type="logic" fp_name="/Test_RISCV_PROCESSOR/uut/pipeline/stall_enable_id_fb">
+               <obj_property name="ElementShortName">stall_enable_id_fb</obj_property>
+               <obj_property name="ObjectShortName">stall_enable_id_fb</obj_property>
+            </wvobject>
+            <wvobject type="array" fp_name="/Test_RISCV_PROCESSOR/uut/pipeline/rs1_final">
+               <obj_property name="ElementShortName">rs1_final[31:0]</obj_property>
+               <obj_property name="ObjectShortName">rs1_final[31:0]</obj_property>
+               <obj_property name="CustomSignalColor">#800080</obj_property>
+               <obj_property name="UseCustomSignalColor">true</obj_property>
+            </wvobject>
+            <wvobject type="array" fp_name="/Test_RISCV_PROCESSOR/uut/pipeline/rs2_final">
+               <obj_property name="ElementShortName">rs2_final[31:0]</obj_property>
+               <obj_property name="ObjectShortName">rs2_final[31:0]</obj_property>
+               <obj_property name="CustomSignalColor">#800080</obj_property>
+               <obj_property name="UseCustomSignalColor">true</obj_property>
+            </wvobject>
+            <wvobject type="array" fp_name="/Test_RISCV_PROCESSOR/uut/pipeline/pc_id_fb">
+               <obj_property name="ElementShortName">pc_id_fb[31:0]</obj_property>
+               <obj_property name="ObjectShortName">pc_id_fb[31:0]</obj_property>
+               <obj_property name="Radix">HEXRADIX</obj_property>
+            </wvobject>
+            <wvobject type="array" fp_name="/Test_RISCV_PROCESSOR/uut/pipeline/feed_back_muxa_sel_id_fb">
+               <obj_property name="ElementShortName">feed_back_muxa_sel_id_fb[2:0]</obj_property>
+               <obj_property name="ObjectShortName">feed_back_muxa_sel_id_fb[2:0]</obj_property>
+               <obj_property name="Radix">BINARYRADIX</obj_property>
+               <obj_property name="CustomSignalColor">#FFA500</obj_property>
+               <obj_property name="UseCustomSignalColor">true</obj_property>
+            </wvobject>
+            <wvobject type="array" fp_name="/Test_RISCV_PROCESSOR/uut/pipeline/feed_back_muxb_sel_id_fb">
+               <obj_property name="ElementShortName">feed_back_muxb_sel_id_fb[2:0]</obj_property>
+               <obj_property name="ObjectShortName">feed_back_muxb_sel_id_fb[2:0]</obj_property>
+               <obj_property name="Radix">BINARYRADIX</obj_property>
+               <obj_property name="CustomSignalColor">#FFA500</obj_property>
+               <obj_property name="UseCustomSignalColor">true</obj_property>
+            </wvobject>
+            <wvobject type="array" fp_name="/Test_RISCV_PROCESSOR/uut/pipeline/rs1_id_fb">
+               <obj_property name="ElementShortName">rs1_id_fb[31:0]</obj_property>
+               <obj_property name="ObjectShortName">rs1_id_fb[31:0]</obj_property>
+               <obj_property name="Radix">HEXRADIX</obj_property>
+               <obj_property name="CustomSignalColor">#FF00FF</obj_property>
+               <obj_property name="UseCustomSignalColor">true</obj_property>
+            </wvobject>
+            <wvobject type="array" fp_name="/Test_RISCV_PROCESSOR/uut/pipeline/rs2_id_fb">
+               <obj_property name="ElementShortName">rs2_id_fb[31:0]</obj_property>
+               <obj_property name="ObjectShortName">rs2_id_fb[31:0]</obj_property>
+               <obj_property name="Radix">HEXRADIX</obj_property>
+               <obj_property name="CustomSignalColor">#FF00FF</obj_property>
+               <obj_property name="UseCustomSignalColor">true</obj_property>
+            </wvobject>
+            <wvobject type="logic" fp_name="/Test_RISCV_PROCESSOR/uut/pipeline/a_bus_sel_id_fb">
+               <obj_property name="ElementShortName">a_bus_sel_id_fb</obj_property>
+               <obj_property name="ObjectShortName">a_bus_sel_id_fb</obj_property>
+            </wvobject>
+            <wvobject type="logic" fp_name="/Test_RISCV_PROCESSOR/uut/pipeline/b_bus_sel_id_fb">
+               <obj_property name="ElementShortName">b_bus_sel_id_fb</obj_property>
+               <obj_property name="ObjectShortName">b_bus_sel_id_fb</obj_property>
+            </wvobject>
+            <wvobject type="logic" fp_name="/Test_RISCV_PROCESSOR/uut/pipeline/jump_id_fb">
+               <obj_property name="ElementShortName">jump_id_fb</obj_property>
+               <obj_property name="ObjectShortName">jump_id_fb</obj_property>
+            </wvobject>
+            <wvobject type="logic" fp_name="/Test_RISCV_PROCESSOR/uut/pipeline/jumpr_id_fb">
+               <obj_property name="ElementShortName">jumpr_id_fb</obj_property>
+               <obj_property name="ObjectShortName">jumpr_id_fb</obj_property>
+            </wvobject>
+            <wvobject type="logic" fp_name="/Test_RISCV_PROCESSOR/uut/pipeline/cbranch_id_fb">
+               <obj_property name="ElementShortName">cbranch_id_fb</obj_property>
+               <obj_property name="ObjectShortName">cbranch_id_fb</obj_property>
+            </wvobject>
+            <wvobject type="array" fp_name="/Test_RISCV_PROCESSOR/uut/pipeline/b_bus_mux_final">
+               <obj_property name="ElementShortName">b_bus_mux_final[31:0]</obj_property>
+               <obj_property name="ObjectShortName">b_bus_mux_final[31:0]</obj_property>
+            </wvobject>
+            <wvobject type="array" fp_name="/Test_RISCV_PROCESSOR/uut/pipeline/imm_out_id_fb">
+               <obj_property name="ElementShortName">imm_out_id_fb[31:0]</obj_property>
+               <obj_property name="ObjectShortName">imm_out_id_fb[31:0]</obj_property>
+               <obj_property name="Radix">HEXRADIX</obj_property>
+            </wvobject>
+            <wvobject type="array" fp_name="/Test_RISCV_PROCESSOR/uut/pipeline/alu_cnt_id_fb">
+               <obj_property name="ElementShortName">alu_cnt_id_fb[3:0]</obj_property>
+               <obj_property name="ObjectShortName">alu_cnt_id_fb[3:0]</obj_property>
+               <obj_property name="Radix">BINARYRADIX</obj_property>
+            </wvobject>
+            <wvobject type="array" fp_name="/Test_RISCV_PROCESSOR/uut/pipeline/comp_cnt_id_fb">
+               <obj_property name="ElementShortName">comp_cnt_id_fb[2:0]</obj_property>
+               <obj_property name="ObjectShortName">comp_cnt_id_fb[2:0]</obj_property>
+               <obj_property name="Radix">BINARYRADIX</obj_property>
+            </wvobject>
+            <wvobject type="array" fp_name="/Test_RISCV_PROCESSOR/uut/pipeline/type_id_fb">
+               <obj_property name="ElementShortName">type_id_fb[1:0]</obj_property>
+               <obj_property name="ObjectShortName">type_id_fb[1:0]</obj_property>
+               <obj_property name="Radix">HEXRADIX</obj_property>
+            </wvobject>
+            <wvobject type="array" fp_name="/Test_RISCV_PROCESSOR/uut/pipeline/rd_id_fb">
+               <obj_property name="ElementShortName">rd_id_fb[4:0]</obj_property>
+               <obj_property name="ObjectShortName">rd_id_fb[4:0]</obj_property>
+               <obj_property name="Radix">UNSIGNEDDECRADIX</obj_property>
+            </wvobject>
+            <wvobject type="array" fp_name="/Test_RISCV_PROCESSOR/uut/pipeline/rs1_out">
+               <obj_property name="ElementShortName">rs1_out[31:0]</obj_property>
+               <obj_property name="ObjectShortName">rs1_out[31:0]</obj_property>
+               <obj_property name="Radix">HEXRADIX</obj_property>
+            </wvobject>
+            <wvobject type="array" fp_name="/Test_RISCV_PROCESSOR/uut/pipeline/data_cache_control_id_fb">
+               <obj_property name="ElementShortName">data_cache_control_id_fb[1:0]</obj_property>
+               <obj_property name="ObjectShortName">data_cache_control_id_fb[1:0]</obj_property>
+               <obj_property name="Radix">HEXRADIX</obj_property>
+            </wvobject>
+         </wvobject>
+         <wvobject type="group" fp_name="group2573">
+            <obj_property name="label">FROM_FB</obj_property>
+            <obj_property name="DisplayName">label</obj_property>
+            <wvobject type="array" fp_name="/Test_RISCV_PROCESSOR/uut/pipeline/exstage/PC_FB_EX">
+               <obj_property name="ElementShortName">PC_FB_EX[31:0]</obj_property>
+               <obj_property name="ObjectShortName">PC_FB_EX[31:0]</obj_property>
+               <obj_property name="Radix">HEXRADIX</obj_property>
+            </wvobject>
+            <wvobject type="array" fp_name="/Test_RISCV_PROCESSOR/uut/pipeline/a_bus_fb_ex">
+               <obj_property name="ElementShortName">a_bus_fb_ex[31:0]</obj_property>
+               <obj_property name="ObjectShortName">a_bus_fb_ex[31:0]</obj_property>
+               <obj_property name="Radix">HEXRADIX</obj_property>
+            </wvobject>
+            <wvobject type="logic" fp_name="/Test_RISCV_PROCESSOR/uut/pipeline/a_bus_sel_fb_ex">
+               <obj_property name="ElementShortName">a_bus_sel_fb_ex</obj_property>
+               <obj_property name="ObjectShortName">a_bus_sel_fb_ex</obj_property>
+            </wvobject>
+            <wvobject type="array" fp_name="/Test_RISCV_PROCESSOR/uut/pipeline/alu_cnt_fb_ex">
+               <obj_property name="ElementShortName">alu_cnt_fb_ex[3:0]</obj_property>
+               <obj_property name="ObjectShortName">alu_cnt_fb_ex[3:0]</obj_property>
+               <obj_property name="Radix">HEXRADIX</obj_property>
+            </wvobject>
+            <wvobject type="array" fp_name="/Test_RISCV_PROCESSOR/uut/pipeline/b_bus_fb_ex">
+               <obj_property name="ElementShortName">b_bus_fb_ex[31:0]</obj_property>
+               <obj_property name="ObjectShortName">b_bus_fb_ex[31:0]</obj_property>
+               <obj_property name="Radix">HEXRADIX</obj_property>
+            </wvobject>
+            <wvobject type="logic" fp_name="/Test_RISCV_PROCESSOR/uut/pipeline/b_bus_sel_fb_ex">
+               <obj_property name="ElementShortName">b_bus_sel_fb_ex</obj_property>
+               <obj_property name="ObjectShortName">b_bus_sel_fb_ex</obj_property>
+            </wvobject>
+            <wvobject type="logic" fp_name="/Test_RISCV_PROCESSOR/uut/pipeline/cbranch_fb_ex">
+               <obj_property name="ElementShortName">cbranch_fb_ex</obj_property>
+               <obj_property name="ObjectShortName">cbranch_fb_ex</obj_property>
+            </wvobject>
+            <wvobject type="array" fp_name="/Test_RISCV_PROCESSOR/uut/pipeline/comp1_fb_ex">
+               <obj_property name="ElementShortName">comp1_fb_ex[31:0]</obj_property>
+               <obj_property name="ObjectShortName">comp1_fb_ex[31:0]</obj_property>
+               <obj_property name="Radix">HEXRADIX</obj_property>
+            </wvobject>
+            <wvobject type="array" fp_name="/Test_RISCV_PROCESSOR/uut/pipeline/comp2_fb_ex">
+               <obj_property name="ElementShortName">comp2_fb_ex[31:0]</obj_property>
+               <obj_property name="ObjectShortName">comp2_fb_ex[31:0]</obj_property>
+               <obj_property name="Radix">HEXRADIX</obj_property>
+            </wvobject>
+            <wvobject type="array" fp_name="/Test_RISCV_PROCESSOR/uut/pipeline/comp_cnt_fb_ex">
+               <obj_property name="ElementShortName">comp_cnt_fb_ex[2:0]</obj_property>
+               <obj_property name="ObjectShortName">comp_cnt_fb_ex[2:0]</obj_property>
+               <obj_property name="Radix">HEXRADIX</obj_property>
+            </wvobject>
+            <wvobject type="array" fp_name="/Test_RISCV_PROCESSOR/uut/pipeline/imm_out_fb_ex">
+               <obj_property name="ElementShortName">imm_out_fb_ex[31:0]</obj_property>
+               <obj_property name="ObjectShortName">imm_out_fb_ex[31:0]</obj_property>
+               <obj_property name="Radix">SIGNEDDECRADIX</obj_property>
+            </wvobject>
+            <wvobject type="array" fp_name="/Test_RISCV_PROCESSOR/uut/pipeline/jump1_fb_ex">
+               <obj_property name="ElementShortName">jump1_fb_ex[31:0]</obj_property>
+               <obj_property name="ObjectShortName">jump1_fb_ex[31:0]</obj_property>
+               <obj_property name="Radix">HEXRADIX</obj_property>
+            </wvobject>
+            <wvobject type="array" fp_name="/Test_RISCV_PROCESSOR/uut/pipeline/jump2_fb_ex">
+               <obj_property name="ElementShortName">jump2_fb_ex[31:0]</obj_property>
+               <obj_property name="ObjectShortName">jump2_fb_ex[31:0]</obj_property>
+               <obj_property name="Radix">HEXRADIX</obj_property>
+            </wvobject>
+            <wvobject type="logic" fp_name="/Test_RISCV_PROCESSOR/uut/pipeline/jump_fb_ex">
+               <obj_property name="ElementShortName">jump_fb_ex</obj_property>
+               <obj_property name="ObjectShortName">jump_fb_ex</obj_property>
+            </wvobject>
+            <wvobject type="logic" fp_name="/Test_RISCV_PROCESSOR/uut/pipeline/jumpr_fb_ex">
+               <obj_property name="ElementShortName">jumpr_fb_ex</obj_property>
+               <obj_property name="ObjectShortName">jumpr_fb_ex</obj_property>
+            </wvobject>
+            <wvobject type="array" fp_name="/Test_RISCV_PROCESSOR/uut/pipeline/rd_fb_ex">
+               <obj_property name="ElementShortName">rd_fb_ex[4:0]</obj_property>
+               <obj_property name="ObjectShortName">rd_fb_ex[4:0]</obj_property>
+               <obj_property name="Radix">UNSIGNEDDECRADIX</obj_property>
+            </wvobject>
+            <wvobject type="array" fp_name="/Test_RISCV_PROCESSOR/uut/pipeline/rs1_fb_ex">
+               <obj_property name="ElementShortName">rs1_fb_ex[31:0]</obj_property>
+               <obj_property name="ObjectShortName">rs1_fb_ex[31:0]</obj_property>
+               <obj_property name="Radix">HEXRADIX</obj_property>
+            </wvobject>
+            <wvobject type="array" fp_name="/Test_RISCV_PROCESSOR/uut/pipeline/rs2_fb_ex">
+               <obj_property name="ElementShortName">rs2_fb_ex[31:0]</obj_property>
+               <obj_property name="ObjectShortName">rs2_fb_ex[31:0]</obj_property>
+               <obj_property name="Radix">HEXRADIX</obj_property>
+            </wvobject>
+            <wvobject type="array" fp_name="/Test_RISCV_PROCESSOR/uut/pipeline/type_fb_ex">
+               <obj_property name="ElementShortName">type_fb_ex[1:0]</obj_property>
+               <obj_property name="ObjectShortName">type_fb_ex[1:0]</obj_property>
+               <obj_property name="Radix">HEXRADIX</obj_property>
+            </wvobject>
+         </wvobject>
+      </wvobject>
+      <wvobject type="group" fp_name="group504">
+         <obj_property name="label">EX_STAGE</obj_property>
+         <obj_property name="DisplayName">label</obj_property>
+         <wvobject type="array" fp_name="/Test_RISCV_PROCESSOR/uut/pipeline/PC_IF_ID">
+            <obj_property name="ElementShortName">PC_IF_ID[31:0]</obj_property>
+            <obj_property name="ObjectShortName">PC_IF_ID[31:0]</obj_property>
+            <obj_property name="Radix">HEXRADIX</obj_property>
+            <obj_property name="CustomSignalColor">#FAAFBE</obj_property>
+            <obj_property name="UseCustomSignalColor">true</obj_property>
+         </wvobject>
+         <wvobject type="array" fp_name="/Test_RISCV_PROCESSOR/uut/pipeline/pc_id_fb">
+            <obj_property name="ElementShortName">pc_id_fb[31:0]</obj_property>
+            <obj_property name="ObjectShortName">pc_id_fb[31:0]</obj_property>
+            <obj_property name="Radix">HEXRADIX</obj_property>
+            <obj_property name="CustomSignalColor">#FAAFBE</obj_property>
+            <obj_property name="UseCustomSignalColor">true</obj_property>
+         </wvobject>
+         <wvobject type="array" fp_name="/Test_RISCV_PROCESSOR/uut/pipeline/exstage/pc_ex_ex2">
+            <obj_property name="ElementShortName">pc_ex_ex2[31:0]</obj_property>
+            <obj_property name="ObjectShortName">pc_ex_ex2[31:0]</obj_property>
+            <obj_property name="Radix">HEXRADIX</obj_property>
+            <obj_property name="CustomSignalColor">#FAAFBE</obj_property>
+            <obj_property name="UseCustomSignalColor">true</obj_property>
+         </wvobject>
+         <wvobject type="array" fp_name="/Test_RISCV_PROCESSOR/uut/pipeline/exstage/JUMP_ADDR">
+            <obj_property name="ElementShortName">JUMP_ADDR[31:0]</obj_property>
+            <obj_property name="ObjectShortName">JUMP_ADDR[31:0]</obj_property>
+            <obj_property name="Radix">HEXRADIX</obj_property>
+         </wvobject>
+         <wvobject type="logic" fp_name="/Test_RISCV_PROCESSOR/uut/pipeline/exstage/JUMP_FINAL">
+            <obj_property name="ElementShortName">JUMP_FINAL</obj_property>
+            <obj_property name="ObjectShortName">JUMP_FINAL</obj_property>
+            <obj_property name="CustomSignalColor">#A52A2A</obj_property>
+            <obj_property name="UseCustomSignalColor">true</obj_property>
+         </wvobject>
+         <wvobject type="logic" fp_name="/Test_RISCV_PROCESSOR/uut/pipeline/exstage/JUMP">
+            <obj_property name="ElementShortName">JUMP</obj_property>
+            <obj_property name="ObjectShortName">JUMP</obj_property>
+            <obj_property name="CustomSignalColor">#800080</obj_property>
+            <obj_property name="UseCustomSignalColor">true</obj_property>
+         </wvobject>
+         <wvobject type="logic" fp_name="/Test_RISCV_PROCESSOR/uut/pipeline/exstage/JUMPR">
+            <obj_property name="ElementShortName">JUMPR</obj_property>
+            <obj_property name="ObjectShortName">JUMPR</obj_property>
+            <obj_property name="CustomSignalColor">#800080</obj_property>
+            <obj_property name="UseCustomSignalColor">true</obj_property>
+         </wvobject>
+         <wvobject type="logic" fp_name="/Test_RISCV_PROCESSOR/uut/pipeline/exstage/CBRANCH">
+            <obj_property name="ElementShortName">CBRANCH</obj_property>
+            <obj_property name="ObjectShortName">CBRANCH</obj_property>
+            <obj_property name="CustomSignalColor">#800080</obj_property>
+            <obj_property name="UseCustomSignalColor">true</obj_property>
+         </wvobject>
+         <wvobject type="logic" fp_name="/Test_RISCV_PROCESSOR/uut/pipeline/exstage/FLUSH">
+            <obj_property name="ElementShortName">FLUSH</obj_property>
+            <obj_property name="ObjectShortName">FLUSH</obj_property>
+            <obj_property name="CustomSignalColor">#0000A0</obj_property>
+            <obj_property name="UseCustomSignalColor">true</obj_property>
+         </wvobject>
+         <wvobject type="logic" fp_name="/Test_RISCV_PROCESSOR/uut/pipeline/exstage/flush_internal">
+            <obj_property name="ElementShortName">flush_internal</obj_property>
+            <obj_property name="ObjectShortName">flush_internal</obj_property>
+            <obj_property name="CustomSignalColor">#0000A0</obj_property>
+            <obj_property name="UseCustomSignalColor">true</obj_property>
+         </wvobject>
+         <wvobject type="array" fp_name="/Test_RISCV_PROCESSOR/uut/pipeline/ins_fb_ex">
+            <obj_property name="ElementShortName">ins_fb_ex[31:0]</obj_property>
+            <obj_property name="ObjectShortName">ins_fb_ex[31:0]</obj_property>
+         </wvobject>
+         <wvobject type="logic" fp_name="/Test_RISCV_PROCESSOR/uut/pipeline/exstage/CLK">
+            <obj_property name="ElementShortName">CLK</obj_property>
+            <obj_property name="ObjectShortName">CLK</obj_property>
+         </wvobject>
+         <wvobject type="array" fp_name="/Test_RISCV_PROCESSOR/uut/pipeline/exstage/COMP1">
+            <obj_property name="ElementShortName">COMP1[31:0]</obj_property>
+            <obj_property name="ObjectShortName">COMP1[31:0]</obj_property>
+            <obj_property name="CustomSignalColor">#FF0000</obj_property>
+            <obj_property name="UseCustomSignalColor">true</obj_property>
+            <obj_property name="Radix">HEXRADIX</obj_property>
+         </wvobject>
+         <wvobject type="array" fp_name="/Test_RISCV_PROCESSOR/uut/pipeline/exstage/COMP2">
+            <obj_property name="ElementShortName">COMP2[31:0]</obj_property>
+            <obj_property name="ObjectShortName">COMP2[31:0]</obj_property>
+            <obj_property name="CustomSignalColor">#FF0000</obj_property>
+            <obj_property name="UseCustomSignalColor">true</obj_property>
+            <obj_property name="Radix">HEXRADIX</obj_property>
+         </wvobject>
+         <wvobject type="array" fp_name="/Test_RISCV_PROCESSOR/uut/pipeline/exstage/COMP1_U">
+            <obj_property name="ElementShortName">COMP1_U[31:0]</obj_property>
+            <obj_property name="ObjectShortName">COMP1_U[31:0]</obj_property>
+            <obj_property name="CustomSignalColor">#FF0000</obj_property>
+            <obj_property name="UseCustomSignalColor">true</obj_property>
+            <obj_property name="Radix">HEXRADIX</obj_property>
+         </wvobject>
+         <wvobject type="array" fp_name="/Test_RISCV_PROCESSOR/uut/pipeline/exstage/COMP2_U">
+            <obj_property name="ElementShortName">COMP2_U[31:0]</obj_property>
+            <obj_property name="ObjectShortName">COMP2_U[31:0]</obj_property>
+            <obj_property name="CustomSignalColor">#FF0000</obj_property>
+            <obj_property name="UseCustomSignalColor">true</obj_property>
+            <obj_property name="Radix">HEXRADIX</obj_property>
+         </wvobject>
+         <wvobject type="array" fp_name="/Test_RISCV_PROCESSOR/uut/pipeline/exstage/COMP_CNT">
+            <obj_property name="ElementShortName">COMP_CNT[2:0]</obj_property>
+            <obj_property name="ObjectShortName">COMP_CNT[2:0]</obj_property>
+            <obj_property name="CustomSignalColor">#FF0000</obj_property>
+            <obj_property name="UseCustomSignalColor">true</obj_property>
+            <obj_property name="Radix">HEXRADIX</obj_property>
+         </wvobject>
+         <wvobject type="array" fp_name="/Test_RISCV_PROCESSOR/uut/pipeline/exstage/PC_FB_EX">
+            <obj_property name="ElementShortName">PC_FB_EX[31:0]</obj_property>
+            <obj_property name="ObjectShortName">PC_FB_EX[31:0]</obj_property>
+            <obj_property name="Radix">HEXRADIX</obj_property>
+            <obj_property name="CustomSignalColor">#FAAFBE</obj_property>
+            <obj_property name="UseCustomSignalColor">true</obj_property>
+         </wvobject>
+         <wvobject type="array" fp_name="/Test_RISCV_PROCESSOR/uut/pipeline/exstage/JUMP_BUS1">
+            <obj_property name="ElementShortName">JUMP_BUS1[31:0]</obj_property>
+            <obj_property name="ObjectShortName">JUMP_BUS1[31:0]</obj_property>
+            <obj_property name="Radix">HEXRADIX</obj_property>
+         </wvobject>
+         <wvobject type="array" fp_name="/Test_RISCV_PROCESSOR/uut/pipeline/exstage/JUMP_BUS2">
+            <obj_property name="ElementShortName">JUMP_BUS2[31:0]</obj_property>
+            <obj_property name="ObjectShortName">JUMP_BUS2[31:0]</obj_property>
+            <obj_property name="Radix">HEXRADIX</obj_property>
+         </wvobject>
+         <wvobject type="array" fp_name="/Test_RISCV_PROCESSOR/uut/pipeline/exstage/A">
+            <obj_property name="ElementShortName">A[31:0]</obj_property>
+            <obj_property name="ObjectShortName">A[31:0]</obj_property>
+            <obj_property name="Radix">HEXRADIX</obj_property>
+            <obj_property name="CustomSignalColor">#800000</obj_property>
+            <obj_property name="UseCustomSignalColor">true</obj_property>
+         </wvobject>
+         <wvobject type="array" fp_name="/Test_RISCV_PROCESSOR/uut/pipeline/exstage/B">
+            <obj_property name="ElementShortName">B[31:0]</obj_property>
+            <obj_property name="ObjectShortName">B[31:0]</obj_property>
+            <obj_property name="Radix">HEXRADIX</obj_property>
+            <obj_property name="CustomSignalColor">#800000</obj_property>
+            <obj_property name="UseCustomSignalColor">true</obj_property>
+         </wvobject>
+         <wvobject type="array" fp_name="/Test_RISCV_PROCESSOR/uut/pipeline/exstage/A_signed">
+            <obj_property name="ElementShortName">A_signed[31:0]</obj_property>
+            <obj_property name="ObjectShortName">A_signed[31:0]</obj_property>
+            <obj_property name="CustomSignalColor">#800000</obj_property>
+            <obj_property name="UseCustomSignalColor">true</obj_property>
+            <obj_property name="Radix">HEXRADIX</obj_property>
+         </wvobject>
+         <wvobject type="array" fp_name="/Test_RISCV_PROCESSOR/uut/pipeline/exstage/B_signed">
+            <obj_property name="ElementShortName">B_signed[31:0]</obj_property>
+            <obj_property name="ObjectShortName">B_signed[31:0]</obj_property>
+            <obj_property name="CustomSignalColor">#800000</obj_property>
+            <obj_property name="UseCustomSignalColor">true</obj_property>
+            <obj_property name="Radix">HEXRADIX</obj_property>
+         </wvobject>
+         <wvobject type="array" fp_name="/Test_RISCV_PROCESSOR/uut/pipeline/exstage/ALU_CNT">
+            <obj_property name="ElementShortName">ALU_CNT[3:0]</obj_property>
+            <obj_property name="ObjectShortName">ALU_CNT[3:0]</obj_property>
+            <obj_property name="Radix">HEXRADIX</obj_property>
+            <obj_property name="CustomSignalColor">#800000</obj_property>
+            <obj_property name="UseCustomSignalColor">true</obj_property>
+         </wvobject>
+         <wvobject type="array" fp_name="/Test_RISCV_PROCESSOR/uut/pipeline/exstage/DATA_CACHE_CONTROL_IN">
+            <obj_property name="ElementShortName">DATA_CACHE_CONTROL_IN[1:0]</obj_property>
+            <obj_property name="ObjectShortName">DATA_CACHE_CONTROL_IN[1:0]</obj_property>
+            <obj_property name="Radix">HEXRADIX</obj_property>
+         </wvobject>
+         <wvobject type="logic" fp_name="/Test_RISCV_PROCESSOR/uut/pipeline/exstage/CACHE_READY">
+            <obj_property name="ElementShortName">CACHE_READY</obj_property>
+            <obj_property name="ObjectShortName">CACHE_READY</obj_property>
+         </wvobject>
+         <wvobject type="array" fp_name="/Test_RISCV_PROCESSOR/uut/pipeline/exstage/DATA_ADDRESS">
+            <obj_property name="ElementShortName">DATA_ADDRESS[31:0]</obj_property>
+            <obj_property name="ObjectShortName">DATA_ADDRESS[31:0]</obj_property>
+            <obj_property name="Radix">HEXRADIX</obj_property>
+         </wvobject>
+         <wvobject type="array" fp_name="/Test_RISCV_PROCESSOR/uut/pipeline/rs2_ex_ex2">
+            <obj_property name="ElementShortName">rs2_ex_ex2[31:0]</obj_property>
+            <obj_property name="ObjectShortName">rs2_ex_ex2[31:0]</obj_property>
+            <obj_property name="Radix">HEXRADIX</obj_property>
+         </wvobject>
+         <wvobject type="array" fp_name="/Test_RISCV_PROCESSOR/uut/pipeline/exstage/DATA_CACHE_CONTROL">
+            <obj_property name="ElementShortName">DATA_CACHE_CONTROL[1:0]</obj_property>
+            <obj_property name="ObjectShortName">DATA_CACHE_CONTROL[1:0]</obj_property>
+            <obj_property name="Radix">HEXRADIX</obj_property>
+         </wvobject>
+         <wvobject type="array" fp_name="/Test_RISCV_PROCESSOR/uut/pipeline/DATA_TO_DATA_CACHE">
+            <obj_property name="ElementShortName">DATA_TO_DATA_CACHE[31:0]</obj_property>
+            <obj_property name="ObjectShortName">DATA_TO_DATA_CACHE[31:0]</obj_property>
+            <obj_property name="Radix">HEXRADIX</obj_property>
+         </wvobject>
+         <wvobject type="array" fp_name="/Test_RISCV_PROCESSOR/uut/pipeline/exstage/WB_DATA">
+            <obj_property name="ElementShortName">WB_DATA[31:0]</obj_property>
+            <obj_property name="ObjectShortName">WB_DATA[31:0]</obj_property>
+            <obj_property name="CustomSignalColor">#0000FF</obj_property>
+            <obj_property name="UseCustomSignalColor">true</obj_property>
+            <obj_property name="Radix">HEXRADIX</obj_property>
+         </wvobject>
+         <wvobject type="array" fp_name="/Test_RISCV_PROCESSOR/uut/pipeline/exstage/TYPE_IN">
+            <obj_property name="ElementShortName">TYPE_IN[1:0]</obj_property>
+            <obj_property name="ObjectShortName">TYPE_IN[1:0]</obj_property>
+            <obj_property name="Radix">HEXRADIX</obj_property>
+         </wvobject>
+         <wvobject type="array" fp_name="/Test_RISCV_PROCESSOR/uut/pipeline/exstage/TYPE_OUT">
+            <obj_property name="ElementShortName">TYPE_OUT[1:0]</obj_property>
+            <obj_property name="ObjectShortName">TYPE_OUT[1:0]</obj_property>
+            <obj_property name="Radix">HEXRADIX</obj_property>
+         </wvobject>
+         <wvobject type="array" fp_name="/Test_RISCV_PROCESSOR/uut/pipeline/BYTE_ENB_TO_CACHE">
+            <obj_property name="ElementShortName">BYTE_ENB_TO_CACHE[3:0]</obj_property>
+            <obj_property name="ObjectShortName">BYTE_ENB_TO_CACHE[3:0]</obj_property>
+            <obj_property name="Radix">HEXRADIX</obj_property>
+         </wvobject>
+         <wvobject type="logic" fp_name="/Test_RISCV_PROCESSOR/uut/pipeline/exstage/cbranch">
+            <obj_property name="ElementShortName">cbranch</obj_property>
+            <obj_property name="ObjectShortName">cbranch</obj_property>
+         </wvobject>
+         <wvobject type="logic" fp_name="/Test_RISCV_PROCESSOR/uut/pipeline/exstage/jump_reg">
+            <obj_property name="ElementShortName">jump_reg</obj_property>
+            <obj_property name="ObjectShortName">jump_reg</obj_property>
+         </wvobject>
+         <wvobject type="logic" fp_name="/Test_RISCV_PROCESSOR/uut/pipeline/exstage/jumpr_reg">
+            <obj_property name="ElementShortName">jumpr_reg</obj_property>
+            <obj_property name="ObjectShortName">jumpr_reg</obj_property>
+         </wvobject>
+         <wvobject type="array" fp_name="/Test_RISCV_PROCESSOR/uut/pipeline/op_type_ex_ex2">
+            <obj_property name="ElementShortName">op_type_ex_ex2[2:0]</obj_property>
+            <obj_property name="ObjectShortName">op_type_ex_ex2[2:0]</obj_property>
+            <obj_property name="Radix">HEXRADIX</obj_property>
+         </wvobject>
+         <wvobject type="logic" fp_name="/Test_RISCV_PROCESSOR/uut/pipeline/exstage/comp_out_w">
+            <obj_property name="ElementShortName">comp_out_w</obj_property>
+            <obj_property name="ObjectShortName">comp_out_w</obj_property>
+         </wvobject>
+         <wvobject type="array" fp_name="/Test_RISCV_PROCESSOR/uut/pipeline/exstage/data_cache_control">
+            <obj_property name="ElementShortName">data_cache_control[1:0]</obj_property>
+            <obj_property name="ObjectShortName">data_cache_control[1:0]</obj_property>
+            <obj_property name="Radix">HEXRADIX</obj_property>
+         </wvobject>
+         <wvobject type="array" fp_name="/Test_RISCV_PROCESSOR/uut/pipeline/exstage/type_out">
+            <obj_property name="ElementShortName">type_out[1:0]</obj_property>
+            <obj_property name="ObjectShortName">type_out[1:0]</obj_property>
+            <obj_property name="Radix">HEXRADIX</obj_property>
+         </wvobject>
+      </wvobject>
+      <wvobject type="group" fp_name="group3174">
+         <obj_property name="label">EX TO WB</obj_property>
+         <obj_property name="DisplayName">label</obj_property>
+         <wvobject type="array" fp_name="/Test_RISCV_PROCESSOR/uut/pipeline/alu_out_wire">
+            <obj_property name="ElementShortName">alu_out_wire[31:0]</obj_property>
+            <obj_property name="ObjectShortName">alu_out_wire[31:0]</obj_property>
+            <obj_property name="Radix">HEXRADIX</obj_property>
+         </wvobject>
+         <wvobject type="array" fp_name="/Test_RISCV_PROCESSOR/uut/pipeline/type_out">
+            <obj_property name="ElementShortName">type_out[1:0]</obj_property>
+            <obj_property name="ObjectShortName">type_out[1:0]</obj_property>
+            <obj_property name="Radix">UNSIGNEDDECRADIX</obj_property>
+         </wvobject>
+         <wvobject type="array" fp_name="/Test_RISCV_PROCESSOR/uut/pipeline/alu_ex_mem1">
+            <obj_property name="ElementShortName">alu_ex_mem1[31:0]</obj_property>
+            <obj_property name="ObjectShortName">alu_ex_mem1[31:0]</obj_property>
+            <obj_property name="CustomSignalColor">#800000</obj_property>
+            <obj_property name="UseCustomSignalColor">true</obj_property>
+            <obj_property name="Radix">HEXRADIX</obj_property>
+         </wvobject>
+         <wvobject type="array" fp_name="/Test_RISCV_PROCESSOR/uut/pipeline/rd_ex_mem1">
+            <obj_property name="ElementShortName">rd_ex_mem1[4:0]</obj_property>
+            <obj_property name="ObjectShortName">rd_ex_mem1[4:0]</obj_property>
+            <obj_property name="CustomSignalColor">#800000</obj_property>
+            <obj_property name="UseCustomSignalColor">true</obj_property>
+            <obj_property name="Radix">UNSIGNEDDECRADIX</obj_property>
+         </wvobject>
+         <wvobject type="array" fp_name="/Test_RISCV_PROCESSOR/uut/pipeline/type_ex_mem1">
+            <obj_property name="ElementShortName">type_ex_mem1[1:0]</obj_property>
+            <obj_property name="ObjectShortName">type_ex_mem1[1:0]</obj_property>
+            <obj_property name="CustomSignalColor">#800000</obj_property>
+            <obj_property name="UseCustomSignalColor">true</obj_property>
+            <obj_property name="Radix">UNSIGNEDDECRADIX</obj_property>
+         </wvobject>
+         <wvobject type="array" fp_name="/Test_RISCV_PROCESSOR/uut/pipeline/alu_mem1_mem2">
+            <obj_property name="ElementShortName">alu_mem1_mem2[31:0]</obj_property>
+            <obj_property name="ObjectShortName">alu_mem1_mem2[31:0]</obj_property>
+            <obj_property name="CustomSignalColor">#800080</obj_property>
+            <obj_property name="UseCustomSignalColor">true</obj_property>
+            <obj_property name="Radix">HEXRADIX</obj_property>
+         </wvobject>
+         <wvobject type="array" fp_name="/Test_RISCV_PROCESSOR/uut/pipeline/rd_mem1_mem2">
+            <obj_property name="ElementShortName">rd_mem1_mem2[4:0]</obj_property>
+            <obj_property name="ObjectShortName">rd_mem1_mem2[4:0]</obj_property>
+            <obj_property name="CustomSignalColor">#800080</obj_property>
+            <obj_property name="UseCustomSignalColor">true</obj_property>
+            <obj_property name="Radix">UNSIGNEDDECRADIX</obj_property>
+         </wvobject>
+         <wvobject type="array" fp_name="/Test_RISCV_PROCESSOR/uut/pipeline/type_mem1_mem2">
+            <obj_property name="ElementShortName">type_mem1_mem2[1:0]</obj_property>
+            <obj_property name="ObjectShortName">type_mem1_mem2[1:0]</obj_property>
+            <obj_property name="CustomSignalColor">#800080</obj_property>
+            <obj_property name="UseCustomSignalColor">true</obj_property>
+            <obj_property name="Radix">UNSIGNEDDECRADIX</obj_property>
+         </wvobject>
+         <wvobject type="array" fp_name="/Test_RISCV_PROCESSOR/uut/pipeline/alu_mem2_mem3">
+            <obj_property name="ElementShortName">alu_mem2_mem3[31:0]</obj_property>
+            <obj_property name="ObjectShortName">alu_mem2_mem3[31:0]</obj_property>
+            <obj_property name="CustomSignalColor">#FF00FF</obj_property>
+            <obj_property name="UseCustomSignalColor">true</obj_property>
+            <obj_property name="Radix">HEXRADIX</obj_property>
+         </wvobject>
+         <wvobject type="array" fp_name="/Test_RISCV_PROCESSOR/uut/pipeline/rd_mem2_mem3">
+            <obj_property name="ElementShortName">rd_mem2_mem3[4:0]</obj_property>
+            <obj_property name="ObjectShortName">rd_mem2_mem3[4:0]</obj_property>
+            <obj_property name="CustomSignalColor">#FF00FF</obj_property>
+            <obj_property name="UseCustomSignalColor">true</obj_property>
+            <obj_property name="Radix">UNSIGNEDDECRADIX</obj_property>
+         </wvobject>
+         <wvobject type="array" fp_name="/Test_RISCV_PROCESSOR/uut/pipeline/type_mem2_mem3">
+            <obj_property name="ElementShortName">type_mem2_mem3[1:0]</obj_property>
+            <obj_property name="ObjectShortName">type_mem2_mem3[1:0]</obj_property>
+            <obj_property name="CustomSignalColor">#FF00FF</obj_property>
+            <obj_property name="UseCustomSignalColor">true</obj_property>
+            <obj_property name="Radix">UNSIGNEDDECRADIX</obj_property>
+         </wvobject>
+         <wvobject type="array" fp_name="/Test_RISCV_PROCESSOR/uut/pipeline/alu_mem3_wb">
+            <obj_property name="ElementShortName">alu_mem3_wb[31:0]</obj_property>
+            <obj_property name="ObjectShortName">alu_mem3_wb[31:0]</obj_property>
+            <obj_property name="CustomSignalColor">#FFA500</obj_property>
+            <obj_property name="UseCustomSignalColor">true</obj_property>
+            <obj_property name="Radix">HEXRADIX</obj_property>
+         </wvobject>
+         <wvobject type="array" fp_name="/Test_RISCV_PROCESSOR/uut/pipeline/rd_mem3_wb">
+            <obj_property name="ElementShortName">rd_mem3_wb[4:0]</obj_property>
+            <obj_property name="ObjectShortName">rd_mem3_wb[4:0]</obj_property>
+            <obj_property name="CustomSignalColor">#FFA500</obj_property>
+            <obj_property name="UseCustomSignalColor">true</obj_property>
+            <obj_property name="Radix">UNSIGNEDDECRADIX</obj_property>
+         </wvobject>
+         <wvobject type="array" fp_name="/Test_RISCV_PROCESSOR/uut/pipeline/type_mem3_wb">
+            <obj_property name="ElementShortName">type_mem3_wb[1:0]</obj_property>
+            <obj_property name="ObjectShortName">type_mem3_wb[1:0]</obj_property>
+            <obj_property name="CustomSignalColor">#FFA500</obj_property>
+            <obj_property name="UseCustomSignalColor">true</obj_property>
+            <obj_property name="Radix">UNSIGNEDDECRADIX</obj_property>
+         </wvobject>
+         <wvobject type="logic" fp_name="/Test_RISCV_PROCESSOR/uut/pipeline/flush_e">
+            <obj_property name="ElementShortName">flush_e</obj_property>
+            <obj_property name="ObjectShortName">flush_e</obj_property>
+         </wvobject>
+         <wvobject type="logic" fp_name="/Test_RISCV_PROCESSOR/uut/pipeline/CACHE_READY">
+            <obj_property name="ElementShortName">CACHE_READY</obj_property>
+            <obj_property name="ObjectShortName">CACHE_READY</obj_property>
+         </wvobject>
+         <wvobject type="array" fp_name="/Test_RISCV_PROCESSOR/uut/pipeline/op_type_mem3_wb">
+            <obj_property name="ElementShortName">op_type_mem3_wb[2:0]</obj_property>
+            <obj_property name="ObjectShortName">op_type_mem3_wb[2:0]</obj_property>
+         </wvobject>
+         <wvobject type="array" fp_name="/Test_RISCV_PROCESSOR/uut/pipeline/DATA_TO_PROC">
+            <obj_property name="ElementShortName">DATA_TO_PROC[31:0]</obj_property>
+            <obj_property name="ObjectShortName">DATA_TO_PROC[31:0]</obj_property>
+            <obj_property name="Radix">HEXRADIX</obj_property>
+         </wvobject>
+      </wvobject>
+      <wvobject type="logic" fp_name="/Test_RISCV_PROCESSOR/uut/pipeline/CACHE_READY_DATA">
+         <obj_property name="ElementShortName">CACHE_READY_DATA</obj_property>
+         <obj_property name="ObjectShortName">CACHE_READY_DATA</obj_property>
+      </wvobject>
+      <wvobject type="group" fp_name="group1081">
+         <obj_property name="label">Decode Unit</obj_property>
+         <obj_property name="DisplayName">label</obj_property>
+         <wvobject type="array" fp_name="/Test_RISCV_PROCESSOR/uut/pipeline/decode_unit/TYPE_MEM3_WB">
+            <obj_property name="ElementShortName">TYPE_MEM3_WB[1:0]</obj_property>
+            <obj_property name="ObjectShortName">TYPE_MEM3_WB[1:0]</obj_property>
+         </wvobject>
+         <wvobject type="logic" fp_name="/Test_RISCV_PROCESSOR/uut/pipeline/decode_unit/FLUSH">
+            <obj_property name="ElementShortName">FLUSH</obj_property>
+            <obj_property name="ObjectShortName">FLUSH</obj_property>
+         </wvobject>
+         <wvobject type="array" fp_name="/Test_RISCV_PROCESSOR/uut/pipeline/decode_unit/INSTRUCTION">
+            <obj_property name="ElementShortName">INSTRUCTION[31:0]</obj_property>
+            <obj_property name="ObjectShortName">INSTRUCTION[31:0]</obj_property>
+         </wvobject>
+         <wvobject type="array" fp_name="/Test_RISCV_PROCESSOR/uut/pipeline/decode_unit/WB_DATA">
+            <obj_property name="ElementShortName">WB_DATA[31:0]</obj_property>
+            <obj_property name="ObjectShortName">WB_DATA[31:0]</obj_property>
+         </wvobject>
+         <wvobject type="array" fp_name="/Test_RISCV_PROCESSOR/uut/pipeline/decode_unit/WB_DES">
+            <obj_property name="ElementShortName">WB_DES[4:0]</obj_property>
+            <obj_property name="ObjectShortName">WB_DES[4:0]</obj_property>
+         </wvobject>
+         <wvobject type="array" fp_name="/Test_RISCV_PROCESSOR/uut/pipeline/decode_unit/FEED_BACK_MUX1_SEL">
+            <obj_property name="ElementShortName">FEED_BACK_MUX1_SEL[2:0]</obj_property>
+            <obj_property name="ObjectShortName">FEED_BACK_MUX1_SEL[2:0]</obj_property>
+         </wvobject>
+         <wvobject type="array" fp_name="/Test_RISCV_PROCESSOR/uut/pipeline/decode_unit/FEED_BACK_MUX2_SEL">
+            <obj_property name="ElementShortName">FEED_BACK_MUX2_SEL[2:0]</obj_property>
+            <obj_property name="ObjectShortName">FEED_BACK_MUX2_SEL[2:0]</obj_property>
+         </wvobject>
+         <wvobject type="array" fp_name="/Test_RISCV_PROCESSOR/uut/pipeline/decode_unit/ALU_CNT">
+            <obj_property name="ElementShortName">ALU_CNT[3:0]</obj_property>
+            <obj_property name="ObjectShortName">ALU_CNT[3:0]</obj_property>
+         </wvobject>
+         <wvobject type="array" fp_name="/Test_RISCV_PROCESSOR/uut/pipeline/decode_unit/D_CACHE_CONTROL">
+            <obj_property name="ElementShortName">D_CACHE_CONTROL[1:0]</obj_property>
+            <obj_property name="ObjectShortName">D_CACHE_CONTROL[1:0]</obj_property>
+         </wvobject>
+         <wvobject type="array" fp_name="/Test_RISCV_PROCESSOR/uut/pipeline/decode_unit/COMP_CNT">
+            <obj_property name="ElementShortName">COMP_CNT[2:0]</obj_property>
+            <obj_property name="ObjectShortName">COMP_CNT[2:0]</obj_property>
+         </wvobject>
+         <wvobject type="logic" fp_name="/Test_RISCV_PROCESSOR/uut/pipeline/decode_unit/JUMP">
+            <obj_property name="ElementShortName">JUMP</obj_property>
+            <obj_property name="ObjectShortName">JUMP</obj_property>
+         </wvobject>
+         <wvobject type="logic" fp_name="/Test_RISCV_PROCESSOR/uut/pipeline/decode_unit/JUMPR">
+            <obj_property name="ElementShortName">JUMPR</obj_property>
+            <obj_property name="ObjectShortName">JUMPR</obj_property>
+         </wvobject>
+         <wvobject type="logic" fp_name="/Test_RISCV_PROCESSOR/uut/pipeline/decode_unit/CBRANCH">
+            <obj_property name="ElementShortName">CBRANCH</obj_property>
+            <obj_property name="ObjectShortName">CBRANCH</obj_property>
+         </wvobject>
+         <wvobject type="array" fp_name="/Test_RISCV_PROCESSOR/uut/pipeline/decode_unit/IMM_OUT">
+            <obj_property name="ElementShortName">IMM_OUT[31:0]</obj_property>
+            <obj_property name="ObjectShortName">IMM_OUT[31:0]</obj_property>
+         </wvobject>
+         <wvobject type="array" fp_name="/Test_RISCV_PROCESSOR/uut/pipeline/decode_unit/RS1_OUT">
+            <obj_property name="ElementShortName">RS1_OUT[31:0]</obj_property>
+            <obj_property name="ObjectShortName">RS1_OUT[31:0]</obj_property>
+         </wvobject>
+         <wvobject type="array" fp_name="/Test_RISCV_PROCESSOR/uut/pipeline/decode_unit/RS2_OUT">
+            <obj_property name="ElementShortName">RS2_OUT[31:0]</obj_property>
+            <obj_property name="ObjectShortName">RS2_OUT[31:0]</obj_property>
+         </wvobject>
+         <wvobject type="logic" fp_name="/Test_RISCV_PROCESSOR/uut/pipeline/decode_unit/A_BUS_SEL">
+            <obj_property name="ElementShortName">A_BUS_SEL</obj_property>
+            <obj_property name="ObjectShortName">A_BUS_SEL</obj_property>
+         </wvobject>
+         <wvobject type="logic" fp_name="/Test_RISCV_PROCESSOR/uut/pipeline/decode_unit/B_BUS_SEL">
+            <obj_property name="ElementShortName">B_BUS_SEL</obj_property>
+            <obj_property name="ObjectShortName">B_BUS_SEL</obj_property>
+         </wvobject>
+         <wvobject type="logic" fp_name="/Test_RISCV_PROCESSOR/uut/pipeline/decode_unit/STALL_ENABLE">
+            <obj_property name="ElementShortName">STALL_ENABLE</obj_property>
+            <obj_property name="ObjectShortName">STALL_ENABLE</obj_property>
+         </wvobject>
+         <wvobject type="array" fp_name="/Test_RISCV_PROCESSOR/uut/pipeline/decode_unit/OP_TYPE">
+            <obj_property name="ElementShortName">OP_TYPE[1:0]</obj_property>
+            <obj_property name="ObjectShortName">OP_TYPE[1:0]</obj_property>
+         </wvobject>
+         <wvobject type="array" fp_name="/Test_RISCV_PROCESSOR/uut/pipeline/decode_unit/RD_OUT">
+            <obj_property name="ElementShortName">RD_OUT[4:0]</obj_property>
+            <obj_property name="ObjectShortName">RD_OUT[4:0]</obj_property>
+         </wvobject>
+         <wvobject type="array" fp_name="/Test_RISCV_PROCESSOR/uut/pipeline/decode_unit/feed_back_mux1_sel">
+            <obj_property name="ElementShortName">feed_back_mux1_sel[2:0]</obj_property>
+            <obj_property name="ObjectShortName">feed_back_mux1_sel[2:0]</obj_property>
+         </wvobject>
+         <wvobject type="array" fp_name="/Test_RISCV_PROCESSOR/uut/pipeline/decode_unit/feed_back_mux2_sel">
+            <obj_property name="ElementShortName">feed_back_mux2_sel[2:0]</obj_property>
+            <obj_property name="ObjectShortName">feed_back_mux2_sel[2:0]</obj_property>
+         </wvobject>
+         <wvobject type="array" fp_name="/Test_RISCV_PROCESSOR/uut/pipeline/decode_unit/alu_cnt">
+            <obj_property name="ElementShortName">alu_cnt[3:0]</obj_property>
+            <obj_property name="ObjectShortName">alu_cnt[3:0]</obj_property>
+         </wvobject>
+         <wvobject type="array" fp_name="/Test_RISCV_PROCESSOR/uut/pipeline/decode_unit/d_cache_control">
+            <obj_property name="ElementShortName">d_cache_control[1:0]</obj_property>
+            <obj_property name="ObjectShortName">d_cache_control[1:0]</obj_property>
+         </wvobject>
+         <wvobject type="array" fp_name="/Test_RISCV_PROCESSOR/uut/pipeline/decode_unit/comp_cnt">
+            <obj_property name="ElementShortName">comp_cnt[2:0]</obj_property>
+            <obj_property name="ObjectShortName">comp_cnt[2:0]</obj_property>
+         </wvobject>
+         <wvobject type="logic" fp_name="/Test_RISCV_PROCESSOR/uut/pipeline/decode_unit/jump_w">
+            <obj_property name="ElementShortName">jump_w</obj_property>
+            <obj_property name="ObjectShortName">jump_w</obj_property>
+         </wvobject>
+         <wvobject type="logic" fp_name="/Test_RISCV_PROCESSOR/uut/pipeline/decode_unit/jumpr_w">
+            <obj_property name="ElementShortName">jumpr_w</obj_property>
+            <obj_property name="ObjectShortName">jumpr_w</obj_property>
+         </wvobject>
+         <wvobject type="logic" fp_name="/Test_RISCV_PROCESSOR/uut/pipeline/decode_unit/cbranch">
+            <obj_property name="ElementShortName">cbranch</obj_property>
+            <obj_property name="ObjectShortName">cbranch</obj_property>
+         </wvobject>
+         <wvobject type="array" fp_name="/Test_RISCV_PROCESSOR/uut/pipeline/decode_unit/imm_out">
+            <obj_property name="ElementShortName">imm_out[31:0]</obj_property>
+            <obj_property name="ObjectShortName">imm_out[31:0]</obj_property>
+         </wvobject>
+         <wvobject type="array" fp_name="/Test_RISCV_PROCESSOR/uut/pipeline/decode_unit/rs1_out">
+            <obj_property name="ElementShortName">rs1_out[31:0]</obj_property>
+            <obj_property name="ObjectShortName">rs1_out[31:0]</obj_property>
+         </wvobject>
+         <wvobject type="array" fp_name="/Test_RISCV_PROCESSOR/uut/pipeline/decode_unit/rs2_out">
+            <obj_property name="ElementShortName">rs2_out[31:0]</obj_property>
+            <obj_property name="ObjectShortName">rs2_out[31:0]</obj_property>
+         </wvobject>
+         <wvobject type="logic" fp_name="/Test_RISCV_PROCESSOR/uut/pipeline/decode_unit/a_bus_sel">
+            <obj_property name="ElementShortName">a_bus_sel</obj_property>
+            <obj_property name="ObjectShortName">a_bus_sel</obj_property>
+         </wvobject>
+         <wvobject type="logic" fp_name="/Test_RISCV_PROCESSOR/uut/pipeline/decode_unit/b_bus_sel">
+            <obj_property name="ElementShortName">b_bus_sel</obj_property>
+            <obj_property name="ObjectShortName">b_bus_sel</obj_property>
+         </wvobject>
+         <wvobject type="logic" fp_name="/Test_RISCV_PROCESSOR/uut/pipeline/decode_unit/stall_enable">
+            <obj_property name="ElementShortName">stall_enable</obj_property>
+            <obj_property name="ObjectShortName">stall_enable</obj_property>
+         </wvobject>
+         <wvobject type="array" fp_name="/Test_RISCV_PROCESSOR/uut/pipeline/decode_unit/op_type">
+            <obj_property name="ElementShortName">op_type[1:0]</obj_property>
+            <obj_property name="ObjectShortName">op_type[1:0]</obj_property>
+         </wvobject>
+         <wvobject type="array" fp_name="/Test_RISCV_PROCESSOR/uut/pipeline/decode_unit/rd_out">
+            <obj_property name="ElementShortName">rd_out[4:0]</obj_property>
+            <obj_property name="ObjectShortName">rd_out[4:0]</obj_property>
+         </wvobject>
+         <wvobject type="array" fp_name="/Test_RISCV_PROCESSOR/uut/pipeline/decode_unit/rs1_sel">
+            <obj_property name="ElementShortName">rs1_sel[4:0]</obj_property>
+            <obj_property name="ObjectShortName">rs1_sel[4:0]</obj_property>
+         </wvobject>
+         <wvobject type="array" fp_name="/Test_RISCV_PROCESSOR/uut/pipeline/decode_unit/rs2_sel">
+            <obj_property name="ElementShortName">rs2_sel[4:0]</obj_property>
+            <obj_property name="ObjectShortName">rs2_sel[4:0]</obj_property>
+         </wvobject>
+         <wvobject type="array" fp_name="/Test_RISCV_PROCESSOR/uut/pipeline/decode_unit/type">
+            <obj_property name="ElementShortName">type[2:0]</obj_property>
+            <obj_property name="ObjectShortName">type[2:0]</obj_property>
+         </wvobject>
+      </wvobject>
+      <wvobject type="array" fp_name="/Test_RISCV_PROCESSOR/EXIT_FIFO_BUFFER">
+         <obj_property name="ElementShortName">EXIT_FIFO_BUFFER[0:31][31:0]</obj_property>
+         <obj_property name="ObjectShortName">EXIT_FIFO_BUFFER[0:31][31:0]</obj_property>
+         <obj_property name="Reversed">false</obj_property>
+         <obj_property name="Radix">ASCIIRADIX</obj_property>
+         <obj_property name="isExpanded"></obj_property>
+         <wvobject type="array" fp_name="/Test_RISCV_PROCESSOR/EXIT_FIFO_BUFFER[0]">
+            <obj_property name="ElementShortName">[0][31:0]</obj_property>
+            <obj_property name="ObjectShortName">[0][31:0]</obj_property>
+            <obj_property name="Radix">ASCIIRADIX</obj_property>
+         </wvobject>
+         <wvobject type="array" fp_name="/Test_RISCV_PROCESSOR/EXIT_FIFO_BUFFER[1]">
+            <obj_property name="ElementShortName">[1][31:0]</obj_property>
+            <obj_property name="ObjectShortName">[1][31:0]</obj_property>
+            <obj_property name="Radix">ASCIIRADIX</obj_property>
+         </wvobject>
+         <wvobject type="array" fp_name="/Test_RISCV_PROCESSOR/EXIT_FIFO_BUFFER[2]">
+            <obj_property name="ElementShortName">[2][31:0]</obj_property>
+            <obj_property name="ObjectShortName">[2][31:0]</obj_property>
+            <obj_property name="Radix">ASCIIRADIX</obj_property>
+         </wvobject>
+         <wvobject type="array" fp_name="/Test_RISCV_PROCESSOR/EXIT_FIFO_BUFFER[3]">
+            <obj_property name="ElementShortName">[3][31:0]</obj_property>
+            <obj_property name="ObjectShortName">[3][31:0]</obj_property>
+            <obj_property name="Radix">ASCIIRADIX</obj_property>
+         </wvobject>
+         <wvobject type="array" fp_name="/Test_RISCV_PROCESSOR/EXIT_FIFO_BUFFER[4]">
+            <obj_property name="ElementShortName">[4][31:0]</obj_property>
+            <obj_property name="ObjectShortName">[4][31:0]</obj_property>
+            <obj_property name="Radix">ASCIIRADIX</obj_property>
+         </wvobject>
+         <wvobject type="array" fp_name="/Test_RISCV_PROCESSOR/EXIT_FIFO_BUFFER[5]">
+            <obj_property name="ElementShortName">[5][31:0]</obj_property>
+            <obj_property name="ObjectShortName">[5][31:0]</obj_property>
+            <obj_property name="Radix">ASCIIRADIX</obj_property>
+         </wvobject>
+         <wvobject type="array" fp_name="/Test_RISCV_PROCESSOR/EXIT_FIFO_BUFFER[6]">
+            <obj_property name="ElementShortName">[6][31:0]</obj_property>
+            <obj_property name="ObjectShortName">[6][31:0]</obj_property>
+            <obj_property name="Radix">ASCIIRADIX</obj_property>
+         </wvobject>
+         <wvobject type="array" fp_name="/Test_RISCV_PROCESSOR/EXIT_FIFO_BUFFER[7]">
+            <obj_property name="ElementShortName">[7][31:0]</obj_property>
+            <obj_property name="ObjectShortName">[7][31:0]</obj_property>
+            <obj_property name="Radix">ASCIIRADIX</obj_property>
+         </wvobject>
+         <wvobject type="array" fp_name="/Test_RISCV_PROCESSOR/EXIT_FIFO_BUFFER[8]">
+            <obj_property name="ElementShortName">[8][31:0]</obj_property>
+            <obj_property name="ObjectShortName">[8][31:0]</obj_property>
+            <obj_property name="Radix">ASCIIRADIX</obj_property>
+         </wvobject>
+         <wvobject type="array" fp_name="/Test_RISCV_PROCESSOR/EXIT_FIFO_BUFFER[9]">
+            <obj_property name="ElementShortName">[9][31:0]</obj_property>
+            <obj_property name="ObjectShortName">[9][31:0]</obj_property>
+            <obj_property name="Radix">ASCIIRADIX</obj_property>
+         </wvobject>
+         <wvobject type="array" fp_name="/Test_RISCV_PROCESSOR/EXIT_FIFO_BUFFER[10]">
+            <obj_property name="ElementShortName">[10][31:0]</obj_property>
+            <obj_property name="ObjectShortName">[10][31:0]</obj_property>
+            <obj_property name="Radix">ASCIIRADIX</obj_property>
+         </wvobject>
+         <wvobject type="array" fp_name="/Test_RISCV_PROCESSOR/EXIT_FIFO_BUFFER[11]">
+            <obj_property name="ElementShortName">[11][31:0]</obj_property>
+            <obj_property name="ObjectShortName">[11][31:0]</obj_property>
+            <obj_property name="Radix">ASCIIRADIX</obj_property>
+         </wvobject>
+         <wvobject type="array" fp_name="/Test_RISCV_PROCESSOR/EXIT_FIFO_BUFFER[12]">
+            <obj_property name="ElementShortName">[12][31:0]</obj_property>
+            <obj_property name="ObjectShortName">[12][31:0]</obj_property>
+            <obj_property name="Radix">ASCIIRADIX</obj_property>
+         </wvobject>
+         <wvobject type="array" fp_name="/Test_RISCV_PROCESSOR/EXIT_FIFO_BUFFER[13]">
+            <obj_property name="ElementShortName">[13][31:0]</obj_property>
+            <obj_property name="ObjectShortName">[13][31:0]</obj_property>
+            <obj_property name="Radix">ASCIIRADIX</obj_property>
+         </wvobject>
+         <wvobject type="array" fp_name="/Test_RISCV_PROCESSOR/EXIT_FIFO_BUFFER[14]">
+            <obj_property name="ElementShortName">[14][31:0]</obj_property>
+            <obj_property name="ObjectShortName">[14][31:0]</obj_property>
+            <obj_property name="Radix">ASCIIRADIX</obj_property>
+         </wvobject>
+         <wvobject type="array" fp_name="/Test_RISCV_PROCESSOR/EXIT_FIFO_BUFFER[15]">
+            <obj_property name="ElementShortName">[15][31:0]</obj_property>
+            <obj_property name="ObjectShortName">[15][31:0]</obj_property>
+            <obj_property name="Radix">ASCIIRADIX</obj_property>
+         </wvobject>
+         <wvobject type="array" fp_name="/Test_RISCV_PROCESSOR/EXIT_FIFO_BUFFER[16]">
+            <obj_property name="ElementShortName">[16][31:0]</obj_property>
+            <obj_property name="ObjectShortName">[16][31:0]</obj_property>
+            <obj_property name="Radix">ASCIIRADIX</obj_property>
+         </wvobject>
+         <wvobject type="array" fp_name="/Test_RISCV_PROCESSOR/EXIT_FIFO_BUFFER[17]">
+            <obj_property name="ElementShortName">[17][31:0]</obj_property>
+            <obj_property name="ObjectShortName">[17][31:0]</obj_property>
+            <obj_property name="Radix">ASCIIRADIX</obj_property>
+         </wvobject>
+         <wvobject type="array" fp_name="/Test_RISCV_PROCESSOR/EXIT_FIFO_BUFFER[18]">
+            <obj_property name="ElementShortName">[18][31:0]</obj_property>
+            <obj_property name="ObjectShortName">[18][31:0]</obj_property>
+            <obj_property name="Radix">ASCIIRADIX</obj_property>
+         </wvobject>
+         <wvobject type="array" fp_name="/Test_RISCV_PROCESSOR/EXIT_FIFO_BUFFER[19]">
+            <obj_property name="ElementShortName">[19][31:0]</obj_property>
+            <obj_property name="ObjectShortName">[19][31:0]</obj_property>
+            <obj_property name="Radix">ASCIIRADIX</obj_property>
+         </wvobject>
+         <wvobject type="array" fp_name="/Test_RISCV_PROCESSOR/EXIT_FIFO_BUFFER[20]">
+            <obj_property name="ElementShortName">[20][31:0]</obj_property>
+            <obj_property name="ObjectShortName">[20][31:0]</obj_property>
+            <obj_property name="Radix">ASCIIRADIX</obj_property>
+         </wvobject>
+         <wvobject type="array" fp_name="/Test_RISCV_PROCESSOR/EXIT_FIFO_BUFFER[21]">
+            <obj_property name="ElementShortName">[21][31:0]</obj_property>
+            <obj_property name="ObjectShortName">[21][31:0]</obj_property>
+            <obj_property name="Radix">ASCIIRADIX</obj_property>
+         </wvobject>
+         <wvobject type="array" fp_name="/Test_RISCV_PROCESSOR/EXIT_FIFO_BUFFER[22]">
+            <obj_property name="ElementShortName">[22][31:0]</obj_property>
+            <obj_property name="ObjectShortName">[22][31:0]</obj_property>
+            <obj_property name="Radix">ASCIIRADIX</obj_property>
+         </wvobject>
+         <wvobject type="array" fp_name="/Test_RISCV_PROCESSOR/EXIT_FIFO_BUFFER[23]">
+            <obj_property name="ElementShortName">[23][31:0]</obj_property>
+            <obj_property name="ObjectShortName">[23][31:0]</obj_property>
+            <obj_property name="Radix">ASCIIRADIX</obj_property>
+         </wvobject>
+         <wvobject type="array" fp_name="/Test_RISCV_PROCESSOR/EXIT_FIFO_BUFFER[24]">
+            <obj_property name="ElementShortName">[24][31:0]</obj_property>
+            <obj_property name="ObjectShortName">[24][31:0]</obj_property>
+            <obj_property name="Radix">ASCIIRADIX</obj_property>
+         </wvobject>
+         <wvobject type="array" fp_name="/Test_RISCV_PROCESSOR/EXIT_FIFO_BUFFER[25]">
+            <obj_property name="ElementShortName">[25][31:0]</obj_property>
+            <obj_property name="ObjectShortName">[25][31:0]</obj_property>
+            <obj_property name="Radix">ASCIIRADIX</obj_property>
+         </wvobject>
+         <wvobject type="array" fp_name="/Test_RISCV_PROCESSOR/EXIT_FIFO_BUFFER[26]">
+            <obj_property name="ElementShortName">[26][31:0]</obj_property>
+            <obj_property name="ObjectShortName">[26][31:0]</obj_property>
+            <obj_property name="Radix">ASCIIRADIX</obj_property>
+         </wvobject>
+         <wvobject type="array" fp_name="/Test_RISCV_PROCESSOR/EXIT_FIFO_BUFFER[27]">
+            <obj_property name="ElementShortName">[27][31:0]</obj_property>
+            <obj_property name="ObjectShortName">[27][31:0]</obj_property>
+            <obj_property name="Radix">ASCIIRADIX</obj_property>
+         </wvobject>
+         <wvobject type="array" fp_name="/Test_RISCV_PROCESSOR/EXIT_FIFO_BUFFER[28]">
+            <obj_property name="ElementShortName">[28][31:0]</obj_property>
+            <obj_property name="ObjectShortName">[28][31:0]</obj_property>
+            <obj_property name="Radix">ASCIIRADIX</obj_property>
+         </wvobject>
+         <wvobject type="array" fp_name="/Test_RISCV_PROCESSOR/EXIT_FIFO_BUFFER[29]">
+            <obj_property name="ElementShortName">[29][31:0]</obj_property>
+            <obj_property name="ObjectShortName">[29][31:0]</obj_property>
+            <obj_property name="Radix">ASCIIRADIX</obj_property>
+         </wvobject>
+         <wvobject type="array" fp_name="/Test_RISCV_PROCESSOR/EXIT_FIFO_BUFFER[30]">
+            <obj_property name="ElementShortName">[30][31:0]</obj_property>
+            <obj_property name="ObjectShortName">[30][31:0]</obj_property>
+            <obj_property name="Radix">ASCIIRADIX</obj_property>
+         </wvobject>
+         <wvobject type="array" fp_name="/Test_RISCV_PROCESSOR/EXIT_FIFO_BUFFER[31]">
+            <obj_property name="ElementShortName">[31][31:0]</obj_property>
+            <obj_property name="ObjectShortName">[31][31:0]</obj_property>
+            <obj_property name="Radix">ASCIIRADIX</obj_property>
+         </wvobject>
+      </wvobject>
+   </wvobject>
+   <wvobject type="vbus" fp_name="vbus236">
+      <obj_property name="label">2586411</obj_property>
+      <obj_property name="DisplayName">label</obj_property>
+   </wvobject>
+   <wvobject type="array" fp_name="/Test_RISCV_PROCESSOR/uut/pipeline/clock">
+      <obj_property name="ElementShortName">clock[63:0]</obj_property>
+      <obj_property name="ObjectShortName">clock[63:0]</obj_property>
+      <obj_property name="Radix">UNSIGNEDDECRADIX</obj_property>
+   </wvobject>
+   <wvobject type="array" fp_name="/Test_RISCV_PROCESSOR/uut/pipeline/ins">
+      <obj_property name="ElementShortName">ins[63:0]</obj_property>
+      <obj_property name="ObjectShortName">ins[63:0]</obj_property>
+      <obj_property name="Radix">UNSIGNEDDECRADIX</obj_property>
+   </wvobject>
+</wave_config>
