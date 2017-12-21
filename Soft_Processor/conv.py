@@ -1,11 +1,13 @@
 import os
 import sys
+
 try:
     c_file=sys.argv[1]
 except:
     c_file=raw_input("input_filename : ")
-os.system('make clean')
-os.system('make')
+
+#os.system('make clean')
+#os.system('make')
 
 
 os.system('riscv64-unknown-elf-objdump -s  RISCV_Test_Benchmark.elf > data.txt')
