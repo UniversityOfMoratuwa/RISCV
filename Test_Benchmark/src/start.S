@@ -20,8 +20,8 @@ _start:
 
 initReg:
 	/* initialize all registers */
-	addi x2, zero, STACK_POINTER
-	addi x3, zero, GLOBAL_POINTER
+	li x2, STACK_POINTER
+	li x3, GLOBAL_POINTER
 	addi x4, zero, 0
 	addi x5, zero, 0
 	addi x6, zero, 0
@@ -58,12 +58,14 @@ isaTest:
 	jal ra,add
 
 isaTestEnd:
+	jal ra,initReg
 	jal ra,dhrystoneBenchmark
 
 dhrystoneBenchmark:
 	jal ra,risvDhrystoneStartMsg
 	jal ra,initReg
 	jal ra,DHRYSTONE
+	jal ra,initReg
 	jal ra,coremarkBenchmark
 
 coremarkBenchmark:

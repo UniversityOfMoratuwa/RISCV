@@ -8,7 +8,7 @@
 #ifndef FIRMWARE_H_
 #define FIRMWARE_H_
 
-#define STACK_POINTER 	1024
+#define STACK_POINTER 	4096
 #define GLOBAL_POINTER	1024
 
 #define OUTPORT 0x10150

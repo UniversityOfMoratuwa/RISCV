@@ -4,7 +4,8 @@ import sys
 from time import sleep
 from time import time
 # create a GUI variable called app
-
+os.system('make clean')
+os.system('make')
 os.system("python conv.py xx" )
 reg_array=[]
 
@@ -176,7 +177,7 @@ while (PC<(1<<20)):
 ####################################load####################################################################
     elif (opcode[binary[25:32]]=='load'):
         imm     = 21*binary[0]+binary[1:12]
-        wb_data = (reg_array[rs1_sel] + conv(imm))%(1<<mem_size)
+        wb_data = (reg_array[rs1_sel] + conv(imm))%(1<<32)
         if (wb_data>=(1<<mem_size)):
                 print "out_of_range_memory",hex(lpc*4),hex(wb_data/4)
                 break
@@ -200,7 +201,7 @@ while (PC<(1<<20)):
   ########################## store############################################################################    
     elif (opcode[binary[25:32]]=='store'):
         imm = 21*binary[0]+binary[1:7]+binary[20:25]
-        wb_data             = ((reg_array[rs1_sel] + conv(imm)))%(1<<mem_size)
+        wb_data             = ((reg_array[rs1_sel] + conv(imm)))%(1<<32)
         sub =[]
         if (wb_data>=(1<<mem_size)):
             print "out_of_range_memory",hex(lpc*4),hex(wb_data/4)

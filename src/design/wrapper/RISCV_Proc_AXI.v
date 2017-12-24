@@ -367,8 +367,8 @@ module RISCV_Proc_AXI # (
            .DATA_FROM_L2_READY_DAT (DATA_FROM_L2_READY_DAT ),
            .DATA_FROM_L2_DAT       (DATA_FROM_L2_DAT       ),
            .EXT_FIFO_WR_ENB        (EXT_FIFO_WR_ENB        ),
-           .EXT_FIFO_WR_DATA       (EXT_FIFO_WR_DATA       ),
-           .P0_INIT_AXI_TXN        (!FIFO_FULL)   
+           .EXT_FIFO_WR_DATA       (EXT_FIFO_WR_DATA       )
+           //.P0_INIT_AXI_TXN        (!FIFO_FULL)   
            
        );
   
