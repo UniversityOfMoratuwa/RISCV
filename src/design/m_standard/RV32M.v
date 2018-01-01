@@ -1,0 +1,149 @@
+`timescale 1ns / 1ps
+//////////////////////////////////////////////////////////////////////////////////
+// Company: 
+// Engineer: 
+// 
+// Create Date: 09/09/2017 05:53:25 PM
+// Design Name: 
+// Module Name: RV32M
+// Project Name: 
+// Target Devices: 
+// Tool Versions: 
+// Description: 
+// 
+// Dependencies: 
+// 
+// Revision:
+// Revision 0.01 - File Created
+// Additional Comments:
+// 
+//////////////////////////////////////////////////////////////////////////////////
+
+
+module RV32M #(
+        parameter INPUT_WIDTH   = 32                                                    ,
+        
+        localparam MUL          = 3'b000                                                ,
+        localparam MULH         = 3'b001                                                ,
+        localparam MULHSU       = 3'b010                                                ,
+        localparam MULHU        = 3'b011                                                ,
+        localparam DIV          = 3'b100                                                ,
+        localparam DIVU         = 3'b101                                                ,
+        localparam REM          = 3'b110                                                ,
+        localparam REMU         = 3'b111                                                
+    ) (
+        input                                       CLK                                 ,
+        input                                       STALL_M_STD                         ,
+        input                                       START                               ,
+        input   [2                          :0]     M_CNT                               ,
+        input   [INPUT_WIDTH - 1            :0]     RS1                                 ,
+        input   [INPUT_WIDTH - 1            :0]     RS2                                 ,
+        output  reg [INPUT_WIDTH - 1        :0]     OUT                                 ,
+        output                                      READY 
+    );
+    
+        reg     [INPUT_WIDTH - 1            :0]     out_reg                             ;
+        reg                                         valid_reg                           ;
+        
+        reg     [2                          :0]     m_cnt_prev                          ;
+        reg     [INPUT_WIDTH - 1            :0]     rs1_prev                            ;
+        reg     [INPUT_WIDTH - 1            :0]     rs2_prev                            ;
+        reg                                         stable                              ;
+
+        
+        initial
+        begin 
+            out_reg     = {INPUT_WIDTH{1'b0}}                                           ; 
+            stable      = 1'b0                                                          ;                        
+        end
+        
+        wire    sign1                   = (M_CNT != MULHU)                                                          ;
+        wire    sign2                   = (M_CNT != MULHSU) & (M_CNT != MULHU)                                      ;
+        wire    sign                    = (M_CNT == DIV)| (M_CNT==REM)                                              ;
+        wire    multiplication_type     = ((M_CNT == MUL)|(M_CNT == MULH)|(M_CNT == MULHSU)|(M_CNT == MULHU))&START ;
+        wire    division_type           = ((M_CNT == DIV)|(M_CNT == DIVU)|(M_CNT == REM)|(M_CNT == REMU))&START     ;
+        
+        wire    [2*INPUT_WIDTH - 1          :0]     mult_out                                                        ;
+        wire    [INPUT_WIDTH - 1            :0]     quotient_out                                                    ;
+        wire    [INPUT_WIDTH - 1            :0]     remainder_out                                                   ;
+       
+        wire                                        multiplication_ready                                            ;
+        wire                                        division_ready                                                  ;
+        wire    ready_internal= ( multiplication_type & multiplication_ready )|( division_type & division_ready )   ;
+        
+    
+        Multiplication #(
+            .INPUT_WIDTH(INPUT_WIDTH)
+        )multiplication(
+            .CLK(CLK),
+            .STALL_MUL(!multiplication_type & !STALL_M_STD),
+            .START(multiplication_type & !stable),
+            .SIGN1(sign1),
+            .SIGN2(sign2),
+            .MULTIPLIER(RS2),
+            .MULTIPLICAND(RS1),
+            .PRODUCT_OUT(mult_out),
+            .READY(multiplication_ready)
+            );
+    
+        Division #(
+            .INPUT_WIDTH(INPUT_WIDTH)
+        )division(
+            .CLK(CLK),
+            .STALL_DIV(!division_type & !STALL_M_STD),
+            .START(division_type & !stable),
+            .SIGN(sign),
+            .DIVIDEND(RS1),
+            .DIVIDER(RS2),  
+            .QUOTIENT_OUT(quotient_out),
+            .REMAINDER_OUT(remainder_out),
+            .READY(division_ready)
+            );
+        
+        always@(*)
+        begin
+            case(M_CNT)
+            MUL: 
+                out_reg = mult_out [INPUT_WIDTH - 1 :0];                                              
+            MULH:
+                out_reg = mult_out [2*INPUT_WIDTH - 1 :INPUT_WIDTH];
+            MULHSU:
+                out_reg = mult_out [2*INPUT_WIDTH - 1 :INPUT_WIDTH];
+            MULHU:
+                out_reg = mult_out [2*INPUT_WIDTH - 1 :INPUT_WIDTH];
+            DIV:
+                out_reg = quotient_out;
+            DIVU:
+                out_reg = quotient_out;
+            REM:
+                out_reg = remainder_out;
+            REMU:   
+                out_reg = remainder_out;
+           endcase  
+        end
+         
+        always@(*)
+        begin 
+           if( (m_cnt_prev==M_CNT) & (rs1_prev==RS1) & (rs2_prev==RS2) ) 
+           begin    
+               stable  <= 1'b1                         ;                             
+           end
+           else
+           begin
+               stable  <= 1'b0                         ;     
+           end                                 
+        end
+        
+        always@(posedge CLK)
+        begin
+            m_cnt_prev   <=  M_CNT                      ;
+            rs1_prev     <=  RS1                        ;
+            rs2_prev     <=  RS2                        ;
+           
+            OUT         <= out_reg                      ; 
+            valid_reg   <= ready_internal & stable      ;
+        end
+           
+        assign READY    = valid_reg & stable            ;
+        
+endmodule
