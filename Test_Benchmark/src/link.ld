@@ -4,9 +4,10 @@
 SECTIONS{
 
 	/* text: test code section */
-	. = 0x00010000;
+	. = 0x00000000;
 	.text :{
 		*(.text.boot)
+		. = 0x00010000;
 		*(.text)
 	} 
 	

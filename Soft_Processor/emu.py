@@ -11,7 +11,7 @@ reg_array=[]
 
 memory=[]
 
-PC = int('00010000',16)/4
+PC = int('00000000',16)/4
 opcode=     {
              '0110111' : 'lui'   ,
              '0010111' : 'auipc' ,

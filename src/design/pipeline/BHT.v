@@ -150,7 +150,6 @@ module BHT #(
     
     
     function integer logb2;
-    
         input integer depth;
         for (logb2 = 0; depth > 1; logb2 = logb2 + 1)
             depth = depth >> 1;

@@ -332,44 +332,44 @@ module RISCV_Proc_AXI # (
         .valid_rd          (DATA_FROM_L2_VALID_DAT),
         .ack               (WR_COMPLETE_DAT     )
     );
-     RISCV_PROCESSOR # (
-           .S          (S),                               // Size of the cache will be 2^S bits
-           .B          (B),                               // Size of a block will be 2^B bits
-           .a          (a),                               // Associativity of the cache would be 2^a
-           .T          (T),                               // Width to depth translation amount
-           .W          (W),                               // Width of the L2-L1 bus would be 2^W
-           .N          (N),                               // Number of stream buffers
-           .n          (n),                               // Depth of stream buffers would be 2^n
-           .p          (p),                               // Prefetch queue's depth is 2^p
-           .V          (V),                               // Size of the victim cache will be 2^V cache lines
-           .L2_DELAY_RD(L2_DELAY_RD)                      // Delay of the second level of cache    
-       ) riscv_proc (
-           .CLK                    (CLK                    ),
-           .RSTN                   (RSTN                   ),
-           // Instruction cache    
-           .ADDR_TO_L2_READY_INS   (ADDR_TO_L2_READY_INS   ),
-           .ADDR_TO_L2_VALID_INS   (ADDR_TO_L2_VALID_INS   ),      
-           .ADDR_TO_L2_INS         (ADDR_TO_L2_INS         ),
-           .DATA_FROM_L2_VALID_INS (DATA_FROM_L2_VALID_INS ),
-           .DATA_FROM_L2_READY_INS (DATA_FROM_L2_READY_INS ),
-           .DATA_FROM_L2_INS       (DATA_FROM_L2_INS       ),
-           // Data cache          
-           .WR_TO_L2_READY_DAT     (WR_TO_L2_READY_DAT     ),
-           .WR_TO_L2_VALID_DAT     (WR_TO_L2_VALID_DAT     ),
-           .WR_ADDR_TO_L2_DAT      (WR_ADDR_TO_L2_DAT      ),
-           .DATA_TO_L2_DAT         (DATA_TO_L2_DAT         ),
-           .WR_CONTROL_TO_L2_DAT   (WR_CONTROL_TO_L2_DAT   ),
-           .WR_COMPLETE_DAT        (WR_COMPLETE_DAT        ),
-           .RD_ADDR_TO_L2_READY_DAT(RD_ADDR_TO_L2_READY_DAT),
-           .RD_ADDR_TO_L2_VALID_DAT(RD_ADDR_TO_L2_VALID_DAT),
-           .RD_ADDR_TO_L2_DAT      (RD_ADDR_TO_L2_DAT      ),
-           .DATA_FROM_L2_VALID_DAT (DATA_FROM_L2_VALID_DAT ),
-           .DATA_FROM_L2_READY_DAT (DATA_FROM_L2_READY_DAT ),
-           .DATA_FROM_L2_DAT       (DATA_FROM_L2_DAT       ),
-           .EXT_FIFO_WR_ENB        (EXT_FIFO_WR_ENB        ),
-           .EXT_FIFO_WR_DATA       (EXT_FIFO_WR_DATA       )
-           //.P0_INIT_AXI_TXN        (!FIFO_FULL)   
-           
-       );
+    
+    RISCV_PROCESSOR # (
+        .S          (S),                               // Size of the cache will be 2^S bits
+        .B          (B),                               // Size of a block will be 2^B bits
+        .a          (a),                               // Associativity of the cache would be 2^a
+        .T          (T),                               // Width to depth translation amount
+        .W          (W),                               // Width of the L2-L1 bus would be 2^W
+        .N          (N),                               // Number of stream buffers
+        .n          (n),                               // Depth of stream buffers would be 2^n
+        .p          (p),                               // Prefetch queue's depth is 2^p
+        .V          (V),                               // Size of the victim cache will be 2^V cache lines
+        .L2_DELAY_RD(L2_DELAY_RD)                      // Delay of the second level of cache    
+    ) riscv_proc (
+        .CLK                    (CLK                    ),
+        .RSTN                   (RSTN                   ),
+        // Instruction cache    
+        .ADDR_TO_L2_READY_INS   (ADDR_TO_L2_READY_INS   ),
+        .ADDR_TO_L2_VALID_INS   (ADDR_TO_L2_VALID_INS   ),      
+        .ADDR_TO_L2_INS         (ADDR_TO_L2_INS         ),
+        .DATA_FROM_L2_VALID_INS (DATA_FROM_L2_VALID_INS ),
+        .DATA_FROM_L2_READY_INS (DATA_FROM_L2_READY_INS ),
+        .DATA_FROM_L2_INS       (DATA_FROM_L2_INS       ),
+        // Data cache          
+        .WR_TO_L2_READY_DAT     (WR_TO_L2_READY_DAT     ),
+        .WR_TO_L2_VALID_DAT     (WR_TO_L2_VALID_DAT     ),
+        .WR_ADDR_TO_L2_DAT      (WR_ADDR_TO_L2_DAT      ),
+        .DATA_TO_L2_DAT         (DATA_TO_L2_DAT         ),
+        .WR_CONTROL_TO_L2_DAT   (WR_CONTROL_TO_L2_DAT   ),
+        .WR_COMPLETE_DAT        (WR_COMPLETE_DAT        ),
+        .RD_ADDR_TO_L2_READY_DAT(RD_ADDR_TO_L2_READY_DAT),
+        .RD_ADDR_TO_L2_VALID_DAT(RD_ADDR_TO_L2_VALID_DAT),
+        .RD_ADDR_TO_L2_DAT      (RD_ADDR_TO_L2_DAT      ),
+        .DATA_FROM_L2_VALID_DAT (DATA_FROM_L2_VALID_DAT ),
+        .DATA_FROM_L2_READY_DAT (DATA_FROM_L2_READY_DAT ),
+        .DATA_FROM_L2_DAT       (DATA_FROM_L2_DAT       ),
+        .EXT_FIFO_WR_ENB        (EXT_FIFO_WR_ENB        ),
+        .EXT_FIFO_WR_DATA       (EXT_FIFO_WR_DATA       )
+        //.P0_INIT_AXI_TXN        (!FIFO_FULL)   
+    );
   
 endmodule

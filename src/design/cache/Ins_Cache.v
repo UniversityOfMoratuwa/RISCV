@@ -596,9 +596,9 @@ module Ins_Cache #(
     assign PC =pc;
     initial begin
         // Processor always starts with the zeroth instruction
-        pc                    = 32'h00010008;   
-        pc_del_1              = 32'h00010004;
-        pc_del_2              = 32'h00010000;
+        pc                    = 32'h00000008;   
+        pc_del_1              = 32'h00000004;
+        pc_del_2              = 32'h00000000;
         DATA_TO_PROC          = 0;
         
                 

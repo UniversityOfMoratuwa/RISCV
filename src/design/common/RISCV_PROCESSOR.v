@@ -185,27 +185,27 @@ module RISCV_PROCESSOR#(
     );
     
     PIPELINE pipeline(
-         .CLK(CLK),
-         // Towards instruction cache
-         .CACHE_READY(cache_ready_ins),
-         .PIPELINE_STALL(proc_ready_ins),
-         .BRANCH_TAKEN(branch_taken),
-         .BYTE_ENB_TO_CACHE( byte_enb_proc),
-         .BRANCH_ADDRESS(branch_address),
-         .PC_IF_ID(pc_to_proc_ins), 
-         .INS_IF_ID(data_to_proc_ins),
-         //Data cache busses
-         .CONTROL_DATA_CACHE(control_from_proc_dat), 
-         .ADDR_TO_DATA_CACHE(addr_from_proc_dat),
-         .DATA_TO_DATA_CACHE(data_from_proc_dat),
-         .DATA_TO_PROC(data_to_proc_dat),
-         .CACHE_READY_DATA(cache_ready_dat),
-          .EX_PC(ex_pc)                          ,
-          .BRANCH(branch)   ,
-          .FLUSH(flush),
-          .RETURN_ADDR(return_addr),
-          .RETURN(return),
-          .PREDICTED(predicted)
+        .CLK(CLK),
+        // Towards instruction cache
+        .CACHE_READY(cache_ready_ins),
+        .PIPELINE_STALL(proc_ready_ins),
+        .BRANCH_TAKEN(branch_taken),
+        .BYTE_ENB_TO_CACHE( byte_enb_proc),
+        .BRANCH_ADDRESS(branch_address),
+        .PC_IF_ID(pc_to_proc_ins), 
+        .INS_IF_ID(data_to_proc_ins),
+        //Data cache busses
+        .CONTROL_DATA_CACHE(control_from_proc_dat), 
+        .ADDR_TO_DATA_CACHE(addr_from_proc_dat),
+        .DATA_TO_DATA_CACHE(data_from_proc_dat),
+        .DATA_TO_PROC(data_to_proc_dat),
+        .CACHE_READY_DATA(cache_ready_dat),
+        .EX_PC(ex_pc),
+        .BRANCH(branch),
+        .FLUSH(flush),
+        .RETURN_ADDR(return_addr),
+        .RETURN(return),
+        .PREDICTED(predicted)
     );
     
     Data_Cache # (
@@ -243,20 +243,20 @@ module RISCV_PROCESSOR#(
         .DATA_FROM_L2(DATA_FROM_L2_DAT)       
     );
     BHT bht (
-            .CLK(CLK)                              ,
-            .PC(pc)                                ,
-            .EX_PC(ex_pc)                          ,
-            .BRANCH(branch)                        ,
-            .BRANCH_TAKEN(branch_taken)            ,
-            .BRANCH_ADDR (branch_address)          ,
-            .PRD_VALID (prd_valid)                 ,
-            .PRD_ADDR  (prd_addr)                  ,
-            .FLUSH(flush)                         ,
-            .CACHE_READY(cache_ready_ins)          ,
-            .CACHE_READY_DATA(cache_ready_dat),
-              .RETURN_ADDR(return_addr),
-                    .RETURN(return),
-                     .PREDICTED(predicted)
+        .CLK(CLK)                               ,
+        .PC(pc)                                 ,
+        .EX_PC(ex_pc)                           ,
+        .BRANCH(branch)                         ,
+        .BRANCH_TAKEN(branch_taken)             ,
+        .BRANCH_ADDR (branch_address)           ,
+        .PRD_VALID (prd_valid)                  ,
+        .PRD_ADDR  (prd_addr)                   ,
+        .FLUSH(flush)                           ,
+        .CACHE_READY(cache_ready_ins)           ,
+        .CACHE_READY_DATA(cache_ready_dat)      ,
+        .RETURN_ADDR(return_addr)               ,
+        .RETURN(return)                         ,
+        .PREDICTED(predicted)
         );
     
     // Intercepting and extracting certain data writes

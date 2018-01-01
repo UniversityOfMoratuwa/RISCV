@@ -570,6 +570,7 @@ module PIPELINE #(
             op_type_mem3_wb          <=       op_type_mem2_mem3       ; 
         end
     end
+    
     assign RETURN               = (ins_fb_ex== 31'h00008067)                ;
     assign RETURN_ADDR          = return_addr;
     assign EX_PC                = pc_fb_ex;
@@ -584,4 +585,5 @@ module PIPELINE #(
   
     assign DATA_TO_DATA_CACHE   = rs2_ex_ex2 << ({4'b0000,alu_out_wire[1:0]} << 3);
     assign PC_ID_FB     = pc_id_fb ;
+    
 endmodule
