@@ -112,6 +112,7 @@
     localparam alu_slt     = 4'b1011 ;
     localparam alu_b4      = 4'b1100 ;
     localparam alu_idle    = 4'b1101 ;
+    localparam alu_mstd    = 4'b1110 ;
     
     //data_cache_cntrol
       

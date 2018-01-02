@@ -21,16 +21,7 @@
 
 
 module RV32M #(
-        parameter INPUT_WIDTH   = 32                                                    ,
-        
-        localparam MUL          = 3'b000                                                ,
-        localparam MULH         = 3'b001                                                ,
-        localparam MULHSU       = 3'b010                                                ,
-        localparam MULHU        = 3'b011                                                ,
-        localparam DIV          = 3'b100                                                ,
-        localparam DIVU         = 3'b101                                                ,
-        localparam REM          = 3'b110                                                ,
-        localparam REMU         = 3'b111                                                
+        parameter INPUT_WIDTH   = 32                                                                                              
     ) (
         input                                       CLK                                 ,
         input                                       STALL_M_STD                         ,
@@ -41,6 +32,8 @@ module RV32M #(
         output  reg [INPUT_WIDTH - 1        :0]     OUT                                 ,
         output                                      READY 
     );
+    
+     `include "PipelineParams.vh"
     
         reg     [INPUT_WIDTH - 1            :0]     out_reg                             ;
         reg                                         valid_reg                           ;
@@ -57,11 +50,11 @@ module RV32M #(
             stable      = 1'b0                                                          ;                        
         end
         
-        wire    sign1                   = (M_CNT != MULHU)                                                          ;
-        wire    sign2                   = (M_CNT != MULHSU) & (M_CNT != MULHU)                                      ;
-        wire    sign                    = (M_CNT == DIV)| (M_CNT==REM)                                              ;
-        wire    multiplication_type     = ((M_CNT == MUL)|(M_CNT == MULH)|(M_CNT == MULHSU)|(M_CNT == MULHU))&START ;
-        wire    division_type           = ((M_CNT == DIV)|(M_CNT == DIVU)|(M_CNT == REM)|(M_CNT == REMU))&START     ;
+        wire    sign1                   = (M_CNT != mulhu)                                                          ;
+        wire    sign2                   = (M_CNT != mulhsu) & (M_CNT != mulhu)                                      ;
+        wire    sign                    = (M_CNT == div)| (M_CNT==rem)                                              ;
+        wire    multiplication_type     = ((M_CNT == mul)|(M_CNT == mulh)|(M_CNT == mulhsu)|(M_CNT == mulhu))&START ;
+        wire    division_type           = ((M_CNT == div)|(M_CNT == divu)|(M_CNT == rem)|(M_CNT == remu))&START     ;
         
         wire    [2*INPUT_WIDTH - 1          :0]     mult_out                                                        ;
         wire    [INPUT_WIDTH - 1            :0]     quotient_out                                                    ;
@@ -103,21 +96,21 @@ module RV32M #(
         always@(*)
         begin
             case(M_CNT)
-            MUL: 
+            mul: 
                 out_reg = mult_out [INPUT_WIDTH - 1 :0];                                              
-            MULH:
+            mulh:
                 out_reg = mult_out [2*INPUT_WIDTH - 1 :INPUT_WIDTH];
-            MULHSU:
+            mulhsu:
                 out_reg = mult_out [2*INPUT_WIDTH - 1 :INPUT_WIDTH];
-            MULHU:
+            mulhu:
                 out_reg = mult_out [2*INPUT_WIDTH - 1 :INPUT_WIDTH];
-            DIV:
+            div:
                 out_reg = quotient_out;
-            DIVU:
+            divu:
                 out_reg = quotient_out;
-            REM:
+            rem:
                 out_reg = remainder_out;
-            REMU:   
+            remu:   
                 out_reg = remainder_out;
            endcase  
         end
@@ -136,12 +129,15 @@ module RV32M #(
         
         always@(posedge CLK)
         begin
-            m_cnt_prev   <=  M_CNT                      ;
-            rs1_prev     <=  RS1                        ;
-            rs2_prev     <=  RS2                        ;
-           
-            OUT         <= out_reg                      ; 
-            valid_reg   <= ready_internal & stable      ;
+            if(!STALL_M_STD & START)
+            begin
+                m_cnt_prev   <=  M_CNT                      ;
+                rs1_prev     <=  RS1                        ;
+                rs2_prev     <=  RS2                        ;
+               
+                OUT         <= out_reg                      ; 
+                valid_reg   <= ready_internal & stable      ;
+            end
         end
            
         assign READY    = valid_reg & stable            ;

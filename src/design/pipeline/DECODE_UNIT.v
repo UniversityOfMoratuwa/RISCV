@@ -108,7 +108,7 @@ wire [4:0]              rd_out             ;
             );
     
      CONTROL_UNIT control_unit(
-                .INS                ({INSTRUCTION[30],INSTRUCTION[14:12]})             ,
+                .INS                ({INSTRUCTION[25],INSTRUCTION[30],INSTRUCTION[14:12]})             ,
                 .INS1               (INSTRUCTION[6:0])             ,
                 .ALU_CNT            (alu_cnt)                 ,
                 .D_CACHE_CONTROL    (d_cache_control)         ,
