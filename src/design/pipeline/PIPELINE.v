@@ -218,16 +218,16 @@ module PIPELINE #(
         .OUT(rs2_final)
         );
                  
-        Multiplexer #(
-            .ORDER(1),
-            .WIDTH(32)  
-            )b_bus_mux (
-            .SELECT(b_bus_sel_id_fb),
-            .IN({ 
-                rs1_final,
-                pc_id_fb}),
-            .OUT(b_bus_mux_final)
-            );
+    Multiplexer #(
+        .ORDER(1),
+        .WIDTH(32)  
+        )b_bus_mux (
+        .SELECT(b_bus_sel_id_fb),
+        .IN({ 
+            rs1_final,
+            pc_id_fb}),
+        .OUT(b_bus_mux_final)
+        );
                  
     Multiplexer#(
         .ORDER(1),
@@ -396,12 +396,12 @@ module PIPELINE #(
     
     always@(posedge CLK)
     begin
-        cache_ready_data            <= CACHE_READY_DATA             ;
+        cache_ready_data            <= CACHE_READY_DATA             ;//dummy
         
         if(CACHE_READY_DATA & CACHE_READY)
         begin  
             flush_e_i               <= flush_e                      ;
-            stall_enable_fb_ex      <=stall_enable_id_fb            ;
+            stall_enable_fb_ex      <= stall_enable_id_fb           ;
             
             if (stall_enable_id_fb||flush_e_i||flush_e)   
             begin  
@@ -462,9 +462,9 @@ module PIPELINE #(
                 end
                 else
                 begin
-                    stall_enable_id_fb     <=  1;
-                    feed_back_muxa_sel_id_fb <= feed_back_muxa_sel_id_fb+(feed_back_muxa_sel_id_fb!=0);
-                    feed_back_muxb_sel_id_fb <= feed_back_muxb_sel_id_fb+(feed_back_muxb_sel_id_fb!=0);
+                    stall_enable_id_fb          <= 1                                                        ;
+                    feed_back_muxa_sel_id_fb    <= feed_back_muxa_sel_id_fb+(feed_back_muxa_sel_id_fb!=0)   ;
+                    feed_back_muxb_sel_id_fb    <= feed_back_muxb_sel_id_fb+(feed_back_muxb_sel_id_fb!=0)   ;
                 end
                  
                 if (feed_back_muxa_sel_id_fb==7)
@@ -541,10 +541,12 @@ module PIPELINE #(
             alu_mem1_mem2            <=      alu_ex_mem1                ;
             alu_mem2_mem3            <=      alu_mem1_mem2              ;
             alu_mem3_wb              <=      alu_mem2_mem3              ;
+            
             if (rd_mem3_wb==1 & type_mem3_wb!=idle)
             begin
                 return_addr          <=      wb_data_final              ;
             end  
+            
             alu_written_back         <=      wb_data_final              ;           
             rd_mem1_mem2             <=       rd_ex_mem1                ;    
             rd_mem2_mem3             <=       rd_mem1_mem2              ;    
@@ -564,7 +566,7 @@ module PIPELINE #(
     assign BRANCH               = (jump_fb_ex |cbranch_fb_ex  |jumpr_fb_ex) &  ! flush_internal ;  
     assign FLUSH                = flush_internal                                    ;
     assign BRANCH_TAKEN         = branch_taken                                      ;
-    assign PIPELINE_STALL       = (stall_enable_id_fb  ||  branch_taken ||flush_e || flush_e_i || !CACHE_READY)& CACHE_READY_DATA   ;
+    assign PIPELINE_STALL       = (stall_enable_id_fb  ||  branch_taken ||flush_e || flush_e_i || !CACHE_READY || exstage_stalled)& CACHE_READY_DATA  ;
     assign c1_mux_final         = rs1_final                                         ; 
     assign c2_mux_final         = rs2_final                                         ;
     assign jmux1_final          = imm_out_id_fb                                     ;

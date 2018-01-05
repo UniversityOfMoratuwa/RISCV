@@ -72,6 +72,11 @@ module EXSTAGE(
     wire [31:0] rv32m_out           ;
     wire        rv32m_ready         ; 
     
+    reg         flush_internal  =0  ;
+    reg         cache_ready_fb  =0  ;
+    reg         cache_ready_ex  =0  ;
+    reg         cache_ready_ex2 =0  ;
+    
        
     integer j;   
     
@@ -193,7 +198,7 @@ module EXSTAGE(
     RV32M rv32m(
         .CLK(CLK),
         .STALL_M_STD(STALL_ENABLE_EX),
-        .START((ALU_CNT==alu_mstd)),
+        .START((ALU_CNT==alu_mstd)& !flush_internal),
         .M_CNT(COMP_CNT),
         .RS1(B),
         .RS2(A),
@@ -252,11 +257,6 @@ module EXSTAGE(
            }),
         .OUT(comp_out_w)
         );             
-  
-    reg     flush_internal  =0      ;
-    reg     cache_ready_fb  =0      ;
-    reg     cache_ready_ex  =0      ;
-    reg     cache_ready_ex2 =0      ;
     
     always@(posedge CLK)
     begin
@@ -326,6 +326,6 @@ module EXSTAGE(
     assign DATA_CACHE_CONTROL   = data_cache_control & {2{!flush_internal}}                         ;
     assign TYPE_OUT             = type_out & {2{!flush_internal}}                                   ;
     assign FLUSH_I              = flush_internal                                                    ;
-    assign EXSTAGE_STALLED      = (ALU_CNT==alu_mstd) & !rv32m_ready                                ;
+    assign EXSTAGE_STALLED      = ((ALU_CNT==alu_mstd) & !rv32m_ready ) & !flush_internal           ;
   
 endmodule
