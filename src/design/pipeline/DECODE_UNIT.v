@@ -33,7 +33,8 @@ module DECODE_UNIT(
     output reg  [ 2:0]  FEED_BACK_MUX2_SEL =0   ,
     output reg  [ 3:0]  ALU_CNT            =0   , 
     output reg  [ 1:0]  D_CACHE_CONTROL    =0   , 
-    output reg  [ 2:0]  COMP_CNT           =0   ,
+    output reg  [ 2:0]  FUN3               =0   ,
+    output reg  [ 3:0]  CSR_CNT            =0   ,
     output reg          JUMP               =0   ,
     output reg          JUMPR              =0   ,
     output reg          CBRANCH            =0   ,
@@ -56,7 +57,8 @@ module DECODE_UNIT(
     wire [ 2:0]     feed_back_mux2_sel      ;
     wire [ 3:0]     alu_cnt                 ;
     wire [ 1:0]     d_cache_control         ;
-    wire [ 2:0]     comp_cnt                ;
+    wire [ 2:0]     fun3                    ;
+    wire [ 3:0]     csr_cnt                 ;
     wire            jump_w                  ;
     wire            jumpr_w                 ;
     wire            cbranch                 ;
@@ -114,11 +116,12 @@ module DECODE_UNIT(
         );
     
      CONTROL_UNIT control_unit(
-        .INS                ({INSTRUCTION[25],INSTRUCTION[30],INSTRUCTION[14:12]})  ,
+        .INS                ({INSTRUCTION[20],INSTRUCTION[25],INSTRUCTION[30],INSTRUCTION[14:12]})  ,
         .INS1               (INSTRUCTION[6:0])                                      ,
         .ALU_CNT            (alu_cnt)                                               ,
         .D_CACHE_CONTROL    (d_cache_control)                                       ,
-        .COMP_CONT          (comp_cnt)                                              ,
+        .FUN3               (fun3)                                                  ,
+        .CSR_CNT            (csr_cnt)                                               ,
         .JUMP               (jump_w)                                                ,
         .JUMPR              (jumpr_w)                                               ,
         .CBRANCH            (cbranch)                                               ,
@@ -166,7 +169,8 @@ module DECODE_UNIT(
             FEED_BACK_MUX2_SEL        =    feed_back_mux2_sel     ;         
             ALU_CNT                   =    alu_cnt                ;                    
             D_CACHE_CONTROL           =    d_cache_control        ;    
-            COMP_CNT                  =    comp_cnt               ;    
+            FUN3                      =    fun3                   ; 
+            CSR_CNT                   =    csr_cnt                ;  
             JUMP                      =    jump_w                 ;  
             JUMPR                     =    jumpr_w                ;  
             CBRANCH                   =    cbranch                ;    

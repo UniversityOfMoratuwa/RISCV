@@ -28,7 +28,7 @@ module PIPELINE #(
         localparam OPCODE_WIDTH                 = 7     ,
         localparam REGARRAY_ADDR_WIDTH          = 5     ,
         localparam ALU_CNT_WIDTH                = 4     ,
-        localparam COMP_CNT_WIDTH               = 2
+        localparam FUN_WIDTH                    = 2
     ) (
     
     //////////////////////////////////
@@ -117,7 +117,7 @@ module PIPELINE #(
     wire [ 1:0] rs2_type                    ;
     
     assign ins_if_id = INS_IF_ID            ;
-    
+   
     DECODE_UNIT decode_unit(
         .CLK                (CLK)                           ,
         .TYPE_MEM3_WB       (type_mem3_wb)                  ,
@@ -130,7 +130,8 @@ module PIPELINE #(
         .FEED_BACK_MUX2_SEL (feed_back_muxb_sel)            ,
         .ALU_CNT            (alu_cnt)                       , 
         .D_CACHE_CONTROL    (data_cache_control_w)          , 
-        .COMP_CNT           (comp_cnt)                      ,     
+        .FUN3               (fun3)                          , 
+        .CSR_CNT            (csr_cnt)                       ,    
         .JUMP               (jump_w)                        ,
         .JUMPR              (jumpr_w)                       ,
         .CBRANCH            (cbranch_w)                     ,
@@ -146,8 +147,7 @@ module PIPELINE #(
         .STALL_ENABLE_FB    (stall_enable_id_fb)            ,
         .RS1_TYPE           (rs1_type)                      ,
         .RS2_TYPE           (rs2_type)                  
-        );
-        
+        );        
   
     EXSTAGE exstage(
         .CLK(CLK)                                                   ,
@@ -165,7 +165,8 @@ module PIPELINE #(
         .JUMP               (jump_fb_ex)                            ,
         .JUMPR              (jumpr_fb_ex)                           ,
         .CBRANCH            (cbranch_fb_ex)                         ,     
-        .COMP_CNT           (comp_cnt_fb_ex)                        ,
+        .FUN3               (fun3_fb_ex)                            ,
+        .CSR_CNT            (csr_cnt_fb_ex)                         ,
         .TYPE_IN            (ins_fb_ex==32'h00100073 ?0:type_fb_ex ),
         .JUMP_FINAL         (branch_taken)                          ,
         .WB_DATA            (alu_out_wire)                          ,
@@ -387,7 +388,7 @@ module PIPELINE #(
             BYTE_ENB_TO_CACHE = 4'b0000;  
     end
       
-    reg flush_e_i=0;
+    reg       flush_e_i=0;
     reg [1:0] rs1_type_fb;
     reg [1:0] rs2_type_fb;
 
@@ -414,7 +415,8 @@ module PIPELINE #(
                 b_bus_sel_id_fb          <= b_bus_sel               ;                  
                 imm_out_id_fb            <= imm_out                 ;   
                 alu_cnt_id_fb            <= alu_cnt                 ;    
-                comp_cnt_id_fb           <= comp_cnt                ;    
+                fun3_id_fb               <= fun3                    ;
+                csr_cnt_id_fb            <= csr_cnt                 ; 
                 type_id_fb               <= op_type                 ;    
                 jump_id_fb               <= jump_w                  ; 
                 jumpr_id_fb              <= jumpr_w                 ;  
@@ -427,7 +429,8 @@ module PIPELINE #(
                 ins_id_fb                <= ins_if_id               ;            
                 ins_fb_ex                <= ins_id_fb               ;
                 alu_cnt_fb_ex            <= alu_cnt_id_fb           ;                   
-                comp_cnt_fb_ex           <= comp_cnt_id_fb          ;    
+                fun3_fb_ex               <= fun3_id_fb              ; 
+                csr_cnt_fb_ex            <= csr_cnt_id_fb           ;   
                 type_fb_ex               <= type_id_fb              ;    
                 jump1_fb_ex              <= jmux1_final             ;  
                 jump2_fb_ex              <= jmux2_final             ;   
@@ -449,7 +452,7 @@ module PIPELINE #(
                 rs2_ex_ex2               <= rs2_final               ;
                 rs1_ex_ex2               <= rs1_final               ;
                 rd_ex_ex2                <= rd_id_fb                ;   
-                op_type_ex_ex2           <= comp_cnt_id_fb          ;     
+                op_type_ex_ex2           <= fun3_id_fb              ;     
                 pc_ex_ex2                <= pc_id_fb                ;   
                 imm_ex_ex2               <= imm_out_id_fb           ;        
             end  
@@ -477,7 +480,8 @@ module PIPELINE #(
                 end
                 
                 alu_cnt_fb_ex            <=    alu_idle             ;
-                comp_cnt_fb_ex           <=    no_branch            ; 
+                fun3_fb_ex               <=    no_branch            ; 
+                csr_cnt_fb_ex            <=    sys_idle             ;
                 type_fb_ex               <=    0                    ; 
                 jump1_fb_ex              <=    0                    ; 
                 jump2_fb_ex              <=    0                    ; 

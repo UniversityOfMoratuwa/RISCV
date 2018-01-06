@@ -33,16 +33,17 @@ module EXSTAGE(
     input signed    [31:0]  A_signed                ,
     input signed    [31:0]  B_signed                ,
     input           [31:0]  PC_FB_EX                ,
-    input           [3 :0]  ALU_CNT                 , 
+    input           [ 3:0]  ALU_CNT                 , 
     input                   JUMP                    ,
     input                   JUMPR                   ,
     input                   CBRANCH                 , 
     input           [31:0]  PC_ID_FB                ,
     input                   STALL_ENABLE_EX         ,
-    input           [1:0 ]  DATA_CACHE_CONTROL_IN   ,     
-    input           [2 :0]  COMP_CNT                ,
+    input           [ 1:0]  DATA_CACHE_CONTROL_IN   ,     
+    input           [ 2:0]  FUN3                    ,
+    input           [ 3:0]  CSR_CNT                 ,
     input                   CACHE_READY             ,
-    input           [1 :0]  TYPE_IN                 ,
+    input           [ 1:0]  TYPE_IN                 ,
 
     output                  JUMP_FINAL              ,
     output          [31:0]  WB_DATA                 ,   
@@ -82,7 +83,7 @@ module EXSTAGE(
     
     reg         comp_out [0:7]      ;
     reg  [ 3:0] alu_cnt=alu_idle    ;
-    reg  [ 2:0] comp_cnt=no_branch  ;
+    reg  [ 2:0] fun3=no_branch      ;
     
     initial
     begin
@@ -102,7 +103,7 @@ module EXSTAGE(
     )alu_mux  (
         .SELECT(alu_cnt),
         .IN({
-            32'b0           ,
+            alu_ins[15]     ,
             alu_ins[14]     ,
             alu_ins[13]     ,
             alu_ins[12]     ,
@@ -141,6 +142,7 @@ module EXSTAGE(
             alu_ins[alu_slt ]   <=      {31'd0,B_signed < A_signed}     ;
             alu_ins[alu_b4  ]   <=      B+32'd4                         ; 
             alu_ins[alu_idle]   <=      32'b0                           ;
+            alu_ins[alu_csr ]   <=      32'b0                           ;
             alu_ins[alu_mstd]   <=      rv32m_out                       ;
         end   
     end      
@@ -194,12 +196,36 @@ module EXSTAGE(
         .OUT(rashift_out)
         );
         
+    CSR_FILE csr_file(
+        .CLK(CLK),
+        .PC(PC_FB_EX),
+        .CSR_CNT(CSR_CNT),
+        .CSR_ADDRESS(A[11:0]),
+        .WRITE_DATA(B),
+        .CSR_ENABLE(),
+        .CSR_OP_TYPE(),
+        .MEIP(),
+        .MTIP(), 
+        .MSIP(), 
+        .TRAP(),
+        .TRAP_FINAL(),
+        .E_CODE_C(),
+        .TVAL(),
+        .TRAP_RETURN(),
+        .TSR(),
+        .TVM(),
+        .TW(),
+        .R_DATA(),
+        .HANDLER_PC(),          
+        .EPC(),
+        .PREV()
+        );
         
     RV32M rv32m(
         .CLK(CLK),
         .STALL_M_STD(STALL_ENABLE_EX),
         .START((ALU_CNT==alu_mstd)& !flush_internal),
-        .M_CNT(COMP_CNT),
+        .M_CNT(FUN3),
         .RS1(B),
         .RS2(A),
         .OUT(rv32m_out),
@@ -222,7 +248,7 @@ module EXSTAGE(
         if (1)
         begin
             cbranch             <= CBRANCH                      ;
-            comp_cnt            <= COMP_CNT                     ;
+            fun3                <= FUN3                         ;
             comp_out[beq]       <= COMP1 == COMP2               ; 
             comp_out[bne]       <= COMP1 != COMP2               ;
             comp_out[blt]       <= COMP1 < COMP2                ;
@@ -245,7 +271,7 @@ module EXSTAGE(
         .ORDER(3),
         .WIDTH(1)  
     )comp  (
-        .SELECT(comp_cnt),
+        .SELECT(fun3),
         .IN({
             comp_out[7],
             comp_out[6],

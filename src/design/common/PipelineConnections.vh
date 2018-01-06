@@ -1,18 +1,18 @@
 ///////////////////////////////////////////////
-                                             //
-wire        [31:0]       comp1            ;  //
-wire        [31:0]       comp2            ;  //
-wire        [31:0]       c1_mux_final     ;  //
-wire        [31:0]       c2_mux_final     ;  //
-reg         [31:0]       comp1_id_fb     =0 ;  //
-reg         [31:0]       comp2_id_fb   =0   ;  //
-reg         [31:0]       comp1_fb_ex    =0  ;  //
-reg         [31:0]       comp2_fb_ex    =0  ;  //
-wire                     branch_taken     ;  //
-reg                      branch_taken_reg =0;  //
+                                               //
+wire        [31:0]       comp1              ;  //
+wire        [31:0]       comp2              ;  //
+wire        [31:0]       c1_mux_final       ;  //
+wire        [31:0]       c2_mux_final       ;  //
+reg         [31:0]       comp1_id_fb=0      ;  //
+reg         [31:0]       comp2_id_fb=0      ;  //
+reg         [31:0]       comp1_fb_ex=0      ;  //
+reg         [31:0]       comp2_fb_ex=0      ;  //
+wire                     branch_taken       ;  //
+reg                      branch_taken_reg=0 ;  //
 reg         [3:0]        bubble_counter  =0 ;  //
-wire                     stall_enable      ;  //
-reg                      stall_enable_id_fb =1'b1;//
+wire                     stall_enable       ;  //
+reg                      stall_enable_id_fb=1'b1;//
 reg                      stall_enable_fb_ex ;//
 reg [31:0]    imm_out_id_fb   =0            ;  //
 reg [31:0]    imm_out_fb_ex   =0            ;  //
@@ -91,12 +91,15 @@ reg  [31:0]             alu_mem3_wb_p    =0  ;   //
 
 /////////////////////////////////////////////////
                                                //
-wire [3:0]              alu_cnt           ;    //
-wire [2:0]              comp_cnt          ;    //
-reg  [3:0]              alu_cnt_id_fb  =0   ;    //
-reg  [2:0]              comp_cnt_id_fb =0 ;
-reg  [3:0]              alu_cnt_fb_ex  =0  ;    //
-reg  [2:0]              comp_cnt_fb_ex =0  ;    //
+wire [3:0]              alu_cnt             ;  //
+wire [2:0]              fun3                ;  //
+wire [2:0]              csr_cnt             ;  //
+reg  [3:0]              alu_cnt_id_fb  =0   ;  //
+reg  [2:0]              fun3_id_fb     =0   ;  //
+reg  [3:0]              csr_cnt_id_fb  =0   ;  //
+reg  [3:0]              alu_cnt_fb_ex  =0   ;  //
+reg  [2:0]              fun3_fb_ex =0       ;  //
+reg  [3:0]              csr_cnt_fb_ex =0    ;  //
                                                //
 /////////////////////////////////////////////////
 

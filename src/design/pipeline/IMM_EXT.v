@@ -25,9 +25,10 @@ module IMM_EXT(
     input       [2:0]    TYPE    ,
     output      [31:0]  OUTPUT
     );
-    reg [31:0] imm_out [7:0]  ;
     
     `include "PipelineParams.vh"
+    
+    reg [31:0] imm_out [7:0]  ;
     
     always @(*)
     begin
@@ -39,24 +40,22 @@ module IMM_EXT(
        imm_out [ ntype]= 32'd0;  
        imm_out [ rtype]= 32'd0;
     end
+    
     Multiplexer #(
-                                   .ORDER(3),
-                                   .WIDTH(32)
-                               ) 
-        imm_mux (
-                                   .SELECT(TYPE),
-                                   .IN(
-                                       {
-                                       32'd0,
-                                       imm_out[6],
-                                       imm_out[5],
-                                       imm_out[4],
-                                       imm_out[3],
-                                       imm_out[2],
-                                       imm_out[1],
-                                       imm_out[0]
-                                       
-                                       }),
-                                    .OUT(OUTPUT)
-                                    );
+        .ORDER(3),
+        .WIDTH(32)
+        )imm_mux (
+        .SELECT(TYPE),
+        .IN({
+            32'd0,
+            imm_out[6],
+            imm_out[5],
+            imm_out[4],
+            imm_out[3],
+            imm_out[2],
+            imm_out[1],
+            imm_out[0]}),
+        .OUT(OUTPUT)
+        );
+        
 endmodule

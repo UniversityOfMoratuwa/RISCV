@@ -21,11 +21,12 @@
 
 
 module CONTROL_UNIT(
-    input      [16:12]      INS             ,
+    input      [17:12]      INS             ,
     input      [ 6: 0]      INS1            ,
     output reg [ 3: 0]      ALU_CNT         ,
     output reg [ 1: 0]      D_CACHE_CONTROL ,
-    output reg [ 2: 0]      COMP_CONT       ,
+    output reg [ 2: 0]      FUN3            ,
+    output reg [ 3: 0]      CSR_CNT         ,
     output reg              JUMP            ,
     output reg              JUMPR           ,
     output reg              CBRANCH         ,
@@ -33,17 +34,18 @@ module CONTROL_UNIT(
     output reg              A_BUS_SEL       ,
     output reg              B_BUS_SEL
     );
+    
     `include "PipelineParams.vh"
+    
     reg undefined;
     
     always@(*)
     begin
-        COMP_CONT       = INS[14:12]                            ;
+        FUN3            = INS[14:12]                            ;
         D_CACHE_CONTROL = {(INS1[6:0]==store),(INS1[6:0]==load)};     
         JUMP            = INS1[6:0]==jump                       ;
         JUMPR           = INS1[6:0]==jumpr                      ;
         CBRANCH         = INS1[6:0]==cjump                      ;
-        COMP_CONT       = INS[14:12]                            ;
         undefined =0                                            ;
         
         case (INS1[6:0])
@@ -53,6 +55,7 @@ module CONTROL_UNIT(
                 A_BUS_SEL          = a_bus_imm_sel  ;
                 B_BUS_SEL          = b_bus_pc_sel   ;
                 ALU_CNT            = alu_a          ;
+                CSR_CNT            = sys_idle       ;
                 TYPE               = alu            ;
             end  
             auipc   : 
@@ -60,6 +63,7 @@ module CONTROL_UNIT(
                 A_BUS_SEL           = a_bus_imm_sel ;
                 B_BUS_SEL           = b_bus_pc_sel  ;
                 ALU_CNT             = alu_add       ;
+                CSR_CNT             = sys_idle      ;
                 TYPE                = alu           ;
             end
             jump    : 
@@ -67,6 +71,7 @@ module CONTROL_UNIT(
                 A_BUS_SEL           = a_bus_imm_sel ;
                 B_BUS_SEL           = b_bus_pc_sel  ;
                 ALU_CNT             = alu_b4        ;
+                CSR_CNT             = sys_idle      ;
                 TYPE                = alu           ;
             end 
             jumpr   : 
@@ -74,6 +79,7 @@ module CONTROL_UNIT(
                 A_BUS_SEL           = a_bus_imm_sel ;
                 B_BUS_SEL           = b_bus_pc_sel  ;
                 ALU_CNT             = alu_b4        ;
+                CSR_CNT             = sys_idle      ;
                 TYPE                = alu           ;
             end
             cjump   : 
@@ -81,13 +87,15 @@ module CONTROL_UNIT(
                 A_BUS_SEL           = a_bus_rs2_sel ;
                 B_BUS_SEL           = b_bus_rs1_sel ;
                 ALU_CNT             = alu_idle      ;
+                CSR_CNT             = sys_idle      ;
                 TYPE                = idle          ;
             end                                   
             load    : 
             begin             
                 A_BUS_SEL           = a_bus_imm_sel ;
                 B_BUS_SEL           = b_bus_rs1_sel ;
-                ALU_CNT             = alu_add       ;   
+                ALU_CNT             = alu_add       ;
+                CSR_CNT             = sys_idle      ;   
                 TYPE                = ld            ;    
             end                                   
             store   : 
@@ -95,12 +103,14 @@ module CONTROL_UNIT(
                 A_BUS_SEL           = a_bus_imm_sel ;
                 B_BUS_SEL           = b_bus_rs1_sel ;                                
                 ALU_CNT             = alu_add       ;
+                CSR_CNT             = sys_idle      ;
                 TYPE                = idle          ; 
             end
             iops    : 
             begin                 
                 A_BUS_SEL           = a_bus_imm_sel ;
                 B_BUS_SEL           = b_bus_rs1_sel ;
+                CSR_CNT             = sys_idle      ;
                 TYPE                = alu           ;
                 case({((INS[14:12]==srli)& INS[15]),INS[14:12]})
                     {1'b0,addi }    : ALU_CNT = alu_add ;
@@ -123,6 +133,7 @@ module CONTROL_UNIT(
             begin   
                 A_BUS_SEL           = a_bus_rs2_sel ;
                 B_BUS_SEL           = b_bus_rs1_sel ;
+                CSR_CNT             = sys_idle      ;
                 TYPE                = alu           ;
                 case({INS[16],(((INS[14:12]==srlr) ||(INS[14:12]==addr))& INS[15]),INS[14:12]})
                     {2'b00,addr   }     : ALU_CNT = alu_add     ;
@@ -155,13 +166,35 @@ module CONTROL_UNIT(
                 A_BUS_SEL           = a_bus_imm_sel ;
                 B_BUS_SEL           = b_bus_pc_sel  ;
                 ALU_CNT             = alu_a         ;
-                TYPE                = alu           ;
+                case({(((INS[14:12]==ecall) ||(INS[14:12]==ebreak))& INS[17]),INS[14:12]})
+                    {1'b0,ecall  }   : 
+                    begin
+                        CSR_CNT = sys_ecall   ;
+                        TYPE    = idle        ;
+                    end
+                    {1'b1,ebreak }   : 
+                    begin
+                        CSR_CNT = sys_ebreak  ;
+                        TYPE    = idle        ;
+                    end
+                    {1'b0,csrrw  }   : 
+                    begin
+                        CSR_CNT = sys_csrrw   ;
+                        TYPE    = idle        ;//need to check and add others
+                    end
+                    default             :
+                    begin
+                        undefined   = 1'b1      ;
+                        CSR_CNT     = sys_idle  ;
+                    end
+                endcase
             end
             default :
             begin
                 A_BUS_SEL           = a_bus_imm_sel ;
                 B_BUS_SEL           = b_bus_pc_sel  ;
                 ALU_CNT             = alu_idle      ;
+                CSR_CNT             = sys_idle      ;
                 TYPE                = idle          ;
                 undefined=INS!=32'd0;
             end          

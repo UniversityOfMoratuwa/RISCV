@@ -21,9 +21,10 @@
 
 
 module INS_TYPE_ROM(
-input           [6:0] INS  ,
-output   reg    [2:0]  TYPE
+    input           [6:0] INS       ,
+    output   reg    [2:0]  TYPE
     );
+    
     `include "PipelineParams.vh"
 
     always@(*)
@@ -44,5 +45,6 @@ output   reg    [2:0]  TYPE
             default :   TYPE=ntype;
         endcase
     end
+    
 endmodule
     

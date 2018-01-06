@@ -20,129 +20,32 @@
 //////////////////////////////////////////////////////////////////////////////////
 
 
-module CSR_FILE #(
-        // ADRESS MAPPINGS
-        localparam	 ustatus	    =	12'h000	,
-        localparam	 uie		    =	12'h004	,
-        localparam	 utvec		    =	12'h005	,
-        localparam	 uscratch	    =	12'h040	,
-        localparam	 uepc		    =	12'h041	,
-        localparam	 ucause		    =	12'h042	,
-        localparam	 utval		    =	12'h043	,
-        localparam	 uip		    =	12'h044	,
-        localparam	 fflags		    =	12'h001	,
-        localparam	 frm	    	=	12'h002	,
-        localparam	 fcsr		    =	12'h003	,
-        localparam	 cycle		    =	12'hC00	,
-        localparam	 timer		    =	12'hC01	,
-        localparam	 instret	    =	12'hC02	,
-        localparam	 hpmcounter3	=	12'hC03	,
-        localparam	 hpmcounter4	=	12'hC04	,
-        localparam	 hpmcounter31	=	12'hC1F	,
-        localparam	 cycleh		    =	12'hC80	,
-        localparam	 timeh		    =	12'hC81	,
-        localparam	 instreth	    =	12'hC82	,
-        localparam	 hpmcounter3h	=	12'hC83	,
-        localparam	 hpmcounter4h	=	12'hC84	,
-        localparam	 hpmcounter31h	=	12'hC9F	,
-        localparam	 sstatus	    =	12'h100	,
-        localparam	 sedeleg	    =	12'h102	,
-        localparam	 sideleg	    =	12'h103	,
-        localparam	 sie		    =	12'h104	,
-        localparam	 stvec		    =	12'h105	,
-        localparam	 scounteren	    =	12'h106	,
-        localparam	 sscratch	    =	12'h140	,
-        localparam	 sepc		    =	12'h141	,
-        localparam	 scause		    =	12'h142	,
-        localparam	 stval		    =	12'h143	,
-        localparam	 sip		    =	12'h144	,
-        localparam	 satp		    =	12'h180	,
-        localparam	 mvendorid	    =	12'hF11	,
-        localparam	 marchid	    =	12'hF12	,
-        localparam	 mimpid		    =	12'hF13	,
-        localparam	 mhartid	    =	12'hF14	,
-        localparam	 mstatus	    =	12'h300	,
-        localparam	 misa		    =   12'h301	,
-        localparam	 medeleg	    =	12'h302	,
-        localparam	 mideleg	    =	12'h303	,
-        localparam	 mie		    =	12'h304	,
-        localparam	 mtvec		    =	12'h305	,
-        localparam	 mcounteren	    =	12'h306	,
-        localparam	 mscratch	    =   12'h340	,
-        localparam	 mepc		    =	12'h341	,
-        localparam	 mcause		    =	12'h342	,
-        localparam	 mtval		    =	12'h343	,
-        localparam	 mip		    =	12'h344	,
-        localparam	 pmpcfg0	    =	12'h3A0	,
-        localparam	 pmpcfg1	    =	12'h3A1	,
-        localparam	 pmpcfg2	    =	12'h3A2	,
-        localparam	 pmpcfg3	    =	12'h3A3	,
-        localparam	 pmpaddr0	    =	12'h3B0	,
-        localparam	 pmpaddr1	    =	12'h3B1	,
-        localparam	 pmpaddr15	    =	12'h3BF	,
-        localparam	 mcycle		    =	12'hB00	,
-        localparam	 minstret	    =	12'hB02	,
-        localparam	 mhpmcounter3	=	12'hB03	,
-        localparam	 mhpmcounter4	=	12'hB04	,
-        localparam	 mhpmcounter31	=	12'hB1F	,
-        localparam	 mcycleh	    =	12'hB80	,
-        localparam	 minstreth	    =	12'hB82	,
-        localparam	 mhpmcounter3h	=	12'hB83	,
-        localparam	 mhpmcounter4h	=	12'hB84	,
-        localparam	 mhpmcounter31h	=	12'hB9F	,
-        localparam	 mhpmevent3	    =	12'h323	,
-        localparam	 mhpmevent4	    =	12'h324	,
-        localparam	 mhpmevent31	=	12'h33F	,
-        localparam	 tselect	    =	12'h7A0	,
-        localparam	 tdata1		    =	12'h7A1	,
-        localparam	 tdata2		    =	12'h7A2	,
-        localparam	 tdata3		    =	12'h7A3	,
-        localparam	 dcsr		    =	12'h7B0	,
-        localparam	 dpc		    =	12'h7B1	,
-        localparam	 dscratch	    =	12'h7B2	,
-        // functions
-        localparam   ecall          =   3'b000  ,
-        localparam   ebreak         =   3'b000  ,
-        
-        localparam   csrrw          =   3'b001  ,
-        localparam   csrrs          =   3'b010  ,
-        localparam   csrrc          =   3'b011  ,
-        localparam   csrrwi         =   3'b101  ,
-        localparam   csrrsi         =   3'b110  ,
-        localparam   csrrci         =   3'b111  ,
-        
-        //modes
-        localparam   mmode          =   2'd3    ,
-        localparam   hmode          =   2'd2    ,
-        localparam   smode          =   2'd1    ,
-        localparam   umode          =   2'd0
-    ) ( 
-        input           CLK             ,
-        input [31  :0]  PC              ,
-        input [11   :0] CSR_ADDRESS     ,
-        input [31   :0] WRITE_DATA      ,
-        input           CSR_ENABLE      ,
-        input [2    :0] CSR_OP_TYPE     ,
-        input           MEIP            ,
-        input           MTIP            , 
-        input           MSIP            , 
-        input           TRAP            ,
-        output          TRAP_FINAL         ,
-        input [30   :0] E_CODE_C        ,
-        input [31   :0] TVAL            ,
-        input           TRAP_RETURN     ,
-        output reg      TSR =0            ,
-        output reg      TVM  =0           ,
-        output reg      TW   =0           ,
-        output reg  [31:0]    R_DATA =0   ,
-        output reg [31:0] HANDLER_PC =0   ,          
-        output reg [31:0]     EPC      ,
-        output [1:0] PREV        
+module CSR_FILE (
+        input               CLK             ,
+        input       [31:0]  PC              ,
+        input       [ 3:0]  CSR_CNT         ,
+        input       [11:0]  CSR_ADDRESS     ,
+        input       [31:0]  WRITE_DATA      ,
+        input               CSR_ENABLE      ,
+        input       [ 2:0]  CSR_OP_TYPE     ,
+        input               MEIP            ,
+        input               MTIP            , 
+        input               MSIP            , 
+        input               TRAP            ,
+        output              TRAP_FINAL      ,
+        input       [30:0]  E_CODE_C        ,
+        input       [31:0]  TVAL            ,
+        input               TRAP_RETURN     ,
+        output reg          TSR             ,
+        output reg          TVM             ,
+        output reg          TW              ,
+        output reg  [31:0]  R_DATA          ,
+        output reg  [31:0]  HANDLER_PC      ,          
+        output reg  [31:0]  EPC             ,
+        output      [ 1:0]  PREV        
     );  
     
-    
-    
-
+    `include "PipelineParams.vh"
     
     reg     heip,seip,ueip,htip,stip,utip,hsip,ssip,usip                ;
     reg     meie,heie,seie,ueie,mtie,htie,stie,utie,msie,hsie,ssie,usie ;
@@ -177,32 +80,32 @@ module CSR_FILE #(
     reg     [8      :0]     asid          =0                            ;
     reg     [21     :0]     ppn           =0                            ;
     
-    
     // user mode specific
-    reg     [29     :0]     ut_base       =0                             ;
-    reg     [1      :0]     ut_mode       =0                             ;
-    reg     [63     :0]     ucycle_reg    =0                             ;
-    reg     [63     :0]     uinsret_reg   =0                             ;
-    reg     [31     :0]     uscratch_reg  =0                             ;
-    reg     [31     :0]     uepc_reg      =0                             ;
-    reg     [31     :0]     utval_reg     =0                             ;
-    reg     [30     :0]     uecode_reg    =0                             ;
-    reg                     uinterrupt    =0                             ;
-    reg                     umode_reg     =0                             ;
-    reg     [63     :0]     cycle_reg     =0                             ; 
-    reg     [63     :0]     timer_reg     =0                             ; 
-    reg     [63     :0]     instret_reg   =0                             ; 
+    reg     [29     :0]     ut_base       =0                            ;
+    reg     [1      :0]     ut_mode       =0                            ;
+    reg     [63     :0]     ucycle_reg    =0                            ;
+    reg     [63     :0]     uinsret_reg   =0                            ;
+    reg     [31     :0]     uscratch_reg  =0                            ;
+    reg     [31     :0]     uepc_reg      =0                            ;
+    reg     [31     :0]     utval_reg     =0                            ;
+    reg     [30     :0]     uecode_reg    =0                            ;
+    reg                     uinterrupt    =0                            ;
+    reg                     umode_reg     =0                            ;
+    reg     [63     :0]     cycle_reg     =0                            ; 
+    reg     [63     :0]     timer_reg     =0                            ; 
+    reg     [63     :0]     instret_reg   =0                            ; 
   
-    
-     
-    
-    
-
     initial
     begin
-        {sd,mxr,sum,mprv,mpp,spp,mpie,spie,upie,m_ie,s_ie,u_ie}           = 13'b011000011101    ;
-        {heip,seip,ueip,htip,stip,utip,hsip,ssip,usip}                    = 9'd0                 ;
-        {meie,heie,seie,ueie,mtie,htie,stie,utie,msie,hsie,ssie,usie}     = 12'd0                ;
+        TSR         =0          ;
+        TVM         =0          ;
+        TW          =0          ;
+        R_DATA      =0          ;
+        HANDLER_PC  =0          ;        
+            
+        {sd,mxr,sum,mprv,mpp,spp,mpie,spie,upie,m_ie,s_ie,u_ie}           = 13'b011000011101        ;
+        {heip,seip,ueip,htip,stip,utip,hsip,ssip,usip}                    = 9'd0                    ;
+        {meie,heie,seie,ueie,mtie,htie,stie,utie,msie,hsie,ssie,usie}     = 12'd0                   ;
     end
    
     // machine mode registers
@@ -225,8 +128,7 @@ module CSR_FILE #(
     wire    [31 : 0] mhartid_r   = 32'd0                 ;
     wire    [31 : 0] marchid_r   = 32'd0                 ;
     wire    [31 : 0] mimpid_r    = 32'd0                 ;
-    wire    [31 : 0] misa_r      = 32'b01000000000000000001000100000000;
-    
+    wire    [31 : 0] misa_r      = 32'b01000000000000000001000100000000;    
         
     // supervisor mode registers
     wire    [31 : 0] sstatus_r   = {sd,11'b0,mxr,sum,9'b0,spp,2'b0,spie,upie,2'b0,s_ie,u_ie};
@@ -258,24 +160,23 @@ module CSR_FILE #(
     wire    [31 : 0] instret_r   = instret_reg [31 :  0];
     wire    [31 : 0] instreth_r  = instret_reg [63 : 32];
     
-    reg     [1 :0] curr_prev             = 2'b11                         ;
+    reg     [1  : 0] curr_prev             = 2'b11                         ;
     
-    wire ie                              = curr_prev == 2'b11 ? m_ie: (curr_prev == 2'b01 ? s_ie & m_ie :( curr_prev ==2'b00 ? u_ie:1'b0));
-   reg       interrupt;
+    wire             ie          = curr_prev == 2'b11 ? m_ie: (curr_prev == 2'b01 ? s_ie & m_ie :( curr_prev ==2'b00 ? u_ie:1'b0));
+    reg              interrupt;
 
     reg            illegal_access        =  1'b0                         ;
-    reg [31 :0]    write_data_final      =  32'b0                        ;
+    reg   [31 :0]    write_data_final      =  32'b0                        ;
     reg   [30:0]   e_code                =  29'b0                        ;
     
     wire exception =   ( illegal_access  )|TRAP                 ;
     wire trap      =    exception | interrupt               ;
    
     //read_    assign prev=curr_prev;data
-        assign PREV=curr_prev;
+    assign PREV=curr_prev;
         
-
-
-            assign TRAP_FINAL =trap;
+    assign TRAP_FINAL =trap;
+    
     always @(*)
     begin
 //        e_code=30'd0;
@@ -346,6 +247,7 @@ module CSR_FILE #(
 //                         ((curr_prev==2'b00) && (((CSR_ADDRESS == instret)|(CSR_ADDRESS == instreth))&&(sir==0))) |
 //                         ((curr_prev==2'b00) && (((CSR_ADDRESS == timer)  |(CSR_ADDRESS == timeh))   &&(stm==0))) |
 //                         ((curr_prev==2'b00) && (((CSR_ADDRESS == cycle)  |(CSR_ADDRESS == cycleh))  &&(scy==0))));
+        
         case (CSR_OP_TYPE)
             csrrw    :    write_data_final =  WRITE_DATA         ;    
             csrrs    :    write_data_final =  WRITE_DATA  | R_DATA;   
@@ -355,6 +257,7 @@ module CSR_FILE #(
             csrrci   :    write_data_final = ~WRITE_DATA  & R_DATA;         
             default  :    write_data_final =  WRITE_DATA          ; 
         endcase
+        
         case (CSR_ADDRESS )
              ustatus	    :	 R_DATA =  ustatus_r	 ;
              uie            :    R_DATA =  uie_r         ;
@@ -400,7 +303,7 @@ module CSR_FILE #(
              medeleg        :    R_DATA =  medeleg_r     ;
              mideleg        :    R_DATA =  mideleg_r     ;
              mie            :    R_DATA =  mie_r         ;
-              mtvec          :    R_DATA =  mtvec_r       ;
+             mtvec          :    R_DATA =  mtvec_r       ;
              mcounteren     :    R_DATA =  mcounteren_r  ;
              mscratch       :    R_DATA =  mscratch_r    ;
              mepc           :    R_DATA =  mepc_r        ;
@@ -441,8 +344,10 @@ module CSR_FILE #(
                                  end
         endcase
     end
+    
     reg trap_return_flag=0;
     // writing to the CSRs
+    
     always@(posedge CLK)
     begin
 //        cycle_reg <=cycle_reg+1'b1;
