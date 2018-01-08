@@ -116,7 +116,7 @@ module DECODE_UNIT(
         );
     
      CONTROL_UNIT control_unit(
-        .INS                ({INSTRUCTION[20],INSTRUCTION[25],INSTRUCTION[30],INSTRUCTION[14:12]})  ,
+        .INS                ({INSTRUCTION[29:28],INSTRUCTION[22:20],INSTRUCTION[25],INSTRUCTION[30],INSTRUCTION[14:12]})  ,
         .INS1               (INSTRUCTION[6:0])                                      ,
         .ALU_CNT            (alu_cnt)                                               ,
         .D_CACHE_CONTROL    (d_cache_control)                                       ,

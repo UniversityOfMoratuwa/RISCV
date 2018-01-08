@@ -116,6 +116,16 @@ module PIPELINE #(
     wire [ 1:0] rs1_type                    ;
     wire [ 1:0] rs2_type                    ;
     
+    reg  [4:0]  rd_ex_ex2                   ;   
+    reg         cache_ready_data            ;
+    
+    reg  [31:0] pc_ex_ex2                   ;
+    reg  [31:0] pc_ex_mem1                  ;
+    reg  [31:0] pc_mem1_mem2                ;
+    reg  [31:0] pc_mem2_mem3                ;
+    reg  [31:0] pc_mem3_wb                  ;
+    reg  [31:0] rs2_ex_ex2                  ;
+    
     assign ins_if_id = INS_IF_ID            ;
    
     DECODE_UNIT decode_unit(
@@ -157,29 +167,32 @@ module PIPELINE #(
         .COMP2_U            (comp2_fb_ex)                           , 
         .JUMP_BUS1          (jump1_fb_ex)                           ,
         .JUMP_BUS2          (jump2_fb_ex)                           ,  
-        .A                  ( ins_fb_ex == 32'hc0002573 ? clock: (ins_fb_ex == 32'hc0202573 ? ins : a_bus_fb_ex))                  ,//clock,ins
-        .B                  (b_bus_fb_ex)                           ,
-        .A_signed           ( ins_fb_ex == 32'hc0002573 ? clock: (ins_fb_ex == 32'hc0202573 ? ins : a_bus_fb_ex ))             ,
+        //.A                  ( ins_fb_ex == 32'hc0002573 ? clock: (ins_fb_ex == 32'hc0202573 ? ins : a_bus_fb_ex))                  ,//clock,ins
+        .A                  (a_bus_fb_ex)                           ,
+        .B                  (b_bus_fb_ex)                           , 
+        //.A_signed           ( ins_fb_ex == 32'hc0002573 ? clock: (ins_fb_ex == 32'hc0202573 ? ins : a_bus_fb_ex ))             ,
+        .A_signed           (a_bus_fb_ex)                           ,
         .B_signed           (b_bus_fb_ex)                           ,
+        .PC_FB_EX           (pc_fb_ex)                              ,
         .ALU_CNT            (alu_cnt_fb_ex)                         , 
         .JUMP               (jump_fb_ex)                            ,
         .JUMPR              (jumpr_fb_ex)                           ,
-        .CBRANCH            (cbranch_fb_ex)                         ,     
-        .FUN3               (fun3_fb_ex)                            ,
-        .CSR_CNT            (csr_cnt_fb_ex)                         ,
-        .TYPE_IN            (ins_fb_ex==32'h00100073 ?0:type_fb_ex ),
-        .JUMP_FINAL         (branch_taken)                          ,
-        .WB_DATA            (alu_out_wire)                          ,
-        .DATA_ADDRESS       (data_cache_address)                    ,
-        .JUMP_ADDR          (BRANCH_ADDRESS)                        ,
+        .CBRANCH            (cbranch_fb_ex)                         ,         
         .PC_ID_FB           (pc_id_fb)                              ,
         .STALL_ENABLE_EX    (stall_enable_fb_ex)                    ,
         .DATA_CACHE_CONTROL_IN(data_cache_control_fb_ex)            ,
-        .DATA_CACHE_CONTROL (CONTROL_DATA_CACHE)                    ,
+        .FUN3               (fun3_fb_ex)                            ,
+        .CSR_CNT            (csr_cnt_fb_ex)                         ,
         .CACHE_READY        ( CACHE_READY&CACHE_READY_DATA)         ,
-        .PC_FB_EX           (pc_fb_ex)                              ,
+        .TYPE_IN            (ins_fb_ex==32'h00100073 ?0:type_fb_ex ),
+        .PROC_IDLE          (!(pc_ex_ex2!=0 && CACHE_READY && CACHE_READY_DATA && !flush_internal))    ,    
+        .JUMP_FINAL         (branch_taken)                          ,
+        .WB_DATA            (alu_out_wire)                          ,
+        .JUMP_ADDR          (BRANCH_ADDRESS)                        ,
+        .DATA_ADDRESS       (data_cache_address)                    ,
+        .DATA_CACHE_CONTROL (CONTROL_DATA_CACHE)                    ,
         .TYPE_OUT           (type_out)                              ,
-        .EXSTAGE_STALLED    (exstage_stalled)                       ,
+        .EXSTAGE_STALLED    (exstage_stalled)                       , //mstd
         //   .CACHE_READY_DATA   (CACHE_READY_DATA)             ,
         .FLUSH(flush_e)                                             ,
         .FLUSH_I(flush_internal)                                    ,              
@@ -251,16 +264,6 @@ module PIPELINE #(
             pc_id_fb }),
         .OUT(jmux2_final)
         );
-         
-    reg  [4:0]  rd_ex_ex2       ;   
-    reg         cache_ready_data;
-    
-    reg  [31:0] pc_ex_ex2       ;
-    reg  [31:0] pc_ex_mem1      ;
-    reg  [31:0] pc_mem1_mem2    ;
-    reg  [31:0] pc_mem2_mem3    ;
-    reg  [31:0] pc_mem3_wb      ;
-    reg  [31:0] rs2_ex_ex2      ;
    
     integer writeFile           ;
     integer writeFiled          ;
@@ -318,18 +321,18 @@ module PIPELINE #(
                 load_byte: //lb
                 begin
                     case (alu_mem3_wb[1:0])
-                        2'b00: wb_data_final = {{24{DATA_TO_PROC[7]}},DATA_TO_PROC[7:0]}; 
-                        2'b01: wb_data_final = {{24{DATA_TO_PROC[15]}},DATA_TO_PROC[15:8]}; 
-                        2'b10: wb_data_final = {{24{DATA_TO_PROC[23]}},DATA_TO_PROC[23:16]}; 
-                        2'b11: wb_data_final = {{24{DATA_TO_PROC[31]}},DATA_TO_PROC[31:24]}; 
+                        2'b00: wb_data_final = {{24{DATA_TO_PROC[7]}},DATA_TO_PROC[7:0]}    ; 
+                        2'b01: wb_data_final = {{24{DATA_TO_PROC[15]}},DATA_TO_PROC[15:8]}  ; 
+                        2'b10: wb_data_final = {{24{DATA_TO_PROC[23]}},DATA_TO_PROC[23:16]} ; 
+                        2'b11: wb_data_final = {{24{DATA_TO_PROC[31]}},DATA_TO_PROC[31:24]} ; 
                     endcase                   
                 end
                 load_hword : //Lh                   
                 begin
                     case (alu_mem3_wb[1:0])
-                        2'b00: wb_data_final = {{16{DATA_TO_PROC[15]}},DATA_TO_PROC[15:0]}; 
-                        2'b01: wb_data_final = {{16{DATA_TO_PROC[23]}},DATA_TO_PROC[23:8]}; 
-                        2'b10: wb_data_final = {{16{DATA_TO_PROC[31]}},DATA_TO_PROC[31:16]}; 
+                        2'b00: wb_data_final = {{16{DATA_TO_PROC[15]}},DATA_TO_PROC[15:0]}  ; 
+                        2'b01: wb_data_final = {{16{DATA_TO_PROC[23]}},DATA_TO_PROC[23:8]}  ; 
+                        2'b10: wb_data_final = {{16{DATA_TO_PROC[31]}},DATA_TO_PROC[31:16]} ; 
                         default:wb_data_final = 32'd0; 
                     endcase                   
                 end
@@ -340,18 +343,18 @@ module PIPELINE #(
                 load_ubyte : //Lbu                  
                 begin
                     case (alu_mem3_wb[1:0])
-                        2'b00: wb_data_final = {24'd0,DATA_TO_PROC[7:0]}; 
-                        2'b01: wb_data_final = {24'd0,DATA_TO_PROC[15:8]}; 
-                        2'b10: wb_data_final = {24'd0,DATA_TO_PROC[23:16]}; 
-                        2'b11: wb_data_final = {24'd0,DATA_TO_PROC[31:24]}; 
+                        2'b00: wb_data_final = {24'd0,DATA_TO_PROC[7:0]}    ; 
+                        2'b01: wb_data_final = {24'd0,DATA_TO_PROC[15:8]}   ; 
+                        2'b10: wb_data_final = {24'd0,DATA_TO_PROC[23:16]}  ; 
+                        2'b11: wb_data_final = {24'd0,DATA_TO_PROC[31:24]}  ; 
                     endcase                   
                 end
                 load_uhword:  // lhu                
                 begin
                     case (alu_mem3_wb[1:0])
-                        2'b00: wb_data_final = {16'd0,DATA_TO_PROC[15:0]}; 
-                        2'b01: wb_data_final = {16'd0,DATA_TO_PROC[23:8]}; 
-                        2'b10: wb_data_final = {16'd0,DATA_TO_PROC[31:16]}; 
+                        2'b00: wb_data_final = {16'd0,DATA_TO_PROC[15:0]}   ; 
+                        2'b01: wb_data_final = {16'd0,DATA_TO_PROC[23:8]}   ; 
+                        2'b10: wb_data_final = {16'd0,DATA_TO_PROC[31:16]}  ; 
                         default:wb_data_final = 32'd0; 
                     endcase
                 end

@@ -46,8 +46,7 @@
 
 
     //csr OPS
-    localparam ecall   = 3'b000 ;
-    localparam ebreak  = 3'b000 ;
+    localparam priv    = 3'b000 ;
     localparam csrrw   = 3'b001 ;
     localparam csrrs   = 3'b010 ;
     localparam csrrc   = 3'b011 ;
@@ -117,15 +116,22 @@
     
     
      //csr OPS
-    localparam sys_ecall   = 4'b0000 ;
-    localparam sys_ebreak  = 4'b1000 ;
-    localparam sys_csrrw   = 4'b0001 ;
-    localparam sys_csrrs   = 4'b0010 ;
-    localparam sys_csrrc   = 4'b0011 ;
-    localparam sys_csrrwi  = 4'b0101 ;
-    localparam sys_csrrsi  = 4'b0110 ;
-    localparam sys_csrrci  = 4'b0111 ;
-    localparam sys_idle    = 4'b1111 ;
+    localparam sys_idle    = 4'b0000 ; 
+    
+    localparam sys_ecall   = 4'b0001 ;
+    localparam sys_ebreak  = 4'b0010 ;
+    localparam sys_uret    = 4'b0011 ;
+    localparam sys_sret    = 4'b0100 ;
+    localparam sys_mret    = 4'b0101 ;
+    localparam sys_wfi     = 4'b0110 ;
+    
+    localparam sys_csrrw   = 4'b1000 ;
+    localparam sys_csrrs   = 4'b1001 ;
+    localparam sys_csrrc   = 4'b1010 ;
+    localparam sys_csrrwi  = 4'b1011 ;
+    localparam sys_csrrsi  = 4'b1100 ;
+    localparam sys_csrrci  = 4'b1101;
+    
     
     
     //data_cache_cntrol
@@ -256,8 +262,8 @@
     localparam     dscratch       =    12'h7B2      ;
     
     //CSR modes
-    localparam     mmode          =    2'd3         ;
-    localparam     hmode          =    2'd2         ;
-    localparam     smode          =    2'd1         ;
-    localparam     umode          =    2'd0         ;
+    localparam     mmode          =    2'b11        ;
+    localparam     hmode          =    2'b10        ;
+    localparam     smode          =    2'b01        ;
+    localparam     umode          =    2'b00        ;
    

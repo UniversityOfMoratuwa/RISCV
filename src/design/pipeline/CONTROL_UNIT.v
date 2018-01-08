@@ -21,7 +21,7 @@
 
 
 module CONTROL_UNIT(
-    input      [17:12]      INS             ,
+    input      [21:12]      INS             ,
     input      [ 6: 0]      INS1            ,
     output reg [ 3: 0]      ALU_CNT         ,
     output reg [ 1: 0]      D_CACHE_CONTROL ,
@@ -165,24 +165,69 @@ module CONTROL_UNIT(
             begin
                 A_BUS_SEL           = a_bus_imm_sel ;
                 B_BUS_SEL           = b_bus_pc_sel  ;
-                ALU_CNT             = alu_a         ;
-                case({(((INS[14:12]==ecall) ||(INS[14:12]==ebreak))& INS[17]),INS[14:12]})
-                    {1'b0,ecall  }   : 
+                ALU_CNT             = alu_csr       ;
+                case({((INS[14:12]==priv)?({INS[21:20],INS[19:17]}):(5'b0)),INS[14:12]})
+                    {5'b00000,priv   }   : 
                     begin
-                        CSR_CNT = sys_ecall   ;
-                        TYPE    = idle        ;
+                        CSR_CNT = sys_ecall     ;
+                        TYPE    = idle          ;
                     end
-                    {1'b1,ebreak }   : 
+                    {5'b00001,priv   }   : 
                     begin
-                        CSR_CNT = sys_ebreak  ;
-                        TYPE    = idle        ;
+                        CSR_CNT = sys_ebreak    ;
+                        TYPE    = idle          ;
                     end
-                    {1'b0,csrrw  }   : 
+                    {5'b00010,priv   }   : 
                     begin
-                        CSR_CNT = sys_csrrw   ;
-                        TYPE    = idle        ;//need to check and add others
+                        CSR_CNT = sys_uret      ;
+                        TYPE    = idle          ;
                     end
-                    default             :
+                    {5'b01010,priv   }   : 
+                    begin
+                        CSR_CNT = sys_sret      ;
+                        TYPE    = idle          ;
+                    end
+                    {5'b11010,priv   }   : 
+                    begin
+                        CSR_CNT = sys_mret      ;
+                        TYPE    = idle          ;
+                    end
+                    {5'b01101,priv   }   : 
+                    begin
+                        CSR_CNT = sys_wfi       ;
+                        TYPE    = idle          ;
+                    end
+                    {5'b00000,csrrw  }   : 
+                    begin
+                        CSR_CNT = sys_csrrw     ;
+                        TYPE    = alu           ;//need to check and add others
+                    end
+                    {5'b00000,csrrs  }   : 
+                    begin
+                        CSR_CNT = sys_csrrs     ;
+                        TYPE    = alu           ;//need to check and add others
+                    end
+                    {5'b00000,csrrc  }   : 
+                    begin
+                        CSR_CNT = sys_csrrc     ;
+                        TYPE    = alu           ;//need to check and add others
+                    end
+                    {5'b00000,csrrwi }   : 
+                    begin
+                        CSR_CNT = sys_csrrwi    ;
+                        TYPE    = alu           ;//need to check and add others
+                    end
+                    {5'b00000,csrrsi }   : 
+                    begin
+                        CSR_CNT = sys_csrrsi    ;
+                        TYPE    = alu           ;//need to check and add others
+                    end
+                    {5'b00000,csrrci }   : 
+                    begin
+                        CSR_CNT = sys_csrrci    ;
+                        TYPE    = alu           ;//need to check and add others
+                    end
+                    default              :
                     begin
                         undefined   = 1'b1      ;
                         CSR_CNT     = sys_idle  ;

@@ -44,6 +44,7 @@ module EXSTAGE(
     input           [ 3:0]  CSR_CNT                 ,
     input                   CACHE_READY             ,
     input           [ 1:0]  TYPE_IN                 ,
+    input                   PROC_IDLE               ,
 
     output                  JUMP_FINAL              ,
     output          [31:0]  WB_DATA                 ,   
@@ -51,7 +52,7 @@ module EXSTAGE(
     output reg      [31:0]  DATA_ADDRESS            ,
     output          [1 :0]  DATA_CACHE_CONTROL      ,
     output          [1 :0]  TYPE_OUT                ,
-    output                  EXSTAGE_STALLED         ,
+    output                  EXSTAGE_STALLED         ,//mstd
     output                  FLUSH_I                 ,
     output reg              FLUSH =1'b0             ,
     output reg              PREDICTED                   
@@ -71,7 +72,9 @@ module EXSTAGE(
     wire [31:0] rashift_out         ; 
     
     wire [31:0] rv32m_out           ;
-    wire        rv32m_ready         ; 
+    wire        rv32m_ready         ;
+    
+    wire [31:0] csr_out             ; 
     
     reg         flush_internal  =0  ;
     reg         cache_ready_fb  =0  ;
@@ -142,7 +145,7 @@ module EXSTAGE(
             alu_ins[alu_slt ]   <=      {31'd0,B_signed < A_signed}     ;
             alu_ins[alu_b4  ]   <=      B+32'd4                         ; 
             alu_ins[alu_idle]   <=      32'b0                           ;
-            alu_ins[alu_csr ]   <=      32'b0                           ;
+            alu_ins[alu_csr ]   <=      csr_out                         ;
             alu_ins[alu_mstd]   <=      rv32m_out                       ;
         end   
     end      
@@ -201,24 +204,10 @@ module EXSTAGE(
         .PC(PC_FB_EX),
         .CSR_CNT(CSR_CNT),
         .CSR_ADDRESS(A[11:0]),
-        .WRITE_DATA(B),
-        .CSR_ENABLE(),
-        .CSR_OP_TYPE(),
-        .MEIP(),
-        .MTIP(), 
-        .MSIP(), 
-        .TRAP(),
-        .TRAP_FINAL(),
-        .E_CODE_C(),
-        .TVAL(),
-        .TRAP_RETURN(),
-        .TSR(),
-        .TVM(),
-        .TW(),
-        .R_DATA(),
-        .HANDLER_PC(),          
-        .EPC(),
-        .PREV()
+        .INPUT_DATA(B),
+        .OUTPUT_DATA(csr_out),
+        .PROC_IDLE(PROC_IDLE),
+        .PRIV_JUMP()
         );
         
     RV32M rv32m(
