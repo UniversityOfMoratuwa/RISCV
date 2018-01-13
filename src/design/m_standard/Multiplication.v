@@ -35,66 +35,67 @@ module Multiplication #(
     );
     
         //0 
-        reg     [31          :0]     a0,a2,a5,a8,a11,a14,a17,a20,a23,a26,a29;       //0
-        reg     [32          :0]     a1,a3,a6,a9,a12,a15,a18,a21,a24,a27,a30;       //1
-        reg     [33          :0]     a4,a7,a10,a13,a16,a19,a22,a25,a28,a31;         //2
+        reg     [2*INPUT_WIDTH - 1          :0]     a0,a2,a5,a8,a11,a14,a17,a20,a23,a26,a29;       //0
+        reg     [2*INPUT_WIDTH - 1          :0]     a1,a3,a6,a9,a12,a15,a18,a21,a24,a27,a30;       //1
+        reg     [2*INPUT_WIDTH - 1          :0]     a4,a7,a10,a13,a16,a19,a22,a25,a28,a31;         //2
         
         //1
-        reg     [33          :0]     S111,S12,S15,S18;
-        reg     [35          :0]     S11;
-        reg     [36          :0]     S13,S14,S16,S17,S19,S110;
+        reg     [2*INPUT_WIDTH - 1          :0]     S111,S12,S15,S18;
+        reg     [2*INPUT_WIDTH - 1          :0]     S11;
+        reg     [2*INPUT_WIDTH - 1          :0]     S13,S14,S16,S17,S19,S110;
         
-        reg     [33          :0]     C12,C13,C15,C16,C18,C19;
-        reg     [35          :0]     C11;
-        reg     [36          :0]     C14,C17,C110;
+        reg     [2*INPUT_WIDTH - 1         :0]     C12,C13,C15,C16,C18,C19;
+        reg     [2*INPUT_WIDTH - 1         :0]     C11;
+        reg     [2*INPUT_WIDTH - 1         :0]     C14,C17,C110;
         
         //2
-        reg     [34          :0]     S21;
-        reg     [36          :0]     S22;
-        reg     [35          :0]     S25;
-        reg     [38          :0]     S23,S27;
-        reg     [42          :0]     S24,S26;
+        reg     [2*INPUT_WIDTH - 1          :0]     S21;
+        reg     [2*INPUT_WIDTH - 1          :0]     S22;
+        reg     [2*INPUT_WIDTH - 1          :0]     S25;
+        reg     [2*INPUT_WIDTH - 1          :0]     S23;
+        reg     [2*INPUT_WIDTH - 1          :0]     S27;
+        reg     [2*INPUT_WIDTH - 1          :0]     S24,S26;
         
-        reg     [34          :0]     C22,C26;
-        reg     [36          :0]     C21;
-        reg     [37          :0]     C23,C25;
-        reg     [40          :0]     C24,C27;
+        reg     [2*INPUT_WIDTH - 1          :0]     C22,C26;
+        reg     [2*INPUT_WIDTH - 1          :0]     C21;
+        reg     [2*INPUT_WIDTH - 1          :0]     C23,C25;
+        reg     [2*INPUT_WIDTH - 1          :0]     C24,C27;
         
         //3
-        reg     [36          :0]     S31;
-        reg     [42          :0]     S33;
-        reg     [43          :0]     S32;
-        reg     [46          :0]     S35;
-        reg     [51          :0]     S34;
+        reg     [2*INPUT_WIDTH - 1          :0]     S31;
+        reg     [2*INPUT_WIDTH - 1          :0]     S33;
+        reg     [2*INPUT_WIDTH - 1         :0]     S32;
+        reg     [2*INPUT_WIDTH - 1          :0]     S35;
+        reg     [2*INPUT_WIDTH - 1          :0]     S34;
         
-        reg     [38          :0]     C34;
-        reg     [41          :0]     C33;
-        reg     [42          :0]     C32;
-        reg     [45          :0]     C35;
+        reg     [2*INPUT_WIDTH - 1          :0]     C34;
+        reg     [2*INPUT_WIDTH - 1          :0]     C33;
+        reg     [2*INPUT_WIDTH - 1          :0]     C32;
+        reg     [2*INPUT_WIDTH - 1          :0]     C35;
         
         //4
-        reg     [43          :0]     S41;
-        reg     [55          :0]     S43;
-        reg     [59          :0]     S42;
+        reg     [2*INPUT_WIDTH - 1          :0]     S41;
+        reg     [2*INPUT_WIDTH - 1          :0]     S43;
+        reg     [2*INPUT_WIDTH - 1          :0]     S42;
         
-        reg     [41          :0]     C41;
-        reg     [53          :0]     C42;
-        reg     [58          :0]     C43;
+        reg     [2*INPUT_WIDTH - 1          :0]     C41;
+        reg     [2*INPUT_WIDTH - 1          :0]     C42;
+        reg     [2*INPUT_WIDTH - 1          :0]     C43;
         
         //5
-        reg     [59          :0]     S51;
-        reg     [63          :0]     S52;
+        reg     [2*INPUT_WIDTH - 1         :0]     S51;
+        reg     [2*INPUT_WIDTH - 1         :0]     S52;
         
-        reg     [46          :0]     C51;
-        reg     [59          :0]     C52;
+        reg     [2*INPUT_WIDTH - 1         :0]     C51;
+        reg     [2*INPUT_WIDTH - 1          :0]     C52;
         
         //6
-        reg     [63          :0]     S61;
-        reg     [60          :0]     C61;
+        reg     [2*INPUT_WIDTH - 1          :0]     S61;
+        reg     [2*INPUT_WIDTH - 1          :0]     C61;
         
         //7
-        reg     [63          :0]     S71;
-        reg     [58          :0]     C71;
+        reg     [2*INPUT_WIDTH - 1          :0]     S71;
+        reg     [2*INPUT_WIDTH - 1          :0]     C71;
         
         //General
         reg     [2*INPUT_WIDTH - 1          :0]     product             ;

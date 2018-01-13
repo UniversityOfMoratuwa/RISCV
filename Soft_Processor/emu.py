@@ -48,30 +48,49 @@ filed =open("data_hex.txt","r")
 
 data = filed.readlines()
 def rem(num1,num2):
-    if((num1<0) and (num2>0)):
-        return -(num1%(-num2))
+    if(num2==0):
+        return num1        
     elif((num1<0) and (num2>0)):
-        return -((num1)%(-num2))
-    elif((num1>0) and (num2<0)):
-        return -((num1)%(-num2))
+        return -((-num1)%(num2))
+    elif((num1>0) and (num2>0)):
+        return ((num1)%(num2))
     elif((num1<0) and (num2<0)):
         return -((-num1)%(-num2))
-    elif((num1>0) and (num2>0)):
-        return  ((num1)%(num2))
+    elif((num1>0) and (num2<0)):
+        return ((num1)%(-num2))
     elif (num1==0):
         return 0
+    
 def div(num1,num2):
-
-    if((num1<0) and (num2>0)):
+    if(num2==0):
+        if(num1 <0):
+            return 1
+        else:
+            return -1         
+    elif((num1<0) and (num2>0)):
         return -((-num1)/(num2))
     elif((num1>0) and (num2<0)):
         return -((num1)/(-num2))
     elif((num1<0) and (num2<0)):
-        return -((-num1)/(-num2))
+        return ((-num1)/(-num2))
     elif((num1>0) and (num2>0)):
         return  ((num1)/(num2))
     elif (num1==0):
         return 0
+
+def twoscomp32(num):
+    if (num<0):
+        num=pow(2,32)+num
+    else:
+	num=num
+    return num
+
+def twoscomp64(num):
+    if (num<0):
+        num=pow(2,64)+num
+    else:
+	num=num
+    return num
     
 def usigned(num):
     if(num<0):
@@ -253,14 +272,24 @@ while (PC<(1<<20)):
     elif (opcode[binary[25:32]]=='rops'):
         if(start_fu=="0000001"):
             if (function == "000"):    ##MUL
-                wb_data= (usigned((reg_array[rs1_sel] * reg_array[rs2_sel]))%(1<<32))
-            elif (function == "110"):  ##REM
-                wb_data= rem(signed(reg_array[rs1_sel]) , signed(reg_array[rs2_sel]))
+                wb_data= (twoscomp64((signed(reg_array[rs1_sel]) * signed(reg_array[rs2_sel]))))%(1<<32)
+                #wb_data= (usigned((reg_array[rs1_sel] * reg_array[rs2_sel]))%(1<<32))
+            elif (function == "001"):   ##MULH
+                wb_data= (twoscomp64((signed(reg_array[rs1_sel]) * signed(reg_array[rs2_sel]))))/(1<<32)
+            elif (function == "010"):   ##MULHSU
+                wb_data= (twoscomp64((signed(reg_array[rs1_sel]) * (reg_array[rs2_sel]))))/(1<<32)
+            elif (function == "011"):   ##MULHU
+                wb_data= (twoscomp64(((reg_array[rs1_sel]) * (reg_array[rs2_sel]))))/(1<<32)
+
             elif(function == "100"):   ##DIV
-                wb_data= div(signed(reg_array[rs1_sel]),signed(reg_array[rs2_sel]))
-            else:
-                print "not implemented"
-                break
+                wb_data= twoscomp32(div(signed(reg_array[rs1_sel]),signed(reg_array[rs2_sel])))
+            elif (function == "110"):  ##REM
+                wb_data= twoscomp32(rem(signed(reg_array[rs1_sel]) , signed(reg_array[rs2_sel])))
+            elif(function == "101"):   ##DIVU
+                wb_data= twoscomp32(div((reg_array[rs1_sel]),(reg_array[rs2_sel])))
+            elif (function == "111"):  ##REMU
+                wb_data= twoscomp32(rem((reg_array[rs1_sel]) , (reg_array[rs2_sel])))
+       
         else:
             if (function  =="000"): 
                 if(start_fu == "0000000"): #ADD

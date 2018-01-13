@@ -22,24 +22,24 @@
 
 module BHT #(
         parameter   ADDR_WIDTH      = 32                                ,
-        parameter   HISTORY_DEPTH   = 512                             ,
+        parameter   HISTORY_DEPTH   = 512                               ,
         
         localparam  H_ADDR_WIDTH    = logb2(HISTORY_DEPTH)              ,
         localparam  TAG_WIDTH       = ADDR_WIDTH - H_ADDR_WIDTH - 2       
     ) (
         input                           CLK                             ,
         input   [ADDR_WIDTH - 1 : 0]    PC                              ,
-        input CACHE_READY_DATA                                           ,
-        input CACHE_READY,
+        input                           CACHE_READY_DATA                ,
+        input                           CACHE_READY                     ,
         input   [ADDR_WIDTH - 1 : 0]    EX_PC                           ,
         input                           BRANCH                          ,
         input                           BRANCH_TAKEN                    ,
         input                           FLUSH                           ,
         input   [ADDR_WIDTH - 1 : 0]    BRANCH_ADDR                     ,
         input                           RETURN                          ,
-        input  [31:0]                   RETURN_ADDR                     ,
-        output reg                         PRD_VALID                       ,
-        output reg  [ADDR_WIDTH - 1 : 0]    PRD_ADDR        ,
+        input   [ADDR_WIDTH - 1 : 0]    RETURN_ADDR                     ,
+        output reg                      PRD_VALID                       ,
+        output reg  [ADDR_WIDTH - 1 : 0]PRD_ADDR                        ,
         input PREDICTED
     );
     
@@ -47,20 +47,21 @@ module BHT #(
     reg     [TAG_WIDTH - 1  : 0] tag        [0: HISTORY_DEPTH - 1   ]   ;
     reg     [1              : 0] history    [0: HISTORY_DEPTH - 1   ]   ;
     reg     [HISTORY_DEPTH - 1 : 0  ]                     state         ;
-    reg     [HISTORY_DEPTH - 1 : 0  ]                     return         ;
+    reg     [HISTORY_DEPTH - 1 : 0  ]                     return        ;
 
     reg                          prd_valid_reg                          ;
     reg     [ADDR_WIDTH - 1 : 0] prd_addr_reg                           ;
     
-    wire     [H_ADDR_WIDTH-1 : 0] pc_line_add  =PC   [H_ADDR_WIDTH+1:2]  ;
-    reg     [H_ADDR_WIDTH-1 : 0] ex_line_add =0 ;
-    reg [31:0] ex_pc;
-    reg [31:0] branch_addr=0;
-    reg branch=0 ;
-    reg branch_taken=0 ;
-    reg predicted =1;
-    reg return_reg=0;
-    reg flush=0;
+    wire    [H_ADDR_WIDTH-1 : 0] pc_line_add  =PC   [H_ADDR_WIDTH+1:2]  ;
+    reg     [H_ADDR_WIDTH-1 : 0] ex_line_add =0                         ;
+    reg     [ADDR_WIDTH - 1 : 0] ex_pc                                  ;
+    reg     [ADDR_WIDTH - 1 : 0] branch_addr=0                          ;
+    reg                          branch=0                               ;
+    reg                          branch_taken=0                         ;
+    reg                          predicted =1                           ;
+    reg                          return_reg=0                           ;
+    reg                          flush=0                                ;
+    
     integer i;
     
     initial
@@ -82,17 +83,17 @@ module BHT #(
     begin
         if (CACHE_READY & CACHE_READY_DATA)
         begin
-            branch       <= BRANCH               ;
-            branch_count <= branch_count +BRANCH      ;
-            predicted_count <= (PREDICTED&BRANCH) +predicted_count     ;
-            branch_taken <= BRANCH_TAKEN         ;
-            predicted    <= PREDICTED            ;
-            branch_addr  <= BRANCH_ADDR          ;
+            branch          <= BRANCH                               ;
+            branch_count    <= branch_count +BRANCH                 ;
+            predicted_count <= (PREDICTED&BRANCH) +predicted_count  ;
+            branch_taken    <= BRANCH_TAKEN                         ;
+            predicted       <= PREDICTED                            ;
+            branch_addr     <= BRANCH_ADDR                          ;
     
-            ex_line_add <= EX_PC[H_ADDR_WIDTH+1:2]  ;
-            ex_pc       <= EX_PC;
-            return_reg  <= RETURN;
-            flush <=FLUSH;
+            ex_line_add     <= EX_PC[H_ADDR_WIDTH+1:2]              ;
+            ex_pc           <= EX_PC                                ;
+            return_reg      <= RETURN                               ;
+            flush           <= FLUSH                                ;
         end
 		if (branch & CACHE_READY & CACHE_READY_DATA)
 		begin
@@ -104,7 +105,7 @@ module BHT #(
 			target[ex_line_add]    <= branch_addr                           ;
 			state[ex_line_add]     <= 1                                     ;
 	    	tag[ex_line_add]       <= ex_pc[ADDR_WIDTH-1:H_ADDR_WIDTH+2]    ;
-	    	return[ex_line_add]    <= return_reg                                ;
+	    	return[ex_line_add]    <= return_reg                            ;
 		end
 	    
 	    if(branch_taken & (tag[ex_line_add]==ex_pc[ADDR_WIDTH-1:H_ADDR_WIDTH+2]) & CACHE_READY_DATA & CACHE_READY & !flush)
@@ -147,7 +148,6 @@ module BHT #(
            PRD_ADDR = return[pc_line_add]?RETURN_ADDR:( ( tag[pc_line_add] == PC[ADDR_WIDTH-1:H_ADDR_WIDTH+2]) & return[pc_line_add]) ? RETURN_ADDR :  ((( history[pc_line_add][1] & ( tag[pc_line_add] == PC[ADDR_WIDTH-1:H_ADDR_WIDTH+2]) & state[pc_line_add] ) ?   target[pc_line_add] : PC + (CACHE_READY<<2)) );
         end
     end
-    
     
     function integer logb2;
         input integer depth;

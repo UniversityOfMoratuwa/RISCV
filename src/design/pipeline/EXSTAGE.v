@@ -42,9 +42,14 @@ module EXSTAGE(
     input           [ 1:0]  DATA_CACHE_CONTROL_IN   ,     
     input           [ 2:0]  FUN3                    ,
     input           [ 3:0]  CSR_CNT                 ,
+    input           [ 4:0]  ZIMM                    ,
     input                   CACHE_READY             ,
     input           [ 1:0]  TYPE_IN                 ,
     input                   PROC_IDLE               ,
+    
+    input                   MEIP                    ,   //machine external interupt pending
+    input                   MTIP                    ,   //machine timer interupt pending
+    input                   MSIP                    ,   //machine software interupt pending, from external hart
 
     output                  JUMP_FINAL              ,
     output          [31:0]  WB_DATA                 ,   
@@ -55,7 +60,7 @@ module EXSTAGE(
     output                  EXSTAGE_STALLED         ,//mstd
     output                  FLUSH_I                 ,
     output reg              FLUSH =1'b0             ,
-    output reg              PREDICTED                   
+    output reg              PREDICTED                  
     );
     //     reg        comp_out;
      wire [31:0] wb_data;
@@ -75,6 +80,7 @@ module EXSTAGE(
     wire        rv32m_ready         ;
     
     wire [31:0] csr_out             ; 
+    wire        priv_jump           ;
     
     reg         flush_internal  =0  ;
     reg         cache_ready_fb  =0  ;
@@ -204,15 +210,18 @@ module EXSTAGE(
         .PC(PC_FB_EX),
         .CSR_CNT(CSR_CNT),
         .CSR_ADDRESS(A[11:0]),
-        .INPUT_DATA(B),
+        .RS1_DATA(B),
+        .ZIMM(ZIMM),
         .OUTPUT_DATA(csr_out),
         .PROC_IDLE(PROC_IDLE),
-        .PRIV_JUMP()
+        .PRIV_JUMP(priv_jump), 
+        .MEIP(MEIP),   
+        .MTIP(MTIP),   
+        .MSIP(MSIP)                        
         );
         
     RV32M rv32m(
         .CLK(CLK),
-        .STALL_M_STD(STALL_ENABLE_EX),
         .START((ALU_CNT==alu_mstd)& !flush_internal),
         .M_CNT(FUN3),
         .RS1(B),
@@ -249,10 +258,10 @@ module EXSTAGE(
             data_cache_control  <= DATA_CACHE_CONTROL_IN        ;
             type_out            <= TYPE_IN                      ;
             
-            JUMP_ADDR           <= (JUMP_BUS1+JUMP_BUS2)        ;  
-            jump_reg            <= JUMP                         ;          
-            jumpr_reg           <= JUMPR                        ;
-            DATA_ADDRESS        <= (A_signed+B_signed)          ;
+            JUMP_ADDR           <= priv_jump ? csr_out : (JUMP_BUS1+JUMP_BUS2)  ;  
+            jump_reg            <= JUMP                                         ;          
+            jumpr_reg           <= JUMPR                                        ;
+            DATA_ADDRESS        <= (A_signed+B_signed)                          ;
         end
     end
     
@@ -336,11 +345,11 @@ module EXSTAGE(
         end    
     end
     
-    assign JUMP_FINAL           = (cbranch ? comp_out_w :jump_reg|jumpr_reg ) & !flush_internal     ; 
-    assign WB_DATA              = wb_data & {32{!flush_internal}}                                   ;
-    assign DATA_CACHE_CONTROL   = data_cache_control & {2{!flush_internal}}                         ;
-    assign TYPE_OUT             = type_out & {2{!flush_internal}}                                   ;
-    assign FLUSH_I              = flush_internal                                                    ;
-    assign EXSTAGE_STALLED      = ((ALU_CNT==alu_mstd) & !rv32m_ready ) & !flush_internal           ;
+    assign JUMP_FINAL           = (priv_jump ? priv_jump : (cbranch ? comp_out_w :jump_reg|jumpr_reg )) & !flush_internal   ; 
+    assign WB_DATA              = wb_data & {32{!flush_internal}}                                                           ;
+    assign DATA_CACHE_CONTROL   = data_cache_control & {2{!flush_internal}}                                                 ;
+    assign TYPE_OUT             = type_out & {2{!flush_internal}}                                                           ;
+    assign FLUSH_I              = flush_internal                                                                            ;
+    assign EXSTAGE_STALLED      = ((ALU_CNT==alu_mstd) & !rv32m_ready ) & !flush_internal                                   ;
   
 endmodule

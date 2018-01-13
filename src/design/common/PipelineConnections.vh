@@ -13,7 +13,7 @@ reg                      branch_taken_reg=0 ;  //
 reg         [3:0]        bubble_counter  =0 ;  //
 wire                     stall_enable       ;  //
 reg                      stall_enable_id_fb=1'b1;//
-reg                      stall_enable_fb_ex ;//
+reg                      stall_enable_fb_ex ;  //
 reg [31:0]    imm_out_id_fb   =0            ;  //
 reg [31:0]    imm_out_fb_ex   =0            ;  //
 reg [31:0]    alu_ex_mem1_d      =0         ;  //
@@ -29,8 +29,8 @@ reg           b_bus_sel_fb_ex     =0        ;  //
 
 ///////////////////////////////////////////////
                                              //
-reg          [31:0]      pc_id_fb  =0       ;  //
-reg          [31:0]      pc_fb_ex   =0      ;  //
+reg          [31:0]      pc_id_fb  =0       ;//
+reg          [31:0]      pc_fb_ex   =0      ;//
                                              //
 ///////////////////////////////////////////////
 
@@ -94,12 +94,15 @@ reg  [31:0]             alu_mem3_wb_p    =0  ;   //
 wire [3:0]              alu_cnt             ;  //
 wire [2:0]              fun3                ;  //
 wire [3:0]              csr_cnt             ;  //
+wire [4:0]              zimm                ;  //
 reg  [3:0]              alu_cnt_id_fb  =0   ;  //
 reg  [2:0]              fun3_id_fb     =0   ;  //
 reg  [3:0]              csr_cnt_id_fb  =0   ;  //
+reg  [4:0]              zimm_id_fb  =0      ;  //
 reg  [3:0]              alu_cnt_fb_ex  =0   ;  //
 reg  [2:0]              fun3_fb_ex =0       ;  //
 reg  [3:0]              csr_cnt_fb_ex =0    ;  //
+reg  [4:0]              zimm_fb_ex =0       ;  //
                                                //
 /////////////////////////////////////////////////
 
@@ -142,15 +145,15 @@ wire [31:0]             mux_input_direct[0:5] ;//
                                                //
 wire [31:0]            rs1_out          ;      //
 wire [31:0]            rs2_out          ;      //
-reg  [31:0]            rs1_id_fb =0       ;      //
-reg  [31:0]            rs2_id_fb  =0      ;
-reg  [31:0]            rs1_fb_ex  =0      ;      //
-reg  [31:0]            rs2_fb_ex  =0      ;      //
+reg  [31:0]            rs1_id_fb =0     ;      //
+reg  [31:0]            rs2_id_fb  =0    ;      //
+reg  [31:0]            rs1_fb_ex  =0    ;      //
+reg  [31:0]            rs2_fb_ex  =0    ;      //
 wire [31:0]            rs1_final        ;      //
 wire [31:0]            rs2_final        ;      //
 wire                   a_bus_sel        ;      //
 wire                   b_bus_sel        ;      //
-wire  [31:0]           imm_out          ;      //
+wire [31:0]            imm_out          ;      //
                                                //
 /////////////////////////////////////////////////
 

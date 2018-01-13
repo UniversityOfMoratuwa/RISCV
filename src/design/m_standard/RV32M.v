@@ -24,7 +24,6 @@ module RV32M #(
         parameter INPUT_WIDTH   = 32                                                                                              
     ) (
         input                                       CLK                                 ,
-        input                                       STALL_M_STD                         ,
         input                                       START                               ,
         input   [2                          :0]     M_CNT                               ,
         input   [INPUT_WIDTH - 1            :0]     RS1                                 ,
@@ -50,9 +49,9 @@ module RV32M #(
             stable      = 1'b0                                                          ;                        
         end
         
-        wire    sign1                   = (M_CNT != mulhu)                                                          ;
-        wire    sign2                   = (M_CNT != mulhsu) & (M_CNT != mulhu)                                      ;
-        wire    sign                    = (M_CNT == div)| (M_CNT==rem)                                              ;
+        wire    sign1                   = ((M_CNT == mul)|(M_CNT == mulh)) ? 1'b1 : 1'b0                            ;
+        wire    sign2                   = ((M_CNT == mul)|(M_CNT == mulh)|(M_CNT == mulhsu)) ? 1'b1 : 1'b0          ;
+        wire    sign                    = ((M_CNT == div) | (M_CNT==rem)) ? 1'b1 : 1'b0                             ;
         wire    multiplication_type     = ((M_CNT == mul)|(M_CNT == mulh)|(M_CNT == mulhsu)|(M_CNT == mulhu))&START ;
         wire    division_type           = ((M_CNT == div)|(M_CNT == divu)|(M_CNT == rem)|(M_CNT == remu))&START     ;
         
@@ -69,7 +68,7 @@ module RV32M #(
             .INPUT_WIDTH(INPUT_WIDTH)
         )multiplication(
             .CLK(CLK),
-            .STALL_MUL(!multiplication_type & !STALL_M_STD),
+            .STALL_MUL(!multiplication_type),
             .START(multiplication_type & !stable),
             .SIGN1(sign1),
             .SIGN2(sign2),
@@ -83,7 +82,7 @@ module RV32M #(
             .INPUT_WIDTH(INPUT_WIDTH)
         )division(
             .CLK(CLK),
-            .STALL_DIV(!division_type & !STALL_M_STD),
+            .STALL_DIV(!division_type),
             .START(division_type & !stable),
             .SIGN(sign),
             .DIVIDEND(RS1),
@@ -129,7 +128,7 @@ module RV32M #(
         
         always@(posedge CLK)
         begin
-            if(!STALL_M_STD & START)
+            if(START)
             begin
                 m_cnt_prev   <=  M_CNT                      ;
                 rs1_prev     <=  RS1                        ;

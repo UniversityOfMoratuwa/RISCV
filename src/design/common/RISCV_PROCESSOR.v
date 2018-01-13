@@ -105,6 +105,11 @@ module RISCV_PROCESSOR#(
         (* mark_debug *) output                              DATA_FROM_L2_READY_DAT,
         (* mark_debug *) input      [L2_BUS_WIDTH   - 1 : 0] DATA_FROM_L2_DAT,
         
+        
+        input                   MEIP                    ,   //machine external interupt pending
+        input                   MTIP                    ,   //machine timer interupt pending
+        input                   MSIP                    ,   //machine software interupt pending, from external hart
+        
         ////////////////////////
         //   EXTRACTION FIFO  //
         ////////////////////////
@@ -150,6 +155,8 @@ module RISCV_PROCESSOR#(
      wire [31:0] return_addr;
      wire  return;
     ///////////////////////////////////////////////////// 
+    
+    wire    exstage_stalled ;
      
      Ins_Cache # (
          .S(S),
@@ -168,7 +175,7 @@ module RISCV_PROCESSOR#(
          .PC(pc) ,
          // Status signals between processor and cache
          .CACHE_READY(cache_ready_ins),
-         .PROC_READY(proc_ready_ins),
+         .PROC_READY(proc_ready_ins & !exstage_stalled),
          // Ports towards the processor
          .BRANCH_ADDR_IN(prd_addr),
          .BRANCH(1),
@@ -187,7 +194,7 @@ module RISCV_PROCESSOR#(
     PIPELINE pipeline(
         .CLK(CLK),
         // Towards instruction cache
-        .CACHE_READY(cache_ready_ins),
+        .CACHE_READY(cache_ready_ins & !exstage_stalled),
         .PIPELINE_STALL(proc_ready_ins),
         .BRANCH_TAKEN(branch_taken),
         .BYTE_ENB_TO_CACHE( byte_enb_proc),
@@ -205,7 +212,11 @@ module RISCV_PROCESSOR#(
         .FLUSH(flush),
         .RETURN_ADDR(return_addr),
         .RETURN(return),
-        .PREDICTED(predicted)
+        .PREDICTED(predicted),
+        .EXSTAGE_STALLED(exstage_stalled),
+        .MEIP(MEIP),   
+        .MTIP(MTIP),   
+        .MSIP(MSIP)  
     );
     
     Data_Cache # (
@@ -253,7 +264,7 @@ module RISCV_PROCESSOR#(
         .PRD_VALID (prd_valid)                  ,
         .PRD_ADDR  (prd_addr)                   ,
         .FLUSH(flush)                           ,
-        .CACHE_READY(cache_ready_ins)           ,
+        .CACHE_READY(cache_ready_ins&!exstage_stalled)           ,
         .CACHE_READY_DATA(cache_ready_dat)      ,
         .RETURN_ADDR(return_addr)               ,
         .RETURN(return)                         ,

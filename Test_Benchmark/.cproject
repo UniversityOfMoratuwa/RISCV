@@ -14,12 +14,12 @@
 				</extensions>
 			</storageModule>
 			<storageModule moduleId="cdtBuildSystem" version="4.0.0">
-				<configuration artifactName="${ProjName}" buildArtefactType="org.eclipse.cdt.cross.riscv.gnu.buildArtefactType.application" buildProperties="org.eclipse.cdt.build.core.buildArtefactType=org.eclipse.cdt.cross.riscv.gnu.buildArtefactType.application,org.eclipse.cdt.build.core.buildType=org.eclipse.cdt.build.core.buildType.debug" description="" id="org.eclipse.cdt.cross.riscv.gnu.linux.elf.debug.374960140" name="Debug" parent="org.eclipse.cdt.cross.riscv.gnu.linux.elf.debug">
+				<configuration artifactName="${ProjName}" buildArtefactType="org.eclipse.cdt.cross.riscv.gnu.buildArtefactType.application" buildProperties="org.eclipse.cdt.build.core.buildArtefactType=org.eclipse.cdt.cross.riscv.gnu.buildArtefactType.application,org.eclipse.cdt.build.core.buildType=org.eclipse.cdt.build.core.buildType.debug" description="" id="org.eclipse.cdt.cross.riscv.gnu.linux.elf.debug.374960140" name="Debug" optionalBuildProperties="org.eclipse.cdt.docker.launcher.containerbuild.property.volumes=,org.eclipse.cdt.docker.launcher.containerbuild.property.selectedvolumes=" parent="org.eclipse.cdt.cross.riscv.gnu.linux.elf.debug">
 					<folderInfo id="org.eclipse.cdt.cross.riscv.gnu.linux.elf.debug.374960140." name="/" resourcePath="">
 						<toolChain id="org.eclipse.cdt.cross.riscv.gnu.linux.elf.toolchain.debug.964181248" name="RISC-V GCC/Newlib Toolchain" superClass="org.eclipse.cdt.cross.riscv.gnu.linux.elf.toolchain.debug">
 							<option id="org.eclipse.cdt.cross.riscv.gnu.linux.option.debugging.level.614163071" name="Debug level" superClass="org.eclipse.cdt.cross.riscv.gnu.linux.option.debugging.level" value="org.eclipse.cdt.cross.riscv.gnu.base.option.debugging.level.none" valueType="enumerated"/>
 							<option id="org.eclipse.cdt.cross.riscv.gnu.linux.option.target.processor.433492530" name="Target" superClass="org.eclipse.cdt.cross.riscv.gnu.linux.option.target.processor" value="org.eclipse.cdt.cross.riscv.gnu.base.option.target.processor.m32" valueType="enumerated"/>
-							<option id="org.eclipse.cdt.cross.riscv.gnu.linux.option.target.arch.rvm.1601626120" name="Hardware Multiply/Divide (RVM)" superClass="org.eclipse.cdt.cross.riscv.gnu.linux.option.target.arch.rvm" value="false" valueType="boolean"/>
+							<option id="org.eclipse.cdt.cross.riscv.gnu.linux.option.target.arch.rvm.1601626120" name="Hardware Multiply/Divide (RVM)" superClass="org.eclipse.cdt.cross.riscv.gnu.linux.option.target.arch.rvm" value="true" valueType="boolean"/>
 							<option id="org.eclipse.cdt.cross.riscv.gnu.linux.option.target.arch.rvf.2092615119" name="Single Precision Floating Point (RVF)" superClass="org.eclipse.cdt.cross.riscv.gnu.linux.option.target.arch.rvf" value="false" valueType="boolean"/>
 							<targetPlatform id="org.eclipse.cdt.cross.riscv.gnu.linux.elf.platform.debug.2097613788" isAbstract="false" name="All Platform" superClass="org.eclipse.cdt.cross.riscv.gnu.linux.elf.platform.debug"/>
 							<builder buildPath="${workspace_loc:/K_1}/Debug" id="org.eclipse.cdt.cross.riscv.gnu.linux.elf.builder.debug.1964051514" keepEnvironmentInBuildfile="false" managedBuildOn="true" name="GNU Make Builder for RISC-V" superClass="org.eclipse.cdt.cross.riscv.gnu.linux.elf.builder.debug"/>
@@ -141,7 +141,14 @@
 		</scannerConfigBuildInfo>
 	</storageModule>
 	<storageModule moduleId="org.eclipse.cdt.core.LanguageSettingsProviders"/>
-	<storageModule moduleId="refreshScope"/>
+	<storageModule moduleId="refreshScope" versionNumber="2">
+		<configuration configurationName="Debug">
+			<resource resourceType="PROJECT" workspacePath="/RISCV_Test_Benchmark"/>
+		</configuration>
+		<configuration configurationName="Release">
+			<resource resourceType="PROJECT" workspacePath="/RISCV_Test_Benchmark"/>
+		</configuration>
+	</storageModule>
 	<storageModule moduleId="org.eclipse.cdt.make.core.buildtargets"/>
 	<storageModule moduleId="org.eclipse.cdt.internal.ui.text.commentOwnerProjectMappings"/>
 </cproject>

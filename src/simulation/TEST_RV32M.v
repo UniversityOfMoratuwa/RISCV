@@ -33,7 +33,6 @@ module TEST_RV32M();
         localparam REMU         = 3'b111                                                ;
 
         reg                                         clk                                 ;
-        reg                                         stall_m_std                         ;
         reg                                         start                               ;
         reg     [2                          :0]     m_cnt                               ;
         reg     [INPUT_WIDTH - 1            :0]     rs1                                 ;
@@ -46,7 +45,6 @@ module TEST_RV32M();
             .INPUT_WIDTH(INPUT_WIDTH)
         ) uut(
             .CLK(clk),
-            .STALL_M_STD(stall_m_std),
             .START(start),
             .M_CNT(m_cnt),
             .RS1(rs1),
@@ -57,7 +55,6 @@ module TEST_RV32M();
             
         initial 
         begin
-            stall_m_std =   0   ;
         
             start   = 1     ;
             m_cnt   = MUL   ;

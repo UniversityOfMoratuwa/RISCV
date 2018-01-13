@@ -9,7 +9,7 @@
 
 #define TEST_FUNC_NAME xori
 #define TEST_FUNC_TXT "xori\t"
-#define TEST_FUNC_RET isaTestEnd
+#define TEST_FUNC_RET mul
 
 #include "riscv_test.h"
 #include "test_macros.h"

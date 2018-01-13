@@ -15,6 +15,8 @@ S_UPPER_SRCS += \
 ../src/riscv_isa_tests/blt.S \
 ../src/riscv_isa_tests/bltu.S \
 ../src/riscv_isa_tests/bne.S \
+../src/riscv_isa_tests/div.S \
+../src/riscv_isa_tests/divu.S \
 ../src/riscv_isa_tests/j.S \
 ../src/riscv_isa_tests/jal.S \
 ../src/riscv_isa_tests/jalr.S \
@@ -24,8 +26,14 @@ S_UPPER_SRCS += \
 ../src/riscv_isa_tests/lhu.S \
 ../src/riscv_isa_tests/lui.S \
 ../src/riscv_isa_tests/lw.S \
+../src/riscv_isa_tests/mul.S \
+../src/riscv_isa_tests/mulh.S \
+../src/riscv_isa_tests/mulhsu.S \
+../src/riscv_isa_tests/mulhu.S \
 ../src/riscv_isa_tests/or.S \
 ../src/riscv_isa_tests/ori.S \
+../src/riscv_isa_tests/rem.S \
+../src/riscv_isa_tests/remu.S \
 ../src/riscv_isa_tests/sb.S \
 ../src/riscv_isa_tests/sh.S \
 ../src/riscv_isa_tests/sll.S \
@@ -53,6 +61,8 @@ OBJS += \
 ./src/riscv_isa_tests/blt.o \
 ./src/riscv_isa_tests/bltu.o \
 ./src/riscv_isa_tests/bne.o \
+./src/riscv_isa_tests/div.o \
+./src/riscv_isa_tests/divu.o \
 ./src/riscv_isa_tests/j.o \
 ./src/riscv_isa_tests/jal.o \
 ./src/riscv_isa_tests/jalr.o \
@@ -62,8 +72,14 @@ OBJS += \
 ./src/riscv_isa_tests/lhu.o \
 ./src/riscv_isa_tests/lui.o \
 ./src/riscv_isa_tests/lw.o \
+./src/riscv_isa_tests/mul.o \
+./src/riscv_isa_tests/mulh.o \
+./src/riscv_isa_tests/mulhsu.o \
+./src/riscv_isa_tests/mulhu.o \
 ./src/riscv_isa_tests/or.o \
 ./src/riscv_isa_tests/ori.o \
+./src/riscv_isa_tests/rem.o \
+./src/riscv_isa_tests/remu.o \
 ./src/riscv_isa_tests/sb.o \
 ./src/riscv_isa_tests/sh.o \
 ./src/riscv_isa_tests/sll.o \
@@ -91,6 +107,8 @@ S_UPPER_DEPS += \
 ./src/riscv_isa_tests/blt.d \
 ./src/riscv_isa_tests/bltu.d \
 ./src/riscv_isa_tests/bne.d \
+./src/riscv_isa_tests/div.d \
+./src/riscv_isa_tests/divu.d \
 ./src/riscv_isa_tests/j.d \
 ./src/riscv_isa_tests/jal.d \
 ./src/riscv_isa_tests/jalr.d \
@@ -100,8 +118,14 @@ S_UPPER_DEPS += \
 ./src/riscv_isa_tests/lhu.d \
 ./src/riscv_isa_tests/lui.d \
 ./src/riscv_isa_tests/lw.d \
+./src/riscv_isa_tests/mul.d \
+./src/riscv_isa_tests/mulh.d \
+./src/riscv_isa_tests/mulhsu.d \
+./src/riscv_isa_tests/mulhu.d \
 ./src/riscv_isa_tests/or.d \
 ./src/riscv_isa_tests/ori.d \
+./src/riscv_isa_tests/rem.d \
+./src/riscv_isa_tests/remu.d \
 ./src/riscv_isa_tests/sb.d \
 ./src/riscv_isa_tests/sh.d \
 ./src/riscv_isa_tests/sll.d \
@@ -122,7 +146,7 @@ S_UPPER_DEPS += \
 src/riscv_isa_tests/%.o: ../src/riscv_isa_tests/%.S
 	@echo 'Building file: $<'
 	@echo 'Invoking: RISC-V GCC/Newlib Assembler'
-	riscv64-unknown-elf-gcc -mabi=ilp32 -march=rv32i -x assembler-with-cpp -Wall -c -MMD -MP -MF"$(@:%.o=%.d)" -MT"$(@)" -Wa,-march=rv32i -o "$@" "$<"
+	riscv64-unknown-elf-gcc -mabi=ilp32 -march=rv32im -x assembler-with-cpp -Wall -c -MMD -MP -MF"$(@:%.o=%.d)" -MT"$(@)" -Wa,-march=rv32im -o "$@" "$<"
 	@echo 'Finished building: $<'
 	@echo ' '
 

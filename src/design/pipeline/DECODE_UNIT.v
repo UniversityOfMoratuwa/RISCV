@@ -35,6 +35,7 @@ module DECODE_UNIT(
     output reg  [ 1:0]  D_CACHE_CONTROL    =0   , 
     output reg  [ 2:0]  FUN3               =0   ,
     output reg  [ 3:0]  CSR_CNT            =0   ,
+    output reg  [ 4:0]  ZIMM               =0   ,
     output reg          JUMP               =0   ,
     output reg          JUMPR              =0   ,
     output reg          CBRANCH            =0   ,
@@ -169,7 +170,8 @@ module DECODE_UNIT(
             FEED_BACK_MUX2_SEL        =    feed_back_mux2_sel     ;         
             ALU_CNT                   =    alu_cnt                ;                    
             D_CACHE_CONTROL           =    d_cache_control        ;    
-            FUN3                      =    fun3                   ; 
+            FUN3                      =    fun3                   ;
+            ZIMM                      =    rs1_sel                ;
             CSR_CNT                   =    csr_cnt                ;  
             JUMP                      =    jump_w                 ;  
             JUMPR                     =    jumpr_w                ;  

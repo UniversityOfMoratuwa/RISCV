@@ -130,7 +130,7 @@
     localparam sys_csrrc   = 4'b1010 ;
     localparam sys_csrrwi  = 4'b1011 ;
     localparam sys_csrrsi  = 4'b1100 ;
-    localparam sys_csrrci  = 4'b1101;
+    localparam sys_csrrci  = 4'b1101 ;
     
     
     

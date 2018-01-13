@@ -96,8 +96,8 @@ module Division #(
             end
         end
      
-        assign QUOTIENT_OUT     = quotient                                                                                              ;
-        assign REMAINDER_OUT    = (!negative_output) ?  dividend_copy[INPUT_WIDTH - 1:0] : ~dividend_copy[INPUT_WIDTH - 1:0] + 1'b1     ;
+        assign QUOTIENT_OUT     = quotient                                                                                                          ;
+        assign REMAINDER_OUT    = (SIGN && DIVIDEND[INPUT_WIDTH-1] ) ? ~dividend_copy[INPUT_WIDTH - 1:0] + 1'b1 : dividend_copy[INPUT_WIDTH - 1:0]  ;
 
               
 endmodule

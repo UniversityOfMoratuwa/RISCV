@@ -66,14 +66,13 @@ module PIPELINE #(
     input                                           CACHE_READY_DATA                ,
     output                                          FLUSH                           ,
     output              [ADDR_WIDTH - 1 : 0]        PC_ID_FB                        ,
-    output                                          PREDICTED
+    output                                          PREDICTED                       ,
+    output                                          EXSTAGE_STALLED                 ,
            
-    
-    //interrupt registers
-   
-//     input                                                MEIP,
-//     input                                                MSIP,
-//     input                                                MTIP
+           
+    input                                           MEIP                            ,   //machine external interupt pending
+    input                                           MTIP                            ,   //machine timer interupt pending
+    input                                           MSIP                                //machine software interupt pending, from external hart
     );
     
     `include "PipelineParams.vh"
@@ -87,8 +86,6 @@ module PIPELINE #(
     
     wire [ 2:0] rs1_count                   ;
     wire [ 2:0] rs2_count                   ;
-    
-    wire        exstage_stalled             ;//mstd
     
     reg         stall_enable_ex_ex2         ;
     
@@ -141,7 +138,8 @@ module PIPELINE #(
         .ALU_CNT            (alu_cnt)                       , 
         .D_CACHE_CONTROL    (data_cache_control_w)          , 
         .FUN3               (fun3)                          , 
-        .CSR_CNT            (csr_cnt)                       ,    
+        .CSR_CNT            (csr_cnt)                       ,
+        .ZIMM               (zimm)                          ,    
         .JUMP               (jump_w)                        ,
         .JUMPR              (jumpr_w)                       ,
         .CBRANCH            (cbranch_w)                     ,
@@ -179,20 +177,24 @@ module PIPELINE #(
         .JUMPR              (jumpr_fb_ex)                           ,
         .CBRANCH            (cbranch_fb_ex)                         ,         
         .PC_ID_FB           (pc_id_fb)                              ,
-        .STALL_ENABLE_EX    (stall_enable_fb_ex)                    ,
+        .STALL_ENABLE_EX    (stall_enable_fb_ex) ,
         .DATA_CACHE_CONTROL_IN(data_cache_control_fb_ex)            ,
         .FUN3               (fun3_fb_ex)                            ,
         .CSR_CNT            (csr_cnt_fb_ex)                         ,
+        .ZIMM               (zimm_fb_ex)                            ,
         .CACHE_READY        ( CACHE_READY&CACHE_READY_DATA)         ,
         .TYPE_IN            (ins_fb_ex==32'h00100073 ?0:type_fb_ex ),
-        .PROC_IDLE          (!(pc_ex_ex2!=0 && CACHE_READY && CACHE_READY_DATA && !flush_internal))    ,    
+        .PROC_IDLE          (!(pc_ex_ex2!=0 && CACHE_READY && CACHE_READY_DATA && !flush_internal))    ,  
+        .MEIP               (MEIP)                                  ,   
+        .MTIP               (MTIP)                                  ,  
+        .MSIP               (MSIP)                                  ,   
         .JUMP_FINAL         (branch_taken)                          ,
         .WB_DATA            (alu_out_wire)                          ,
         .JUMP_ADDR          (BRANCH_ADDRESS)                        ,
         .DATA_ADDRESS       (data_cache_address)                    ,
         .DATA_CACHE_CONTROL (CONTROL_DATA_CACHE)                    ,
         .TYPE_OUT           (type_out)                              ,
-        .EXSTAGE_STALLED    (exstage_stalled)                       , //mstd
+        .EXSTAGE_STALLED    (EXSTAGE_STALLED)                       , //mstd
         //   .CACHE_READY_DATA   (CACHE_READY_DATA)             ,
         .FLUSH(flush_e)                                             ,
         .FLUSH_I(flush_internal)                                    ,              
@@ -419,7 +421,8 @@ module PIPELINE #(
                 imm_out_id_fb            <= imm_out                 ;   
                 alu_cnt_id_fb            <= alu_cnt                 ;    
                 fun3_id_fb               <= fun3                    ;
-                csr_cnt_id_fb            <= csr_cnt                 ; 
+                csr_cnt_id_fb            <= csr_cnt                 ;
+                zimm_id_fb               <= zimm                    ; 
                 type_id_fb               <= op_type                 ;    
                 jump_id_fb               <= jump_w                  ; 
                 jumpr_id_fb              <= jumpr_w                 ;  
@@ -432,8 +435,9 @@ module PIPELINE #(
                 ins_id_fb                <= ins_if_id               ;            
                 ins_fb_ex                <= ins_id_fb               ;
                 alu_cnt_fb_ex            <= alu_cnt_id_fb           ;                   
-                fun3_fb_ex               <= fun3_id_fb              ; 
-                csr_cnt_fb_ex            <= csr_cnt_id_fb           ;   
+                fun3_fb_ex               <= fun3_id_fb              ;
+                csr_cnt_fb_ex            <= csr_cnt_id_fb           ;
+                zimm_fb_ex               <= zimm_id_fb              ;    
                 type_fb_ex               <= type_id_fb              ;    
                 jump1_fb_ex              <= jmux1_final             ;  
                 jump2_fb_ex              <= jmux2_final             ;   
@@ -483,8 +487,9 @@ module PIPELINE #(
                 end
                 
                 alu_cnt_fb_ex            <=    alu_idle             ;
-                fun3_fb_ex               <=    no_branch            ; 
+                fun3_fb_ex               <=    no_branch            ;
                 csr_cnt_fb_ex            <=    sys_idle             ;
+                zimm_fb_ex               <=    0                    ; 
                 type_fb_ex               <=    0                    ; 
                 jump1_fb_ex              <=    0                    ; 
                 jump2_fb_ex              <=    0                    ; 
@@ -514,7 +519,7 @@ module PIPELINE #(
             rd_fb_ex                 <=    rd_id_fb                 ;                      
             rd_ex_mem1               <=    rd_ex_ex2                ;             
             pc_ex_mem1               <=    pc_fb_ex                 ;                                              
-            imm_fb_ex                <= imm_out_id_fb               ;    
+            imm_fb_ex                <=    imm_out_id_fb            ;    
         end
         
         if (CACHE_READY_DATA)
@@ -537,9 +542,9 @@ module PIPELINE #(
             else 
             begin
                 type_ex_mem1             <=      type_out               ;
-                pc_ex_mem1               <=       pc_fb_ex              ;            
+                pc_ex_mem1               <=      pc_fb_ex               ;            
                 alu_ex_mem1              <=      alu_out_wire           ;
-                op_type_ex_mem1          <=       op_type_ex_ex2        ;         
+                op_type_ex_mem1          <=      op_type_ex_ex2         ;         
             end
            
             type_mem1_mem2           <=      type_ex_mem1               ;
@@ -554,7 +559,7 @@ module PIPELINE #(
                 return_addr          <=      wb_data_final              ;
             end  
             
-            alu_written_back         <=      wb_data_final              ;           
+            alu_written_back         <=       wb_data_final             ;           
             rd_mem1_mem2             <=       rd_ex_mem1                ;    
             rd_mem2_mem3             <=       rd_mem1_mem2              ;    
             rd_mem3_wb               <=       rd_mem2_mem3              ;                   
@@ -573,7 +578,7 @@ module PIPELINE #(
     assign BRANCH               = (jump_fb_ex |cbranch_fb_ex  |jumpr_fb_ex) &  ! flush_internal ;  
     assign FLUSH                = flush_internal                                    ;
     assign BRANCH_TAKEN         = branch_taken                                      ;
-    assign PIPELINE_STALL       = (stall_enable_id_fb  ||  branch_taken ||flush_e || flush_e_i || !CACHE_READY || exstage_stalled)& CACHE_READY_DATA  ;
+    assign PIPELINE_STALL       = (stall_enable_id_fb  ||  branch_taken ||flush_e || flush_e_i || !CACHE_READY)& CACHE_READY_DATA  ;
     assign c1_mux_final         = rs1_final                                         ; 
     assign c2_mux_final         = rs2_final                                         ;
     assign jmux1_final          = imm_out_id_fb                                     ;
