@@ -86,6 +86,8 @@ module Test_RISCV_PROCESSOR ();
     wire                          DATA_FROM_L2_READY_DAT;
     reg  [L2_BUS_WIDTH   - 1 : 0] DATA_FROM_L2_DAT;
     
+    reg                           P0_INIT_AXI_TXN;
+    
     wire                          EXT_FIFO_WR_ENB;
     wire [DATA_WIDTH - 1 :0]      EXT_FIFO_WR_DATA;
        
@@ -126,7 +128,8 @@ module Test_RISCV_PROCESSOR ();
         // Read data to Data Cache from Memory
         .DATA_FROM_L2_VALID_DAT(DATA_FROM_L2_VALID_DAT),
         .DATA_FROM_L2_READY_DAT(DATA_FROM_L2_READY_DAT),
-        .DATA_FROM_L2_DAT(DATA_FROM_L2_DAT), 
+        .DATA_FROM_L2_DAT(DATA_FROM_L2_DAT),
+        .P0_INIT_AXI_TXN(P0_INIT_AXI_TXN),
         .EXT_FIFO_WR_ENB(EXT_FIFO_WR_ENB),
         .EXT_FIFO_WR_DATA(EXT_FIFO_WR_DATA)
     );
@@ -135,17 +138,17 @@ module Test_RISCV_PROCESSOR ();
     
     integer vk;
     integer writeFiles;
-     initial
-     begin
-         
-         writeFiles = $fopen("prints.txt", "w");
-         $fclose(writeFiles);
-         
-         
-         
-     end
-    always@(posedge CLK)
+    
+    initial
     begin
+        writeFiles = $fopen("prints.txt", "w")  ;
+        $fclose(writeFiles)                     ; 
+        P0_INIT_AXI_TXN     = 1                 ;
+    end
+   
+   
+   always@(posedge CLK)
+   begin
    writeFiles = $fopen("prints.txt", "a");
         if(EXT_FIFO_WR_ENB)
         begin                 
@@ -159,6 +162,7 @@ module Test_RISCV_PROCESSOR ();
     $fclose(writeFiles);
     end
     
+      
     //L2 Cache emulators
     reg [DATA_WIDTH - 1 : 0] ins_memory [0: INS_RAM_DEPTH - 1] ;  
     reg [DATA_WIDTH - 1 : 0] dat_memory [0: DAT_RAM_DEPTH - 1] ;  

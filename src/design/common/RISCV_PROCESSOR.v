@@ -19,7 +19,6 @@
 // 
 //////////////////////////////////////////////////////////////////////////////////
 
-
 module RISCV_PROCESSOR#(
         // Fixed parameters
         localparam ADDR_WIDTH           = 32,
@@ -105,19 +104,48 @@ module RISCV_PROCESSOR#(
         (* mark_debug *) output                              DATA_FROM_L2_READY_DAT,
         (* mark_debug *) input      [L2_BUS_WIDTH   - 1 : 0] DATA_FROM_L2_DAT,
         
-        
-        input                   MEIP                    ,   //machine external interupt pending
-        input                   MTIP                    ,   //machine timer interupt pending
-        input                   MSIP                    ,   //machine software interupt pending, from external hart
-        
+                         input                               P0_INIT_AXI_TXN,
         ////////////////////////
         //   EXTRACTION FIFO  //
         ////////////////////////
                    
-        output reg                          EXT_FIFO_WR_ENB,
-        output reg [DATA_WIDTH     - 1 : 0] EXT_FIFO_WR_DATA
+        output reg                                            EXT_FIFO_WR_ENB,
+        output reg [DATA_WIDTH     - 1 : 0]                   EXT_FIFO_WR_DATA,
+        
+        
+        ///////////////////////////
+        //    DATA PERIPHERAL    //
+        ///////////////////////////
+        
+        output      [31:0]          RD_ADDR_TO_PERI,
+        output                      RD_ADDR_TO_PERI_VALID,
+        input                       RD_ADDR_TO_PERI_READY,
+        output      [31:0]          WR_ADDR_TO_PERI,
+        output                      WR_TO_PERI_VALID,
+        input                       WR_TO_PERI_READY,
+        output      [31:0]          DATA_TO_PERI,
+        input       [31:0]          DATA_FROM_PERI,
+        output                      DATA_FROM_PERI_READY,
+        input                       DATA_FROM_PERI_VALID,
+        input                       TRANSACTION_COMPLETE_PERI
     );
-    
+     
+     // Peripheral signals
+     reg                                p_flag = 0;
+     reg                                stop_dat_cache = 0;
+     reg                                stop_ins_cache = 0;
+     reg                                peri_start;
+     reg        [31:0]                  addr_to_peri;
+     reg                                control_to_peri;
+     reg        [31:0]                  data_to_peri;
+     reg                                peri_done = 0;
+     
+     wire       [31:0]                  data_from_peri;
+     wire                               peri_complete;
+     
+     integer                            counter = 0;
+     
+     
      // Status signals between processor and instruction cache
      wire                               proc_ready_ins;
      wire                               cache_ready_ins;
@@ -154,47 +182,47 @@ module RISCV_PROCESSOR#(
      wire flush;
      wire [31:0] return_addr;
      wire  return;
-    ///////////////////////////////////////////////////// 
+     wire [31:0] ins_id_ex;
+    //////////////////////////////////////////////////////////
     
     wire    exstage_stalled ;
      
-     Ins_Cache # (
-         .S(S),
-         .B(B),
-         .a(a),
-         .T(T),
-         .W(W),
-         .L2_DELAY(L2_DELAY_RD),
-         .N(N),
-         .n(n),
-         .p(p)
-     ) ins_cache (
-         // Standard inputs
-         .CLK(CLK),
-         .RSTN(RSTN),
-         .PC(pc) ,
-         // Status signals between processor and cache
-         .CACHE_READY(cache_ready_ins),
-         .PROC_READY(proc_ready_ins & !exstage_stalled),
-         // Ports towards the processor
-         .BRANCH_ADDR_IN(prd_addr),
-         .BRANCH(1),
-         .DATA_TO_PROC(data_to_proc_ins),
-         .PC_TO_PROC(pc_to_proc_ins),
-         /// Read port towards the L2 cache    
-         .ADDR_TO_L2(ADDR_TO_L2_INS),
-         .ADDR_TO_L2_READY(ADDR_TO_L2_READY_INS),
-         .ADDR_TO_L2_VALID(ADDR_TO_L2_VALID_INS),
-         .DATA_FROM_L2(DATA_FROM_L2_INS),
-         .DATA_FROM_L2_VALID(DATA_FROM_L2_VALID_INS),
-         .DATA_FROM_L2_READY(DATA_FROM_L2_READY_INS)
-         
-    );
+    Ins_Cache # (
+        .S(S),
+        .B(B),
+        .a(a),
+        .T(T),
+        .W(W),
+        .L2_DELAY(L2_DELAY_RD),
+        .N(N),
+        .n(n),
+        .p(p)
+    ) ins_cache (
+        // Standard inputs
+        .CLK(CLK),
+        .RSTN(RSTN),
+        .PC(pc) ,
+        // Status signals between processor and cache
+        .CACHE_READY(cache_ready_ins),
+        .PROC_READY(proc_ready_ins & !exstage_stalled & P0_INIT_AXI_TXN!=0 & !stop_ins_cache),
+        // Ports towards the processor
+        .BRANCH_ADDR_IN(prd_addr),
+        .BRANCH(1),
+        .DATA_TO_PROC(data_to_proc_ins),
+        .PC_TO_PROC(pc_to_proc_ins),
+        /// Read port towards the L2 cache    
+        .ADDR_TO_L2(ADDR_TO_L2_INS),
+        .ADDR_TO_L2_READY(ADDR_TO_L2_READY_INS),
+        .ADDR_TO_L2_VALID(ADDR_TO_L2_VALID_INS),
+        .DATA_FROM_L2(DATA_FROM_L2_INS),
+        .DATA_FROM_L2_VALID(DATA_FROM_L2_VALID_INS),
+        .DATA_FROM_L2_READY(DATA_FROM_L2_READY_INS)
+         );
     
     PIPELINE pipeline(
         .CLK(CLK),
         // Towards instruction cache
-        .CACHE_READY(cache_ready_ins & !exstage_stalled),
+        .CACHE_READY(cache_ready_ins & !exstage_stalled & P0_INIT_AXI_TXN!=0 & !stop_ins_cache),
         .PIPELINE_STALL(proc_ready_ins),
         .BRANCH_TAKEN(branch_taken),
         .BYTE_ENB_TO_CACHE( byte_enb_proc),
@@ -205,8 +233,8 @@ module RISCV_PROCESSOR#(
         .CONTROL_DATA_CACHE(control_from_proc_dat), 
         .ADDR_TO_DATA_CACHE(addr_from_proc_dat),
         .DATA_TO_DATA_CACHE(data_from_proc_dat),
-        .DATA_TO_PROC(data_to_proc_dat),
-        .CACHE_READY_DATA(cache_ready_dat),
+        .DATA_TO_PROC((p_flag)? data_from_peri: data_to_proc_dat),
+        .CACHE_READY_DATA(cache_ready_dat & !stop_dat_cache),
         .EX_PC(ex_pc),
         .BRANCH(branch),
         .FLUSH(flush),
@@ -214,9 +242,7 @@ module RISCV_PROCESSOR#(
         .RETURN(return),
         .PREDICTED(predicted),
         .EXSTAGE_STALLED(exstage_stalled),
-        .MEIP(MEIP),   
-        .MTIP(MTIP),   
-        .MSIP(MSIP)  
+        .INS_ID_EX(ins_id_ex)
     );
     
     Data_Cache # (
@@ -233,7 +259,7 @@ module RISCV_PROCESSOR#(
         // Status signals between processor and cache
         .CACHE_READY(cache_ready_dat),
         // Ports towards the processor
-        .CONTROL_FROM_PROC(control_from_proc_dat),  // CONTROL_FROM_PROC = {00(idle), 01(read), 10(write), 11(flush address from cache)}
+        .CONTROL_FROM_PROC((addr_from_proc_dat != EXT_FIFO_ADDRESS & addr_from_proc_dat < 32'h10000000)? control_from_proc_dat : 0),  // CONTROL_FROM_PROC = {00(idle), 01(read), 10(write), 11(flush address from cache)}
         .BYTE_ENB_FROM_PROC(byte_enb_proc),
         .ADDR_FROM_PROC(addr_from_proc_dat),
         .DATA_FROM_PROC(data_from_proc_dat),
@@ -255,35 +281,111 @@ module RISCV_PROCESSOR#(
     );
     
     BHT bht (
-        .CLK(CLK)                               ,
-        .PC(pc)                                 ,
-        .EX_PC(ex_pc)                           ,
-        .BRANCH(branch)                         ,
-        .BRANCH_TAKEN(branch_taken)             ,
-        .BRANCH_ADDR (branch_address)           ,
-        .PRD_VALID (prd_valid)                  ,
-        .PRD_ADDR  (prd_addr)                   ,
-        .FLUSH(flush)                           ,
-        .CACHE_READY(cache_ready_ins&!exstage_stalled)           ,
-        .CACHE_READY_DATA(cache_ready_dat)      ,
-        .RETURN_ADDR(return_addr)               ,
-        .RETURN(return)                         ,
+        .CLK(CLK)                              ,
+        .PC(pc)                                ,
+        .EX_PC(ex_pc)                          ,
+        .BRANCH(branch)                        ,
+        .BRANCH_TAKEN(branch_taken)            ,
+        .BRANCH_ADDR (branch_address)          ,
+        .PRD_VALID (prd_valid)                 ,
+        .PRD_ADDR  (prd_addr)                  ,
+        .FLUSH(flush)                          ,
+        .CACHE_READY(cache_ready_ins & !exstage_stalled & P0_INIT_AXI_TXN!=0 & !stop_ins_cache)          ,
+        .CACHE_READY_DATA(cache_ready_dat & !stop_dat_cache),
+        .RETURN_ADDR(return_addr),
+        .RETURN(return),
         .PREDICTED(predicted)
-        );
+    );
+    
+    Peripheral peripheral(
+        .CLK(CLK),
+        .RESETN(RSTN),
+        .START(peri_start),
+        .ADDRESS(addr_to_peri),
+        .WRITE(control_to_peri),
+        .DATA_IN(data_to_peri),
+        .DATA_OUT(data_from_peri),
+        .DONE(peri_complete),
+        .RD_ADDR_TO_PERI(RD_ADDR_TO_PERI),
+        .RD_ADDR_TO_PERI_VALID(RD_ADDR_TO_PERI_VALID),
+        .RD_ADDR_TO_PERI_READY(RD_ADDR_TO_PERI_READY),
+        .WR_ADDR_TO_PERI(WR_ADDR_TO_PERI),
+        .WR_TO_PERI_VALID(WR_TO_PERI_VALID),
+        .WR_TO_PERI_READY(WR_TO_PERI_READY),
+        .DATA_TO_PERI(DATA_TO_PERI),
+        .DATA_FROM_PERI(DATA_FROM_PERI),
+        .DATA_FROM_PERI_READY(DATA_FROM_PERI_READY),
+        .DATA_FROM_PERI_VALID(DATA_FROM_PERI_VALID),
+        .TRANSACTION_COMPLETE_PERI(TRANSACTION_COMPLETE_PERI),
+        .CACHE_READY_DAT(cache_ready_dat)
+    );
+    
     
     // Intercepting and extracting certain data writes
     reg [DATA_WIDTH - 1 : 0] data;
     reg [2          - 1 : 0] control;
     reg [ADDR_WIDTH - 1 : 0] address;
     
+    reg [7:0] counter1 = 0;
     
-    always @ (posedge CLK) begin
-        control <= control_from_proc_dat;       
-        address <= addr_from_proc_dat;          
-        data    <= data_from_proc_dat;   
-        
-        EXT_FIFO_WR_ENB  <= (addr_from_proc_dat == EXT_FIFO_ADDRESS) & (control_from_proc_dat == 2)  & cache_ready_dat & cache_ready_ins;
-        EXT_FIFO_WR_DATA <= data_from_proc_dat;      
+    always@(posedge CLK)
+    begin
+        if  (addr_from_proc_dat >= 32'h10000000 && control_from_proc_dat != 0 && counter==0 && !stop_dat_cache && cache_ready_ins && cache_ready_dat)
+        begin
+            data_to_peri <= data_from_proc_dat;
+            addr_to_peri <= addr_from_proc_dat;
+            control_to_peri <= (control_from_proc_dat == 2) ? 1'b1:1'b0;
+            peri_start <=1;
+            stop_ins_cache <=1;
+            counter <= counter +1;
+            peri_done <= 0;
+        end
+        else if (cache_ready_dat && counter>0)
+        begin
+            if(peri_complete)
+            begin
+                peri_done <= 1;
+            end            
+            if (counter == 3 && !peri_done)
+            begin
+                stop_dat_cache <=1;
+                p_flag         <=0;
+                stop_ins_cache <=0;     
+            end
+            else if (counter == 3 && peri_done)
+            begin
+                stop_ins_cache <=0;  
+                p_flag         <=1;
+                counter        <=0;
+                stop_dat_cache <=0;
+            end
+            else
+            begin
+                counter       <=counter + 1;
+                peri_start    <=0;
+            end         
+        end
+        if (p_flag && peri_done)
+        begin
+            peri_start <=0;
+        end
+        if (p_flag & cache_ready_dat & !stop_dat_cache)
+            p_flag <= 0;       
+    end
+    
+    always @ (posedge CLK) 
+    begin 
+        EXT_FIFO_WR_ENB  <=P0_INIT_AXI_TXN & cache_ready_dat & cache_ready_ins ;//<= data_to_proc_ins;
+        EXT_FIFO_WR_DATA <= {ex_pc[31:2],cache_ready_dat,cache_ready_ins};
+        if (((addr_from_proc_dat == EXT_FIFO_ADDRESS) & (control_from_proc_dat == 2)  & cache_ready_dat & cache_ready_ins & P0_INIT_AXI_TXN))
+        begin
+            EXT_FIFO_WR_ENB  <= 1;
+            EXT_FIFO_WR_DATA <= data_from_proc_dat;
+        end      
+        else
+        begin
+            EXT_FIFO_WR_ENB  <= 0;
+        end
     end
     
     function integer logb2;
@@ -291,5 +393,5 @@ module RISCV_PROCESSOR#(
         for (logb2 = 0; depth > 1; logb2 = logb2 + 1)
             depth = depth >> 1;
     endfunction
-    
+     
 endmodule

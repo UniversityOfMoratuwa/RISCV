@@ -9,7 +9,7 @@
 
 #define TEST_FUNC_NAME remu
 #define TEST_FUNC_TXT "remu\t"
-#define TEST_FUNC_RET isaTestEnd
+#define TEST_FUNC_RET csr
 
 #include "riscv_test.h"
 #include "test_macros.h"

@@ -68,6 +68,7 @@ module PIPELINE #(
     output              [ADDR_WIDTH - 1 : 0]        PC_ID_FB                        ,
     output                                          PREDICTED                       ,
     output                                          EXSTAGE_STALLED                 ,
+    output              [ADDR_WIDTH - 1 : 0]        INS_ID_EX                       ,
            
            
     input                                           MEIP                            ,   //machine external interupt pending
@@ -284,6 +285,7 @@ module PIPELINE #(
     
     reg  [ 3:0] pred=0          ;
     reg         flag1=0         ;
+    reg         init_reg=1      ;
     
     always @(posedge CLK)
     begin
@@ -303,11 +305,12 @@ module PIPELINE #(
         clock<=clock+(1);
         writeFile = $fopen("mem_reads.txt", "a");
         writeFiled = $fopen("clocks.txt", "a");
-        if (pc_ex_ex2!=0 && CACHE_READY && CACHE_READY_DATA && !flush_internal)
+        if (((ins_fb_ex!=0 && init_reg) |pc_ex_ex2!=0) && CACHE_READY && CACHE_READY_DATA && !flush_internal)
         begin
             $fwrite(writeFile,"%h %h\n",pc_ex_ex2,alu_out_wire);   
             $fwrite(writeFiled,"%d\n",clock);
             ins=ins+1;
+            init_reg <= 1'b0;
         end 
         $fclose(writeFiled);                                                             
         $fclose(writeFile);                                                                             
@@ -578,11 +581,11 @@ module PIPELINE #(
     assign BRANCH               = (jump_fb_ex |cbranch_fb_ex  |jumpr_fb_ex) &  ! flush_internal ;  
     assign FLUSH                = flush_internal                                    ;
     assign BRANCH_TAKEN         = branch_taken                                      ;
-    assign PIPELINE_STALL       = (stall_enable_id_fb  ||  branch_taken ||flush_e || flush_e_i || !CACHE_READY)& CACHE_READY_DATA  ;
+    assign PIPELINE_STALL       = (stall_enable_id_fb  ||  branch_taken ||flush_e || flush_e_i || !CACHE_READY) & CACHE_READY_DATA  ;
     assign c1_mux_final         = rs1_final                                         ; 
     assign c2_mux_final         = rs2_final                                         ;
     assign jmux1_final          = imm_out_id_fb                                     ;
-  
+    assign INS_ID_EX            = ins_fb_ex                                         ;
     assign DATA_TO_DATA_CACHE   = rs2_ex_ex2 << ({4'b0000,alu_out_wire[1:0]} << 3)  ;
     assign PC_ID_FB             = pc_id_fb                                          ;
     

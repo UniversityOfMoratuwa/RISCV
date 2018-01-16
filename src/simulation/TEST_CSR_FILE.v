@@ -10,12 +10,12 @@ module TEST_CSR_FILE();
     localparam sys_mret    = 4'b0101 ;
     localparam sys_wfi     = 4'b0110 ;
     
-    localparam sys_csrrw   = 4'b1000 ;
-    localparam sys_csrrs   = 4'b1001 ;
-    localparam sys_csrrc   = 4'b1010 ;
-    localparam sys_csrrwi  = 4'b1011 ;
-    localparam sys_csrrsi  = 4'b1100 ;
-    localparam sys_csrrci  = 4'b1101 ;
+    localparam sys_csrrw   = 4'b1001 ;
+    localparam sys_csrrs   = 4'b1010 ;
+    localparam sys_csrrc   = 4'b1011 ;
+    localparam sys_csrrwi  = 4'b1101 ;
+    localparam sys_csrrsi  = 4'b1110 ;
+    localparam sys_csrrci  = 4'b1111 ;
     
     // CSR ADRESS MAPPINGS
     localparam     ustatus        =    12'h000      ;
@@ -113,6 +113,7 @@ module TEST_CSR_FILE();
     reg             proc_idle       ;
     
     wire  [31  :0]  output_data     ;
+    wire  [31  :0]  priv_jump_add   ;
     wire            priv_jump       ;
   
     reg             meip            ;
@@ -128,6 +129,7 @@ module TEST_CSR_FILE();
         .RS1_DATA(rs1_data),
         .ZIMM(zimm),
         .OUTPUT_DATA(output_data),
+        .PRIV_JUMP_ADD(priv_jump_add),
         .PROC_IDLE(proc_idle),
         .PRIV_JUMP(priv_jump),
         .MEIP(meip), 
@@ -142,7 +144,7 @@ module TEST_CSR_FILE();
     begin
         clk             = 0         ;  
         proc_idle       = 0         ;
-        zimm            = 0         ;
+        zimm            = 1         ;
       
         /* 
         //test ecall/mtvec - pass
@@ -150,35 +152,30 @@ module TEST_CSR_FILE();
         csr_cnt         = sys_csrrw ;
         csr_address     = mtvec     ;
         rs1_data        = 104       ;
-        zimm            = 0         ;
         
         #20;
         pc              = 0         ;
         csr_cnt         = sys_idle  ;
         csr_address     = utvec     ;
         rs1_data        = 16        ;
-        zimm            = 0         ;
         
         #20
         pc              = 4         ;
         csr_cnt         = sys_ecall ;
         csr_address     = 0         ;
         rs1_data        = 0         ;//output 104
-        zimm            = 0         ;
         
         #20;
         pc              = 0         ;
         csr_cnt         = sys_idle  ;
         csr_address     = 0         ;
         rs1_data        = 16        ;
-        zimm            = 0         ;
         
         #20
         pc              = 8         ;
         csr_cnt         = sys_csrrs ;
         csr_address     = mepc      ;
         rs1_data        = 0         ;//output 4 
-        zimm            = 0         ;
         */
         
         /*
@@ -188,14 +185,12 @@ module TEST_CSR_FILE();
         csr_cnt         = sys_csrrs ;
         csr_address     = cycle     ;
         rs1_data        = 0         ;//x
-        zimm            = 0         ;
         
         #20
         pc              = 4         ;
         csr_cnt         = sys_csrrs ;
         csr_address     = instret   ;
         rs1_data        = 0         ; //y
-        zimm            = 0         ;
         
         #20;
         pc              = 8         ;
@@ -209,14 +204,12 @@ module TEST_CSR_FILE();
         csr_cnt         = sys_csrrs ;
         csr_address     = cycle     ;
         rs1_data        = 0         ;//output x+8
-        zimm            = 0         ;
         
         #20
         pc              = 4         ;
         csr_cnt         = sys_csrrs ;
         csr_address     = instret   ;
-        rs1_data        = 0         ;//output y+6  
-        zimm            = 0         ;    
+        rs1_data        = 0         ;//output y+6   
         */
         
     end

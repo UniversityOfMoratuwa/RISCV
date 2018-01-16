@@ -125,12 +125,12 @@
     localparam sys_mret    = 4'b0101 ;
     localparam sys_wfi     = 4'b0110 ;
     
-    localparam sys_csrrw   = 4'b1000 ;
-    localparam sys_csrrs   = 4'b1001 ;
-    localparam sys_csrrc   = 4'b1010 ;
-    localparam sys_csrrwi  = 4'b1011 ;
-    localparam sys_csrrsi  = 4'b1100 ;
-    localparam sys_csrrci  = 4'b1101 ;
+    localparam sys_csrrw   = 4'b1001 ;
+    localparam sys_csrrs   = 4'b1010 ;
+    localparam sys_csrrc   = 4'b1011 ;
+    localparam sys_csrrwi  = 4'b1101 ;
+    localparam sys_csrrsi  = 4'b1110 ;
+    localparam sys_csrrci  = 4'b1111 ;
     
     
     

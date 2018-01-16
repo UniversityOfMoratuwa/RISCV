@@ -19,7 +19,6 @@
 // 
 //////////////////////////////////////////////////////////////////////////////////
 
-
 module RISCV_Proc_AXI # (
         // Fixed parameters
         localparam ADDR_WIDTH           = 32,
@@ -39,7 +38,7 @@ module RISCV_Proc_AXI # (
         
         //AXI interface parameters
         parameter PROCESSOR_DATA_WIDTH          = 32,
-        parameter C_M_TARGET_SLAVE_BASE_ADDR    = 32'h40000000,
+        parameter C_M_TARGET_SLAVE_BASE_ADDR    = 32'h00000000,
         parameter C_M_AXI_BURST_LEN             = 4,
         parameter C_M_AXI_ID_WIDTH              = 1,
         parameter C_M_AXI_ADDR_WIDTH            = 32,
@@ -49,6 +48,13 @@ module RISCV_Proc_AXI # (
         parameter C_M_AXI_WUSER_WIDTH           = 0,
         parameter C_M_AXI_RUSER_WIDTH           = 0,
         parameter C_M_AXI_BUSER_WIDTH           = 0,
+        
+        //Peripheral Interface Parameters
+        parameter  C_Peripheral_Interface_START_DATA_VALUE              = 32'h00000000,
+        parameter  C_Peripheral_Interface_TARGET_SLAVE_BASE_ADDR        = 32'h00000000,
+        parameter integer C_Peripheral_Interface_ADDR_WIDTH             = 32,
+        parameter integer C_Peripheral_Interface_DATA_WIDTH             = 32,
+        parameter integer C_Peripheral_Interface_TRANSACTIONS_NUM       = 4,
         
         // Calculated parameters
         localparam L2_BUS_WIDTH         = 1 << W
@@ -152,34 +158,70 @@ module RISCV_Proc_AXI # (
         input  wire                                   M1_AXI_RLAST      ,
         input  wire [C_M_AXI_RUSER_WIDTH     - 1 : 0] M1_AXI_RUSER      ,
         input  wire                                   M1_AXI_RVALID     ,
-        output wire                                   M1_AXI_RREADY      
+        output wire                                   M1_AXI_RREADY     ,
+        input  wire                                             peripheral_interface_init_axi_txn,
+        output wire                                             peripheral_interface_error,
+        output wire                                             peripheral_interface_txn_done,
+        input  wire                                             peripheral_interface_aclk,
+        input  wire                                             peripheral_interface_aresetn,
+        output wire [C_Peripheral_Interface_ADDR_WIDTH-1 : 0]   peripheral_interface_awaddr,
+        output wire [2 : 0]                                     peripheral_interface_awprot,
+        output wire                                             peripheral_interface_awvalid,
+        input  wire                                             peripheral_interface_awready,
+        output wire [C_Peripheral_Interface_DATA_WIDTH-1 : 0]   peripheral_interface_wdata,
+        output wire [C_Peripheral_Interface_DATA_WIDTH/8-1 : 0] peripheral_interface_wstrb,
+        output wire                                             peripheral_interface_wvalid,
+        input  wire                                             peripheral_interface_wready,
+        input  wire [1 : 0]                                     peripheral_interface_bresp,
+        input  wire                                             peripheral_interface_bvalid,
+        output wire                                             peripheral_interface_bready,
+        output wire [C_Peripheral_Interface_ADDR_WIDTH-1 : 0]   peripheral_interface_araddr,
+        output wire [2 : 0]                                     peripheral_interface_arprot,
+        output wire                                             peripheral_interface_arvalid,
+        input  wire                                             peripheral_interface_arready,
+        input  wire [C_Peripheral_Interface_DATA_WIDTH-1 : 0]   peripheral_interface_rdata,
+        input  wire [1 : 0]                                     peripheral_interface_rresp,
+        input  wire                                             peripheral_interface_rvalid,
+        output wire                                             peripheral_interface_rready 
     );
     
-    wire                          RSTN = 1;
+    wire                            RSTN = 1;
     
-    wire                          ADDR_TO_L2_READY_INS;
-    wire                          ADDR_TO_L2_VALID_INS;      
-    wire [ADDR_WIDTH - 2 - 1 : 0] ADDR_TO_L2_INS;
+    wire                            ADDR_TO_L2_READY_INS;
+    wire                            ADDR_TO_L2_VALID_INS;      
+    wire [ADDR_WIDTH - 2 - 1 : 0]   ADDR_TO_L2_INS;
     
     
-    wire                          DATA_FROM_L2_VALID_INS;
-    wire                          DATA_FROM_L2_READY_INS;
-    wire [L2_BUS_WIDTH   - 1 : 0] DATA_FROM_L2_INS;
+    wire                            DATA_FROM_L2_VALID_INS;
+    wire                            DATA_FROM_L2_READY_INS;
+    wire [L2_BUS_WIDTH   - 1 : 0]   DATA_FROM_L2_INS;
     
-    wire                          WR_TO_L2_READY_DAT;
-    wire                          WR_TO_L2_VALID_DAT;
-    wire [ADDR_WIDTH - 2 - 1 : 0] WR_ADDR_TO_L2_DAT;
-    wire [L2_BUS_WIDTH   - 1 : 0] DATA_TO_L2_DAT;
-    wire                          WR_CONTROL_TO_L2_DAT;
-    wire                          WR_COMPLETE_DAT;
+    wire                            WR_TO_L2_READY_DAT;
+    wire                            WR_TO_L2_VALID_DAT;
+    wire [ADDR_WIDTH - 2 - 1 : 0]   WR_ADDR_TO_L2_DAT;
+    wire [L2_BUS_WIDTH   - 1 : 0]   DATA_TO_L2_DAT;
+    wire                            WR_CONTROL_TO_L2_DAT;
+    wire                            WR_COMPLETE_DAT;
     
-    wire                          RD_ADDR_TO_L2_READY_DAT;
-    wire                          RD_ADDR_TO_L2_VALID_DAT;
-    wire [ADDR_WIDTH - 2 - 1 : 0] RD_ADDR_TO_L2_DAT;
+    wire                            RD_ADDR_TO_L2_READY_DAT;
+    wire                            RD_ADDR_TO_L2_VALID_DAT;
+    wire [ADDR_WIDTH - 2 - 1 : 0]   RD_ADDR_TO_L2_DAT;
     
-    wire                          DATA_FROM_L2_VALID_DAT;
-    wire                          DATA_FROM_L2_READY_DAT;
-    wire [L2_BUS_WIDTH   - 1 : 0] DATA_FROM_L2_DAT;  
+    wire                            DATA_FROM_L2_VALID_DAT;
+    wire                            DATA_FROM_L2_READY_DAT;
+    wire [L2_BUS_WIDTH   - 1 : 0]   DATA_FROM_L2_DAT;
+    
+    wire [ADDR_WIDTH      - 1 : 0]  RD_ADDR_TO_PERI;
+    wire                            RD_ADDR_TO_PERI_VALID;
+    wire                            RD_ADDR_TO_PERI_READY;
+    wire [ADDR_WIDTH      - 1 : 0]  WR_ADDR_TO_PERI;
+    wire                            WR_TO_PERI_VALID;
+    wire                            WR_TO_PERI_READY;
+    wire [DATA_WIDTH      - 1 : 0]  DATA_TO_PERI;
+    wire [DATA_WIDTH      - 1 : 0]  DATA_FROM_PERI;
+    wire                            DATA_FROM_PERI_READY;
+    wire                            DATA_FROM_PERI_VALID;
+    wire                            TRANSACTION_COMPLETE_PERI;
 
    
     
@@ -333,43 +375,102 @@ module RISCV_Proc_AXI # (
         .ack               (WR_COMPLETE_DAT     )
     );
     
-    RISCV_PROCESSOR # (
-        .S          (S),                               // Size of the cache will be 2^S bits
-        .B          (B),                               // Size of a block will be 2^B bits
-        .a          (a),                               // Associativity of the cache would be 2^a
-        .T          (T),                               // Width to depth translation amount
-        .W          (W),                               // Width of the L2-L1 bus would be 2^W
-        .N          (N),                               // Number of stream buffers
-        .n          (n),                               // Depth of stream buffers would be 2^n
-        .p          (p),                               // Prefetch queue's depth is 2^p
-        .V          (V),                               // Size of the victim cache will be 2^V cache lines
-        .L2_DELAY_RD(L2_DELAY_RD)                      // Delay of the second level of cache    
-    ) riscv_proc (
-        .CLK                    (CLK                    ),
-        .RSTN                   (RSTN                   ),
-        // Instruction cache    
-        .ADDR_TO_L2_READY_INS   (ADDR_TO_L2_READY_INS   ),
-        .ADDR_TO_L2_VALID_INS   (ADDR_TO_L2_VALID_INS   ),      
-        .ADDR_TO_L2_INS         (ADDR_TO_L2_INS         ),
-        .DATA_FROM_L2_VALID_INS (DATA_FROM_L2_VALID_INS ),
-        .DATA_FROM_L2_READY_INS (DATA_FROM_L2_READY_INS ),
-        .DATA_FROM_L2_INS       (DATA_FROM_L2_INS       ),
-        // Data cache          
-        .WR_TO_L2_READY_DAT     (WR_TO_L2_READY_DAT     ),
-        .WR_TO_L2_VALID_DAT     (WR_TO_L2_VALID_DAT     ),
-        .WR_ADDR_TO_L2_DAT      (WR_ADDR_TO_L2_DAT      ),
-        .DATA_TO_L2_DAT         (DATA_TO_L2_DAT         ),
-        .WR_CONTROL_TO_L2_DAT   (WR_CONTROL_TO_L2_DAT   ),
-        .WR_COMPLETE_DAT        (WR_COMPLETE_DAT        ),
-        .RD_ADDR_TO_L2_READY_DAT(RD_ADDR_TO_L2_READY_DAT),
-        .RD_ADDR_TO_L2_VALID_DAT(RD_ADDR_TO_L2_VALID_DAT),
-        .RD_ADDR_TO_L2_DAT      (RD_ADDR_TO_L2_DAT      ),
-        .DATA_FROM_L2_VALID_DAT (DATA_FROM_L2_VALID_DAT ),
-        .DATA_FROM_L2_READY_DAT (DATA_FROM_L2_READY_DAT ),
-        .DATA_FROM_L2_DAT       (DATA_FROM_L2_DAT       ),
-        .EXT_FIFO_WR_ENB        (EXT_FIFO_WR_ENB        ),
-        .EXT_FIFO_WR_DATA       (EXT_FIFO_WR_DATA       )
-        //.P0_INIT_AXI_TXN        (!FIFO_FULL)   
-    );
+    
+     RISCV_PROCESSOR # (
+           .S          (S),                               // Size of the cache will be 2^S bits
+           .B          (B),                               // Size of a block will be 2^B bits
+           .a          (a),                               // Associativity of the cache would be 2^a
+           .T          (T),                               // Width to depth translation amount
+           .W          (W),                               // Width of the L2-L1 bus would be 2^W
+           .N          (N),                               // Number of stream buffers
+           .n          (n),                               // Depth of stream buffers would be 2^n
+           .p          (p),                               // Prefetch queue's depth is 2^p
+           .V          (V),                               // Size of the victim cache will be 2^V cache lines
+           .L2_DELAY_RD(L2_DELAY_RD)                      // Delay of the second level of cache    
+       ) riscv_proc (
+           .CLK                    (CLK                    ),
+           .RSTN                   (RSTN                   ),
+           // Instruction cache    
+           .ADDR_TO_L2_READY_INS   (ADDR_TO_L2_READY_INS   ),
+           .ADDR_TO_L2_VALID_INS   (ADDR_TO_L2_VALID_INS   ),      
+           .ADDR_TO_L2_INS         (ADDR_TO_L2_INS         ),
+           .DATA_FROM_L2_VALID_INS (DATA_FROM_L2_VALID_INS ),
+           .DATA_FROM_L2_READY_INS (DATA_FROM_L2_READY_INS ),
+           .DATA_FROM_L2_INS       (DATA_FROM_L2_INS       ),
+           // Data cache          
+           .WR_TO_L2_READY_DAT     (WR_TO_L2_READY_DAT     ),
+           .WR_TO_L2_VALID_DAT     (WR_TO_L2_VALID_DAT     ),
+           .WR_ADDR_TO_L2_DAT      (WR_ADDR_TO_L2_DAT      ),
+           .DATA_TO_L2_DAT         (DATA_TO_L2_DAT         ),
+           .WR_CONTROL_TO_L2_DAT   (WR_CONTROL_TO_L2_DAT   ),
+           .WR_COMPLETE_DAT        (WR_COMPLETE_DAT        ),
+           .RD_ADDR_TO_L2_READY_DAT(RD_ADDR_TO_L2_READY_DAT),
+           .RD_ADDR_TO_L2_VALID_DAT(RD_ADDR_TO_L2_VALID_DAT),
+           .RD_ADDR_TO_L2_DAT      (RD_ADDR_TO_L2_DAT      ),
+           .DATA_FROM_L2_VALID_DAT (DATA_FROM_L2_VALID_DAT ),
+           .DATA_FROM_L2_READY_DAT (DATA_FROM_L2_READY_DAT ),
+           .DATA_FROM_L2_DAT       (DATA_FROM_L2_DAT       ),
+           .EXT_FIFO_WR_ENB        (EXT_FIFO_WR_ENB        ),
+           .EXT_FIFO_WR_DATA       (EXT_FIFO_WR_DATA       ),
+           .P0_INIT_AXI_TXN        (!FIFO_FULL             ),
+           .RD_ADDR_TO_PERI        (RD_ADDR_TO_PERI        ),
+           .RD_ADDR_TO_PERI_VALID  (RD_ADDR_TO_PERI_VALID  ),
+           .RD_ADDR_TO_PERI_READY  (RD_ADDR_TO_PERI_READY  ),
+           .WR_ADDR_TO_PERI        (WR_ADDR_TO_PERI        ),
+           .WR_TO_PERI_VALID       (WR_TO_PERI_VALID       ),
+           .WR_TO_PERI_READY       (WR_TO_PERI_READY       ),
+           .DATA_TO_PERI           (DATA_TO_PERI           ),
+           .DATA_FROM_PERI         (DATA_FROM_PERI         ),
+           .DATA_FROM_PERI_READY   (DATA_FROM_PERI_READY   ),
+           .DATA_FROM_PERI_VALID   (DATA_FROM_PERI_VALID   ),
+           .TRANSACTION_COMPLETE_PERI(TRANSACTION_COMPLETE_PERI)  
+       );
+       
+       // Instantiation of Axi Bus Interface Peripheral_Interface
+       PERIPHERAL_INTERFACE # ( 
+       // .C_M_START_DATA_VALUE            (C_Peripheral_Interface_START_DATA_VALUE),
+       // .C_M_TARGET_SLAVE_BASE_ADDR      (C_Peripheral_Interface_TARGET_SLAVE_BASE_ADDR),
+       // .C_M_AXI_ADDR_WIDTH              (C_Peripheral_Interface_ADDR_WIDTH),
+       // .C_M_AXI_DATA_WIDTH              (C_Peripheral_Interface_DATA_WIDTH),
+       // .C_M_TRANSACTIONS_NUM            (C_Peripheral_Interface_TRANSACTIONS_NUM)
+       ) peripheral_interface (
+       .INIT_AXI_TXN(peripheral_interface_init_axi_txn),
+       .ERROR                           (peripheral_interface_error),
+       .TXN_DONE                        (peripheral_interface_txn_done),
+       .M_AXI_ACLK                      (peripheral_interface_aclk),
+       .M_AXI_ARESETN                   (peripheral_interface_aresetn),
+       .M_AXI_AWADDR                    (peripheral_interface_awaddr),
+       .M_AXI_AWPROT                    (peripheral_interface_awprot),
+       .M_AXI_AWVALID                   (peripheral_interface_awvalid),
+       .M_AXI_AWREADY                   (peripheral_interface_awready),
+       .M_AXI_WDATA                     (peripheral_interface_wdata),
+       .M_AXI_WSTRB                     (peripheral_interface_wstrb),
+       .M_AXI_WVALID                    (peripheral_interface_wvalid),
+       .M_AXI_WREADY                    (peripheral_interface_wready),
+       .M_AXI_BRESP                     (peripheral_interface_bresp),
+       .M_AXI_BVALID                    (peripheral_interface_bvalid),
+       .M_AXI_BREADY                    (peripheral_interface_bready),
+       .M_AXI_ARADDR                    (peripheral_interface_araddr),
+       .M_AXI_ARPROT                    (peripheral_interface_arprot),
+       .M_AXI_ARVALID                   (peripheral_interface_arvalid),
+       .M_AXI_ARREADY                   (peripheral_interface_arready),
+       .M_AXI_RDATA                     (peripheral_interface_rdata),
+       .M_AXI_RRESP                     (peripheral_interface_rresp),
+       .M_AXI_RVALID                    (peripheral_interface_rvalid),
+       .M_AXI_RREADY                    (peripheral_interface_rready),
+       //Peripheral Side Ports
+       .dout_ra                         (RD_ADDR_TO_PERI),
+       .valid_ra                        (RD_ADDR_TO_PERI_VALID),
+       .ready_ra                        (RD_ADDR_TO_PERI_READY),
+       .dout_wa                         (WR_ADDR_TO_PERI),
+       .valid_wa                        (WR_TO_PERI_VALID),
+       .ready_wa                        (WR_TO_PERI_READY),
+       .dout_wd                         (DATA_TO_PERI),
+       .dout                            (DATA_FROM_PERI),
+       .ready_rd                        (DATA_FROM_PERI_READY),
+       .valid_rd                        (DATA_FROM_PERI_VALID),
+       .ack                             (TRANSACTION_COMPLETE_PERI)
+       );
+       
   
 endmodule

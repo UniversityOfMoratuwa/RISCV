@@ -79,7 +79,8 @@ module EXSTAGE(
     wire [31:0] rv32m_out           ;
     wire        rv32m_ready         ;
     
-    wire [31:0] csr_out             ; 
+    wire [31:0] csr_out             ;
+    wire [31:0] priv_jump_add       ; 
     wire        priv_jump           ;
     
     reg         flush_internal  =0  ;
@@ -210,9 +211,10 @@ module EXSTAGE(
         .PC(PC_FB_EX),
         .CSR_CNT(CSR_CNT),
         .CSR_ADDRESS(A[11:0]),
-        .RS1_DATA(B),
+        .RS1_DATA(COMP1),
         .ZIMM(ZIMM),
         .OUTPUT_DATA(csr_out),
+        .PRIV_JUMP_ADD(priv_jump_add),
         .PROC_IDLE(PROC_IDLE),
         .PRIV_JUMP(priv_jump), 
         .MEIP(MEIP),   
@@ -258,10 +260,10 @@ module EXSTAGE(
             data_cache_control  <= DATA_CACHE_CONTROL_IN        ;
             type_out            <= TYPE_IN                      ;
             
-            JUMP_ADDR           <= priv_jump ? csr_out : (JUMP_BUS1+JUMP_BUS2)  ;  
-            jump_reg            <= JUMP                                         ;          
-            jumpr_reg           <= JUMPR                                        ;
-            DATA_ADDRESS        <= (A_signed+B_signed)                          ;
+            JUMP_ADDR           <= priv_jump ? priv_jump_add : (JUMP_BUS1+JUMP_BUS2)    ;  
+            jump_reg            <= JUMP                                                 ;          
+            jumpr_reg           <= JUMPR                                                ;
+            DATA_ADDRESS        <= (A_signed+B_signed)                                  ;
         end
     end
     

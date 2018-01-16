@@ -200,32 +200,32 @@ module CONTROL_UNIT(
                     {5'b00000,csrrw  }   : 
                     begin
                         CSR_CNT = sys_csrrw     ;
-                        TYPE    = alu           ;//need to check and add others
+                        TYPE    = alu           ;
                     end
                     {5'b00000,csrrs  }   : 
                     begin
                         CSR_CNT = sys_csrrs     ;
-                        TYPE    = alu           ;//need to check and add others
+                        TYPE    = alu           ;
                     end
                     {5'b00000,csrrc  }   : 
                     begin
                         CSR_CNT = sys_csrrc     ;
-                        TYPE    = alu           ;//need to check and add others
+                        TYPE    = alu           ;
                     end
                     {5'b00000,csrrwi }   : 
                     begin
                         CSR_CNT = sys_csrrwi    ;
-                        TYPE    = alu           ;//need to check and add others
+                        TYPE    = alu           ;
                     end
                     {5'b00000,csrrsi }   : 
                     begin
                         CSR_CNT = sys_csrrsi    ;
-                        TYPE    = alu           ;//need to check and add others
+                        TYPE    = alu           ;
                     end
                     {5'b00000,csrrci }   : 
                     begin
                         CSR_CNT = sys_csrrci    ;
-                        TYPE    = alu           ;//need to check and add others
+                        TYPE    = alu           ;
                     end
                     default              :
                     begin
