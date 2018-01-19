@@ -30,6 +30,7 @@ module Peripheral(
     input           [31:0]          DATA_IN,
     output reg      [31:0]          DATA_OUT,
     output reg                      DONE,
+    input           [3 :0]          WSTRB,
     output reg      [31:0]          RD_ADDR_TO_PERI,
     output reg                      RD_ADDR_TO_PERI_VALID,
     input                           RD_ADDR_TO_PERI_READY,
@@ -41,7 +42,8 @@ module Peripheral(
     output reg                      DATA_FROM_PERI_READY,
     input                           DATA_FROM_PERI_VALID,
     input                           TRANSACTION_COMPLETE_PERI,
-    input                           CACHE_READY_DAT
+    input                           CACHE_READY_DAT,
+    output reg      [3 :0]          WSTRB_OUT
     );
     
     wire ready_wa;
@@ -77,6 +79,7 @@ module Peripheral(
                 WR_ADDR_TO_PERI <= ADDRESS;
                 DATA_TO_PERI <= DATA_IN;
                 WR_TO_PERI_VALID <= 1;
+                WSTRB_OUT <= WSTRB;
             end
             else
             begin

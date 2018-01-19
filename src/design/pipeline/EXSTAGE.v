@@ -216,7 +216,7 @@ module EXSTAGE(
         .OUTPUT_DATA(csr_out),
         .PRIV_JUMP_ADD(priv_jump_add),
         .PROC_IDLE(PROC_IDLE),
-        .PRIV_JUMP(priv_jump), 
+        .PRIV_JUMP(priv_jump),
         .MEIP(MEIP),   
         .MTIP(MTIP),   
         .MSIP(MSIP)                        
@@ -349,9 +349,9 @@ module EXSTAGE(
     
     assign JUMP_FINAL           = (priv_jump ? priv_jump : (cbranch ? comp_out_w :jump_reg|jumpr_reg )) & !flush_internal   ; 
     assign WB_DATA              = wb_data & {32{!flush_internal}}                                                           ;
-    assign DATA_CACHE_CONTROL   = data_cache_control & {2{!flush_internal}}                                                 ;
-    assign TYPE_OUT             = type_out & {2{!flush_internal}}                                                           ;
+    assign DATA_CACHE_CONTROL   = data_cache_control & {2{!flush_internal}}   & {2{!priv_jump}}                             ;
+    assign TYPE_OUT             = type_out & {2{!flush_internal}} & {2{!priv_jump}}                                         ;
     assign FLUSH_I              = flush_internal                                                                            ;
-    assign EXSTAGE_STALLED      = ((ALU_CNT==alu_mstd) & !rv32m_ready ) & !flush_internal                                   ;
+    assign EXSTAGE_STALLED      = ((ALU_CNT==alu_mstd) & !rv32m_ready ) & !flush_internal & {!priv_jump}                    ;
   
 endmodule

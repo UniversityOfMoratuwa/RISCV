@@ -16,11 +16,9 @@ The RISC-V ISA has been designed with small, fast, and low-power real-world impl
 
  * Fully written in Verilog
  * Support 32 Bit long Words
- * Support RISC-V Integer Specification "RV32I" 
- * Implimented as a 11 Stage Pipelined Architecture
+ * Support RISC-V Integer Specification "RV32IM" 
+ * Implemented as a 12 Stage Pipelined Architecture
  * Support both Instruction and Data Cache
  * Address most of the common hazards found in the Pipelined Architectures
- * The Pipeleine pass all the tests and successfully synthesis at 200 MHz
-
-## Ongoing Works
+ * The Pipeleine pass all the tests and successfully synthesis at 100 MHz on Zybo
  * SoC for the RISC-V Core

@@ -165,22 +165,22 @@ module CSR_FILE (
         {sd,mxr,sum,mprv,mpp,spp,mpie,spie,upie,m_ie,s_ie,u_ie}           = 13'b011000011101        ;
         {heip,seip,ueip,htip,stip,utip,hsip,ssip,usip}                    = 9'd0                    ;
         {meie,heie,seie,ueie,mtie,htie,stie,utie,msie,hsie,ssie,usie}     = 12'd0                   ;
+        mpp=2'b11;
     end
     
-    reg     [1  : 0] curr_prev          = mmode                             ;
+    reg     [1  : 0] curr_prev          = mmode                                                     ;
     
-    wire             csr_write_allowed  = ((ZIMM==5'b0) | PROC_IDLE) ? 1'b0 : 1'b1  ;
-    wire             illegal_access     = (curr_prev < CSR_ADDRESS[9:8])    ;
-    wire             interrupt          = meie & (MEIP| MTIP | MSIP)        ;
+    wire             csr_write_allowed  = ((ZIMM==5'b0) | PROC_IDLE) ? 1'b0 : 1'b1                  ;
+    wire             illegal_access     = (curr_prev < CSR_ADDRESS[9:8])                            ;
+    wire             interrupt          = m_ie & ((meie & MEIP)| (mtie & MTIP) | (MSIP & msie))     ;
     
     reg     [31 : 0] input_data_final   = 32'b0                             ;
-    reg     [30 : 0] e_code             = 29'b0                             ;
+    reg     [30 : 0] e_code             = 31'b0                             ;
     reg              trap_return_flag   = 1'b0                              ;
     
     wire             exception          = illegal_access | TRAP             ;
     wire             trap               = exception | interrupt             ;
       
-        
     assign           TRAP_FINAL         = trap                              ;
     
     //Create final write data
@@ -201,13 +201,13 @@ module CSR_FILE (
     //Handling Privilage System instruction and Read from CSR Registers
     always@(*)
     begin
-        if(interrupt)
-        begin
-            if(MEIP)         PRIV_JUMP_ADD = {mt_base,2'b0} + 32'd44; //similarly used and supervisor
-            else if(MSIP)    PRIV_JUMP_ADD = {mt_base,2'b0} + 32'd12;
-            else if(MTIP)    PRIV_JUMP_ADD = {mt_base,2'b0} + 32'd28;
-            else             ;
-        end
+//        if(interrupt)
+//        begin
+//            if(MEIP)         PRIV_JUMP_ADD = {mt_base,2'b0} + 32'd44; //similarly used and supervisor
+//            else if(MSIP)    PRIV_JUMP_ADD = {mt_base,2'b0} + 32'd12;
+//            else if(MTIP)    PRIV_JUMP_ADD = {mt_base,2'b0} + 32'd28;
+//            //else             ;
+//        end
         
         //if(!illegal_access)
         if(1)
@@ -293,22 +293,30 @@ module CSR_FILE (
                 dscratch       :    OUTPUT_DATA =  dscratch_r     ;  */
                 default        :    OUTPUT_DATA =  32'b0          ;
             endcase
-            case (CSR_CNT)
-                sys_ecall   :  //exception
-                case(curr_prev)
-                    mmode   : PRIV_JUMP_ADD  = mtvec_r    ;
-                    smode   : PRIV_JUMP_ADD  = stvec_r    ;
-                    umode   : PRIV_JUMP_ADD  = utvec_r    ;
-                    default : ;
+            if(interrupt)
+            begin
+                if(MEIP)         PRIV_JUMP_ADD = {mt_base,2'b0} ; //similarly used and supervisor
+                else if(MSIP)    PRIV_JUMP_ADD = {mt_base,2'b0} ;
+                else             PRIV_JUMP_ADD = {mt_base,2'b0};
+            end
+            else
+            begin
+                case (CSR_CNT)
+                    sys_ecall   :  //exception
+                    case(curr_prev)
+                        umode   : PRIV_JUMP_ADD  = utvec_r    ;
+                        smode   : PRIV_JUMP_ADD  = stvec_r    ;
+                        mmode   : PRIV_JUMP_ADD  = mtvec_r    ;
+                        default : ;
+                    endcase
+                    
+                    sys_uret    :   PRIV_JUMP_ADD = uepc_reg  ;
+                    sys_sret    :   PRIV_JUMP_ADD = sepc_reg  ;
+                    sys_mret    :   PRIV_JUMP_ADD = mepc_reg  ;
+           
+                    default     :   PRIV_JUMP_ADD = mepc_reg  ;
                 endcase
-                
-                //sys_ebreak  :   PRIV_JUMP_ADD = ;//
-                sys_uret    :   PRIV_JUMP_ADD = uepc_reg  ;
-                sys_sret    :   PRIV_JUMP_ADD = sepc_reg  ;
-                sys_mret    :   PRIV_JUMP_ADD = mepc_reg  ;
-                //sys_wfi     :   PRIV_JUMP_ADD = ;
-                default     :   ;
-            endcase
+            end
         end
     end
     
@@ -321,55 +329,91 @@ module CSR_FILE (
             minsret_reg <= minsret_reg + 1'b1   ;
         end
         
-        if(interrupt)
-        begin   
-            minterrupt <= 1'b1      ;
-            mecode_reg <= 31'd7     ;
-            
-            case({mideleg_r [e_code]&!curr_prev[1],sideleg_r[e_code]&!curr_prev[0]} )
-                2'b00: 
-                begin
-                    curr_prev      <=   mmode                                   ;
-                    mecode_reg     <=   e_code                                   ;
-                    minterrupt     <=   1'b1                                     ;    
-                    mepc_reg       <=   PC                                       ;
-                    mpp            <=   curr_prev                                ;
-                    mpie           <=   m_ie                                     ;
-                    m_ie           <=   1'b0                                     ;
-                end
-                2'b01: 
-                begin
-                    curr_prev      <=   mmode                                     ;    
-                    mecode_reg     <=   e_code                                    ;
-                    minterrupt     <=   1'b1                                      ; 
-                    mepc_reg       <=   PC                                        ;
-                    mpp            <=   curr_prev                                 ;
-                    mpie           <=   m_ie                                      ;
-                    m_ie           <=   1'b0                                      ;
-    
-                end
-                2'b10: begin
-                    curr_prev      <=  smode                                      ;
-                    secode_reg     <=  e_code                                     ;
-                    sinterrupt     <=   1'b1                                      ;
-                    sepc_reg       <=  PC                                         ;
-                    spp            <=   curr_prev[0]                              ;
-                    spie           <=   s_ie                                      ;
-                    s_ie           <=   1'b0                                      ;
-                end     
-                2'b11:
-                begin
-                    curr_prev      <=  umode                                      ;
-                    uecode_reg     <=  e_code                                     ;
-                    uinterrupt     <=  1'b1                                       ;    
-                    uepc_reg       <=  PC                                         ;
-                    upie           <=  s_ie                                       ;
-                    u_ie           <=  1'b0                                       ;
-                end              
-            endcase 
+        if (!PROC_IDLE)
+        begin
+            //external interupts >> software interupts >> timer interupts >> synchornous traps
+            if(m_ie & meie & MEIP)
+            begin
+                curr_prev      <=   mmode                                       ;
+                mecode_reg     <=   31'd11                                      ;
+                minterrupt     <=   1'b1                                        ;    
+                mepc_reg       <=   PC                                          ;
+                mpp            <=   curr_prev                                   ;
+                mpie           <=   m_ie                                        ;
+                m_ie           <=   1'b0                                        ;
+                //case for others - this for m only
+            end
+            else if(m_ie & mtie & MTIP)
+            begin
+                curr_prev      <=   mmode                                       ;
+                mecode_reg     <=   31'd7                                       ;
+                minterrupt     <=   1'b1                                        ;    
+                mepc_reg       <=   PC                                          ;
+                mpp            <=   curr_prev                                   ;
+                mpie           <=   m_ie                                        ;
+                m_ie           <=   1'b0                                        ;
+                //case for others - this for m only
+            end
+            else
+            begin
+             case(CSR_CNT)
+                 sys_ecall   :   
+                 begin
+                     minterrupt  <= 0    ;
+                     case(curr_prev)
+                         mmode   :
+                         begin
+                             mepc_reg    <= PC       ;
+                             mpp         <= mmode    ;
+                             mecode_reg  <= 31'd11   ;
+                         end
+                         smode   : 
+                         begin
+                             sepc_reg    <= PC       ;
+                             spp         <= smode    ;
+                             mecode_reg  <= 31'd9    ;
+                         end
+                         umode   :
+                         begin
+                             uepc_reg    <= PC       ;
+                             mecode_reg  <= 31'd8    ;
+                         end
+                         default : ;
+                     endcase
+                 end
+                 sys_ebreak  :   
+                 begin
+                     minterrupt  <= 0    ;
+                     mecode_reg  <= 3    ;
+                     case(curr_prev)
+                         umode   : uepc_reg  <= PC   ;
+                         smode   : sepc_reg  <= PC   ;
+                         mmode   : mepc_reg  <= PC   ;     
+                         default : ;
+                     endcase
+                 end
+                 sys_uret    :  
+                 begin
+                     curr_prev   <= 2'b0         ;
+                     u_ie        <= upie         ;
+                     upie        <= 1'b1         ;
+                 end
+                 sys_sret    :  
+                 begin
+                     curr_prev   <= {1'b0,spp  } ;
+                     s_ie        <= spie         ;
+                     spie        <= 1'b1         ; 
+                 end
+                 sys_mret    :
+                 begin
+                     curr_prev   <= mpp          ;
+                     m_ie        <= mpie         ;
+                     mpie        <= 1'b0         ;
+                 end
+                 default     :   ;
+             endcase
+             end
         end
-        
-        //if(!illegal_access)
         if(csr_write_allowed)
         begin
             case (CSR_ADDRESS)
@@ -461,192 +505,16 @@ module CSR_FILE (
                 mcycle         :    mcycle_reg[31 : 0]  <=  input_data_final            ;
                 minstret       :    minsret_reg [31:0]  <=  input_data_final            ;
                 mcycleh        :    mcycle_reg[63:32]   <=  input_data_final            ;
-                minstreth      :    minsret_reg[63:32]  <=  input_data_final            ; 
-                
-                sys_ecall   :   
-                begin
-                    minterrupt  <= 0    ;
-                    case(curr_prev)
-                        mmode   :
-                        begin
-                            mepc_reg    <= PC   ;
-                            mecode_reg  <= 11   ;
-                        end
-                        smode   : 
-                        begin
-                            sepc_reg    <= PC   ;
-                            mecode_reg  <= 9    ;
-                        end
-                        umode   :
-                        begin
-                            uepc_reg    <= PC   ;
-                            mecode_reg  <= 8    ;
-                        end
-                        default : ;
-                    endcase
-                end
-                sys_ebreak  :   
-                begin
-                    minterrupt  <= 0    ;
-                    mecode_reg  <= 3    ;
-                    case(curr_prev)
-                        mmode   : mepc_reg  <= PC   ;
-                        smode   : sepc_reg  <= PC   ;
-                        umode   : uepc_reg  <= PC   ;
-                        default : ;
-                    endcase
-                end
-                sys_uret    :  
-                begin
-                    curr_prev   <= 2'b0         ;
-                    u_ie        <= upie         ;
-                    upie        <= 1'b1         ;
-                end
-                sys_sret    :  
-                begin
-                    curr_prev   <= {1'b0,spp  } ;
-                    s_ie        <= spie         ;
-                    spie        <= 1'b1         ; 
-                end
-                sys_mret    :
-                begin
-                    curr_prev   <= mpp          ;
-                    m_ie        <= mpie         ;
-                    mpie        <= 1'b0         ;
-                end
-                sys_wfi     :   ;
-                default     :   ;
+                minstreth      :    minsret_reg[63:32]  <=  input_data_final            ;
+                default        :    ; 
             endcase
         end
+        
+     
     end
     
-    assign           PRIV_JUMP          = (CSR_CNT==sys_ecall) | (CSR_CNT==sys_uret) | (CSR_CNT==sys_sret) | (CSR_CNT==sys_mret) | (interrupt)  ;
+    assign  PRIV_JUMP       = (CSR_CNT==sys_ecall) | (CSR_CNT==sys_uret) | (CSR_CNT==sys_sret) | (CSR_CNT==sys_mret) | (interrupt)  ;
         
 endmodule
-                 
-                 
-                                                   
-  /*       
-        else if (exception)
-        begin
-            case({medeleg_r [e_code]&!curr_prev[1],sedeleg_r[e_code]&!curr_prev[0]} )
-                2'b00: 
-                begin
-                    curr_prev      <=   mmode                                    ;
-                  
-                    mecode_reg     <=   e_code                                   ;
-                    minterrupt     <=   1'b0                                     ;
-                    if ((e_code <= 29'd1) | ((e_code >= 29'd4) & (e_code <= 29'd7)) | ((e_code >= 29'd12) & (e_code <= 29'd15)))
-                    begin 
-                         mtval_reg      <=   PC                                  ;
-                    end
-                    else
-                    begin
-                          mtval_reg      <= 32'd0                                 ;
-                    end     
-                    mepc_reg           <=   PC                                    ;
-                    mpp                <=   curr_prev                             ;
-                    mpie               <=   m_ie                                  ;
-                    m_ie               <=   1'b0                                  ;
-                    
-                
-                end
-                2'b01: 
-                begin
-                    curr_prev      <=   mmode                                     ;
-                    mecode_reg     <=   e_code                                    ;
-                    minterrupt     <=   1'b0                                      ;
-                    if ((e_code <= 29'd1) | ((e_code >= 29'd4) & (e_code <= 29'd7)) | ((e_code >= 29'd12) & (e_code <= 29'd15)))
-                    begin 
-                         mtval_reg     <=   PC                                   ;
-                    end
-                    else
-                    begin
-                          mtval_reg    <= 32'd0                                 ;
-                    end     
-                    mepc_reg           <=   PC                                    ;
-                    mpp                <=   curr_prev                             ;
-                    mpie               <=   m_ie                                  ;
-                    m_ie               <=   1'b0                                  ;
-                
-                end
-            
-                2'b10: begin
-                
-                    curr_prev      <=  smode                                      ;
-            
-                    secode_reg     <=  e_code                                     ;
-                    sinterrupt     <=   1'b0                                      ;
-                    if ((e_code <= 29'd1) | ((e_code >= 29'd4) & (e_code <= 29'd7)) | ((e_code >= 29'd12) & (e_code <= 29'd15)))
-                    begin 
-                         stval_reg      <= PC                                     ; 
-                    end
-                    else
-                    begin
-                         stval_reg      <= 32'd0                                  ;
-                    end
-                    sepc_reg           <=   PC                                    ;
-                    spp                <=   curr_prev[0]                          ;
-                    mpie               <=   m_ie                                  ;
-                    m_ie               <=   1'b0                                  ;
 
-                end     
-                2'b11:
-                begin
-                    curr_prev      <=  umode                                      ;
-                    uecode_reg     <=  e_code                                     ;
-                    uinterrupt     <=  1'b0                                       ;
-                    if ((e_code <= 29'd1) | ((e_code >= 29'd4) & (e_code <= 29'd7)) | ((e_code >= 29'd12) & (e_code <= 29'd15)))
-                    begin 
-                       utval_reg     <= PC                                        ;
-                    end
-                    else
-                    begin
-                       utval_reg     <= 32'd0                                     ;
-                    end     
-                    uepc_reg         <= PC                                        ;   
-                    upie             <= m_ie                                      ;
-                    u_ie             <= 1'b0                                      ;
-
-                end
-                
-                
-                
-            endcase
-        end
-        
-    
-   */
-/*
-        hpmcounter3    :    OUTPUT_DATA =  hpmcounter3_r ;
-        hpmcounter4    :    OUTPUT_DATA =  hpmcounter4_r ;
-        hpmcounter31   :    OUTPUT_DATA =  hpmcounter31_r;  
-        hpmcounter3h   :    OUTPUT_DATA =  hpmcounter3h_r;
-        hpmcounter4h   :    OUTPUT_DATA =  hpmcounter4h_r;
-        hpmcounter31h  :    OUTPUT_DATA =  hpmcounter31h_r; 
-        pmpcfg0        :    OUTPUT_DATA =  pmpcfg0_r     ;
-        pmpcfg1        :    OUTPUT_DATA =  pmpcfg1_r     ;
-        pmpcfg2        :    OUTPUT_DATA =  pmpcfg2_r     ;
-        pmpcfg3        :    OUTPUT_DATA =  pmpcfg3_r     ;
-        pmpaddr0       :    OUTPUT_DATA =  pmpaddr0_r    ;
-        pmpaddr1       :    OUTPUT_DATA =  pmpaddr1_r    
-        pmpaddr15      :    OUTPUT_DATA =  pmpaddr15_r   ;  
-        mhpmcounter3   :    OUTPUT_DATA =  mhpmcounter3_r;
-        mhpmcounter4   :    OUTPUT_DATA =  mhpmcounter4_r;
-        mhpmcounter31  :    OUTPUT_DATA =  mhpmcounter31_r;    
-        mhpmcounter3h  :    OUTPUT_DATA =  mhpmcounter3h_r;
-        mhpmcounter4h  :    OUTPUT_DATA =  mhpmcounter4h_r;
-        mhpmcounter31h :    OUTPUT_DATA =  mhpmcounter31h_r;
-        mhpmevent3     :    OUTPUT_DATA =  mhpmevent3_r   ;
-        mhpmevent4     :    OUTPUT_DATA =  mhpmevent4_r   ;
-        mhpmevent31    :    OUTPUT_DATA =  mhpmevent31_r  ;
-        tselect        :    OUTPUT_DATA =  tselect_r      ;
-        tdata1         :    OUTPUT_DATA =  tdata1_r       ;
-        tdata2         :    OUTPUT_DATA =  tdata2_r       ;
-        tdata3         :    OUTPUT_DATA =  tdata3_r       ;
-        dcsr           :    OUTPUT_DATA =  dcsr_r         ;
-        dpc            :    OUTPUT_DATA =  dpc_r          ;
-        dscratch       :    OUTPUT_DATA =  dscratch_r     ;  
-        flags          :    OUTPUT_DATA =  fflags_r      ;
-        frm            :    OUTPUT_DATA =  frm_r       
-        fcsr           :    OUTPUT_DATA =  fcsr_r        ;     */                            
+                     

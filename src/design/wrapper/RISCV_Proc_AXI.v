@@ -182,7 +182,10 @@ module RISCV_Proc_AXI # (
         input  wire [C_Peripheral_Interface_DATA_WIDTH-1 : 0]   peripheral_interface_rdata,
         input  wire [1 : 0]                                     peripheral_interface_rresp,
         input  wire                                             peripheral_interface_rvalid,
-        output wire                                             peripheral_interface_rready 
+        output wire                                             peripheral_interface_rready ,
+        input                                           MEIP                            ,   //machine external interupt pending
+        input                                           MTIP                            ,   //machine timer interupt pending
+        input                                           MSIP                                //machine software interupt pending, from external hart
     );
     
     wire                            RSTN = 1;
@@ -222,7 +225,7 @@ module RISCV_Proc_AXI # (
     wire                            DATA_FROM_PERI_READY;
     wire                            DATA_FROM_PERI_VALID;
     wire                            TRANSACTION_COMPLETE_PERI;
-
+    wire [3:0]                      wstrb;
    
     
     MEMORY_INTERFACE # ( 
@@ -286,6 +289,7 @@ module RISCV_Proc_AXI # (
         .M_AXI_RUSER        (M0_AXI_RUSER    ),
         .M_AXI_RVALID       (M0_AXI_RVALID   ),
         .M_AXI_RREADY       (M0_AXI_RREADY   ),
+        // Cache side ports
         // Cache side ports
         .dout_ra           (ADDR_TO_L2_INS),
         .valid_ra          (ADDR_TO_L2_VALID_INS),
@@ -423,7 +427,11 @@ module RISCV_Proc_AXI # (
            .DATA_FROM_PERI         (DATA_FROM_PERI         ),
            .DATA_FROM_PERI_READY   (DATA_FROM_PERI_READY   ),
            .DATA_FROM_PERI_VALID   (DATA_FROM_PERI_VALID   ),
-           .TRANSACTION_COMPLETE_PERI(TRANSACTION_COMPLETE_PERI)  
+           .TRANSACTION_COMPLETE_PERI(TRANSACTION_COMPLETE_PERI)  ,
+           .WSTRB_OUT(wstrb),
+             .MEIP(MEIP),
+            .MSIP(MSIP),
+            .MTIP(MTIP)
        );
        
        // Instantiation of Axi Bus Interface Peripheral_Interface
@@ -458,6 +466,7 @@ module RISCV_Proc_AXI # (
        .M_AXI_RRESP                     (peripheral_interface_rresp),
        .M_AXI_RVALID                    (peripheral_interface_rvalid),
        .M_AXI_RREADY                    (peripheral_interface_rready),
+       .wstrb(          wstrb                                       ),
        //Peripheral Side Ports
        .dout_ra                         (RD_ADDR_TO_PERI),
        .valid_ra                        (RD_ADDR_TO_PERI_VALID),

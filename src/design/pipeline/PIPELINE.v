@@ -317,7 +317,7 @@ module PIPELINE #(
     end      
                                                                               
     reg         flag            ; 
-                  
+
     always@(*)
     begin
         if(type_mem3_wb==ld)

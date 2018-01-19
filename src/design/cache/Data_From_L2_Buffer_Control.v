@@ -29,19 +29,20 @@ module Data_From_L2_Buffer_Control #(
         input ENB,
         
         input DATA_FROM_L2_VALID,
-        output DATA_FROM_L2_READY,
+        output  DATA_FROM_L2_READY,
         
         input DATA_FROM_L2_BUFFER_READY,
-        output DATA_FROM_L2_BUFFER_VALID,
+        output  DATA_FROM_L2_BUFFER_VALID,
         
         output [(BUFFER_WIDTH / L2_BUS_WIDTH) - 1 : 0] DATA_FROM_L2_BUFFER_ENB
     );
     
     reg [(BUFFER_WIDTH / L2_BUS_WIDTH) - 1 : 0] state;
     
-    assign DATA_FROM_L2_BUFFER_ENB = (state == 0)? ((DATA_FROM_L2_BUFFER_READY & DATA_FROM_L2_VALID)? 1 : 0) : state;
+    assign DATA_FROM_L2_BUFFER_ENB = (state == 0)? ((DATA_FROM_L2_BUFFER_READY & DATA_FROM_L2_VALID & DATA_FROM_L2_READY)? 1 : 0) : state;
     assign DATA_FROM_L2_BUFFER_VALID = (state == 0);
     assign DATA_FROM_L2_READY = ENB & ((state == 0) ? DATA_FROM_L2_BUFFER_READY : 1'b1);
+    
     
     always @(posedge CLK) begin
         if (ENB) begin
@@ -59,6 +60,32 @@ module Data_From_L2_Buffer_Control #(
             end
         end
     end
+//    always @(posedge CLK) begin
+//        if (ENB) begin
+//            if (state == 0) begin
+                
+//                if (DATA_FROM_L2_BUFFER_READY) begin
+//                    if (DATA_FROM_L2_VALID)
+//                    begin
+//                        DATA_FROM_L2_READY <= 1;
+                        
+//                    end
+//                    else if (DATA_FROM_L2_READY & DATA_FROM_L2_VALID)
+//                    begin
+//                        DATA_FROM_L2_READY <= 0;
+//                        state <=2;
+//                    end 
+//                    else
+//                        state <= 1;    
+//                end             
+//            end else begin 
+//                if (DATA_FROM_L2_VALID ) begin
+//                    DATA_FROM_L2_READY <= 1;
+//                    state <= state << 1;
+//                end
+//            end
+//        end
+//    end
     
     initial begin
         state = 1;

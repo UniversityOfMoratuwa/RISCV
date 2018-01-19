@@ -792,9 +792,9 @@ module Data_Cache #(
     //////////////////////////////////////////////////////////////////////////////
      
     initial begin
-        addr_from_proc            = 13235634;   
-        addr_from_proc_del_1      = 42235213;
-        addr_from_proc_del_2      = 124537765;
+        addr_from_proc            = 0;   
+        addr_from_proc_del_1      = 0;
+        addr_from_proc_del_2      = 0;
            
         word_address_del_1        = addr_from_proc_del_1[BYTES_PER_WORD                     +: WORDS_PER_SECT];
         tag_address_del_1         = addr_from_proc_del_1[(BYTES_PER_WORD + WORDS_PER_BLOCK) +: TAG_ADDR_WIDTH];

@@ -7,7 +7,6 @@ module PERIPHERAL_INTERFACE #
     // User parameters ends
     // Do not modify the parameters beyond this line
     // The master requires a target slave base address.
-    // The master will initiate read and write transactions on the slave with base address specified here as a parameter.
     parameter  C_M_TARGET_SLAVE_BASE_ADDR	= 32'h00000000,
     // Width of M_AXI address bus. 
     // The master generates the read and write addresses of width specified as C_M_AXI_ADDR_WIDTH.
@@ -67,7 +66,7 @@ module PERIPHERAL_INTERFACE #
     // Write strobes. 
     // This signal indicates which byte lanes hold valid data.
     // There is one write strobe bit for each eight bits of the write data bus.
-    output wire [C_M_AXI_DATA_WIDTH/8-1 : 0] M_AXI_WSTRB,
+    output wire [/*C_M_AXI_DATA_WIDTH/8-1 */3: 0] M_AXI_WSTRB,
     // Write valid. This signal indicates that valid write data and strobes are available.
     output wire  M_AXI_WVALID,
     // Write ready. This signal indicates that the slave can accept the write data.
@@ -99,7 +98,9 @@ module PERIPHERAL_INTERFACE #
     // Read valid. This signal indicates that the channel is signaling the required read data.
     input wire  M_AXI_RVALID,
     // Read ready. This signal indicates that the master can accept the read data and response information.
-    output wire  M_AXI_RREADY
+    output wire  M_AXI_RREADY,
+    
+    input   [3:0]       wstrb
     );
 
     // function called clogb2 that returns an integer which has the
@@ -144,6 +145,7 @@ module PERIPHERAL_INTERFACE #
     reg                             addr_transaction_done   = 0;
     reg                             transaction_done        = 1;
     reg                             transaction_done_read   = 1;
+    reg         [3:0]               axi_wstrb;
 
     // I/O Connections assignments
 
@@ -156,7 +158,7 @@ module PERIPHERAL_INTERFACE #
     //Write Data(W)
     assign M_AXI_WVALID    = axi_wvalid;
     //Set all byte strobes in this example
-    assign M_AXI_WSTRB    = 4'b1111;
+    assign M_AXI_WSTRB    = axi_wstrb;
     //Write Response (B)
     assign M_AXI_BREADY    = axi_bready;
     //Read Address (AR)
@@ -252,6 +254,23 @@ module PERIPHERAL_INTERFACE #
       	else 
       	begin
       		axi_awaddr <= axi_awaddr;                                                   	
+       	end                                                   
+      end
+      
+    //Write Addresses                                        
+      always @(posedge M_AXI_ACLK)                                  
+      begin                                                     
+        if (M_AXI_ARESETN == 0  || init_axi_txn == 1'b0)                                
+          begin                                                 
+            axi_wstrb <= 0;                                    
+          end                                                                             
+        else if (ready_wa && valid_wa)                  
+          begin                                                 
+            axi_wstrb <= wstrb;                                                              
+          end
+      	else 
+      	begin
+      		axi_wstrb <= axi_wstrb;                                                   	
        	end                                                   
       end
 

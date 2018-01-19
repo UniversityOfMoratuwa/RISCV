@@ -8,25 +8,25 @@ module MEMORY_INTERFACE #
     // Do not modify the parameters beyond this line
 
     // Base address of targeted slave
-    parameter  C_M_TARGET_SLAVE_BASE_ADDR	= 32'h00000000,
+    parameter  C_M_TARGET_SLAVE_BASE_ADDR   = 32'h00000000,
     // Burst Length. Supports 1, 2, 4, 8, 16, 32, 64, 128, 256 burst lengths
-    parameter integer C_M_AXI_BURST_LEN	= 4,
+    parameter integer C_M_AXI_BURST_LEN = 4,
     // Thread ID Width
-    parameter integer C_M_AXI_ID_WIDTH	= 1,
+    parameter integer C_M_AXI_ID_WIDTH  = 1,
     // Width of Address Bus
-    parameter integer C_M_AXI_ADDR_WIDTH	= 32,
+    parameter integer C_M_AXI_ADDR_WIDTH    = 32,
     // Width of Data Bus
-    parameter integer C_M_AXI_DATA_WIDTH	= 32,
+    parameter integer C_M_AXI_DATA_WIDTH    = 32,
     // Width of User Write Address Bus
-    parameter integer C_M_AXI_AWUSER_WIDTH	= 0,
+    parameter integer C_M_AXI_AWUSER_WIDTH  = 0,
     // Width of User Read Address Bus
-    parameter integer C_M_AXI_ARUSER_WIDTH	= 0,
+    parameter integer C_M_AXI_ARUSER_WIDTH  = 0,
     // Width of User Write Data Bus
-    parameter integer C_M_AXI_WUSER_WIDTH	= 0,
+    parameter integer C_M_AXI_WUSER_WIDTH   = 0,
     // Width of User Read Data Bus
-    parameter integer C_M_AXI_RUSER_WIDTH	= 0,
+    parameter integer C_M_AXI_RUSER_WIDTH   = 0,
     // Width of User Response Bus
-    parameter integer C_M_AXI_BUSER_WIDTH	= 0
+    parameter integer C_M_AXI_BUSER_WIDTH   = 0
 )
 (
     // Users to add ports here
@@ -184,7 +184,7 @@ module MEMORY_INTERFACE #
     
     // Burst length for transactions, in C_M_AXI_DATA_WIDTHs.
     // Non-2^n lengths will eventually cause bursts across 4K address boundaries.
-     localparam integer C_MASTER_LENGTH	    = 12;
+     localparam integer C_MASTER_LENGTH     = 12;
     // total number of burst transfers is master length divided by burst length and burst size
      localparam integer C_NO_BURSTS_REQ     = C_MASTER_LENGTH-clogb2((C_M_AXI_BURST_LEN*C_M_AXI_DATA_WIDTH/8)-1);
      //address LSB widths
@@ -196,22 +196,22 @@ module MEMORY_INTERFACE #
     //AXI4 internal temp signals
     (* mark_debug *) reg [C_M_AXI_ADDR_WIDTH-1 : 0]  axi_awaddr          = {C_M_AXI_ADDR_WIDTH{1'b0}};
     (* mark_debug *) reg [C_M_AXI_DATA_WIDTH-1 : 0]  dout_wd_buffer      = {C_M_AXI_DATA_WIDTH{1'b0}};
-    (* mark_debug *) reg  	                        axi_awvalid         = 0;
-    reg [C_M_AXI_DATA_WIDTH-1 : 0] 	axi_wdata           = {C_M_AXI_DATA_WIDTH{1'b0}};
-    (* mark_debug *) reg  	                        axi_wlast           = 0;
-    (* mark_debug *) reg  	                        axi_wvalid          = 0;
-    reg  	                        axi_bready          = 0;
-    (* mark_debug *) reg [C_M_AXI_ADDR_WIDTH-1 : 0] 	axi_araddr          = {C_M_AXI_DATA_WIDTH{1'b0}};
-    reg  	                        axi_arvalid         = 0;
-    (* mark_debug *) reg  	                        axi_rready          = 0;
+    (* mark_debug *) reg                            axi_awvalid         = 0;
+    reg [C_M_AXI_DATA_WIDTH-1 : 0]  axi_wdata           = {C_M_AXI_DATA_WIDTH{1'b0}};
+    (* mark_debug *) reg                            axi_wlast           = 0;
+    (* mark_debug *) reg                            axi_wvalid          = 0;
+    reg                             axi_bready          = 0;
+    (* mark_debug *) reg [C_M_AXI_ADDR_WIDTH-1 : 0]     axi_araddr          = {C_M_AXI_DATA_WIDTH{1'b0}};
+    reg                             axi_arvalid         = 0;
+    (* mark_debug *) reg                            axi_rready          = 0;
     reg [7 : 0]                     write_index         = 0;        //write beat count in a burst
     reg [C_TRANSACTIONS_NUM : 0]    read_index          = 0;        //read beat count in a burst
     wire [C_TRANSACTIONS_NUM+2 : 0] burst_size_bytes;
-    reg  	                        error_reg           = 0;
+    reg                             error_reg           = 0;
     //Interface response error flags
-    wire  	                        write_resp_error;
-    (* mark_debug *) wire  	                        read_resp_error;
-    wire  	                        init_txn_pulse  =!init_axi_txn;
+    wire                            write_resp_error;
+    (* mark_debug *) wire                           read_resp_error;
+    wire                            init_txn_pulse  =!init_axi_txn;
     (* mark_debug *) wire                            valid_wd;
     (* mark_debug *) wire                            valid_wa;
     (* mark_debug *) reg                             ready_wa                = 0;
@@ -222,296 +222,297 @@ module MEMORY_INTERFACE #
     
     // I/O Connections assignments
     //I/O Connections. Write Address (AW)
-    assign M_AXI_AWID	    = 'b0;
+    assign M_AXI_AWID       = 'b0;
     //The AXI address is a concatenation of the target base address + active offset range
-    assign M_AXI_AWADDR	    = axi_awaddr+C_M_TARGET_SLAVE_BASE_ADDR;
+    assign M_AXI_AWADDR     = axi_awaddr+C_M_TARGET_SLAVE_BASE_ADDR;
     //Burst LENgth is number of transaction beats, minus 1
-    assign M_AXI_AWLEN	    = C_M_AXI_BURST_LEN - 1;
+    assign M_AXI_AWLEN      = C_M_AXI_BURST_LEN - 1;
     //Size should be C_M_AXI_DATA_WIDTH, in 2^SIZE bytes, otherwise narrow bursts are used
     //*****cannot change burst size(M_AXI_AWSIZE). If burst size to be more than the bus width, then some places in code must be changed ****// 
-    assign M_AXI_AWSIZE	    = clogb2((C_M_AXI_DATA_WIDTH/8)-1);
+    assign M_AXI_AWSIZE     = clogb2((C_M_AXI_DATA_WIDTH/8)-1);
     //INCR burst type is usually used, except for keyhole bursts
-    assign M_AXI_AWBURST	= 2'b01;
-    assign M_AXI_AWLOCK	    = 1'b0;
+    assign M_AXI_AWBURST    = 2'b01;
+    assign M_AXI_AWLOCK     = 1'b0;
     //Update value to 4'b0011 if coherent accesses to be used via the Zynq ACP port. Not Allocated, Modifiable, not Bufferable. Not Bufferable since this example is meant to test memory, not intermediate cache. 
-    assign M_AXI_AWCACHE	= 4'b0011;
-    assign M_AXI_AWPROT	    = 3'h0;
-    assign M_AXI_AWQOS	    = 4'h0;
-    assign M_AXI_AWUSER	    = 'b1;
-    assign M_AXI_AWVALID	= axi_awvalid;
+    assign M_AXI_AWCACHE    = 4'b0011;
+    assign M_AXI_AWPROT     = 3'h0;
+    assign M_AXI_AWQOS      = 4'h0;
+    assign M_AXI_AWUSER     = 'b1;
+    assign M_AXI_AWVALID    = axi_awvalid;
     //Write Data(W)
-    assign M_AXI_WDATA	    = buffer_reg_dat[write_index];
+    assign M_AXI_WDATA      = buffer_reg_dat[write_index];
     //All bursts are complete and aligned in this example
-    assign M_AXI_WSTRB	    = {(C_M_AXI_DATA_WIDTH/8){1'b1}};
-    assign M_AXI_WLAST	    = axi_wlast;
-    assign M_AXI_WUSER	    = 'b0;
-    assign M_AXI_WVALID	    = axi_wvalid;
+    assign M_AXI_WSTRB      = {(C_M_AXI_DATA_WIDTH/8){1'b1}};
+    assign M_AXI_WLAST      = axi_wlast;
+    assign M_AXI_WUSER      = 'b0;
+    assign M_AXI_WVALID     = axi_wvalid;
     //Write Response (B)
-    assign M_AXI_BREADY	    = axi_bready;
+    assign M_AXI_BREADY     = axi_bready;
     //Read Address (AR)
-    assign M_AXI_ARID	    = 'b0;
-    assign M_AXI_ARADDR	    = axi_araddr+C_M_TARGET_SLAVE_BASE_ADDR;
+    assign M_AXI_ARID       = 'b0;
+    assign M_AXI_ARADDR     = axi_araddr+C_M_TARGET_SLAVE_BASE_ADDR;
     //Burst LENgth is number of transaction beats, minus 1
-    assign M_AXI_ARLEN	    = C_M_AXI_BURST_LEN - 1;
+    assign M_AXI_ARLEN      = C_M_AXI_BURST_LEN - 1;
     //Size should be C_M_AXI_DATA_WIDTH, in 2^n bytes, otherwise narrow bursts are used
-    assign M_AXI_ARSIZE	    = clogb2((C_M_AXI_DATA_WIDTH/8)-1);
+    assign M_AXI_ARSIZE     = clogb2((C_M_AXI_DATA_WIDTH/8)-1);
     //INCR burst type is usually used, except for keyhole bursts
-    assign M_AXI_ARBURST	= 2'b10;
-    assign M_AXI_ARLOCK	    = 1'b0;
+    assign M_AXI_ARBURST    = 2'b10;
+    assign M_AXI_ARLOCK     = 1'b0;
     //Update value to 4'b0011 if coherent accesses to be used via the Zynq ACP port. Not Allocated, Modifiable, not Bufferable. Not Bufferable since this example is meant to test memory, not intermediate cache. 
-    assign M_AXI_ARCACHE	= 4'b0011;
-    assign M_AXI_ARPROT	    = 3'h0;
-    assign M_AXI_ARQOS	    = 4'h0;
-    assign M_AXI_ARUSER	    = 'b1;
-    (* mark_debug *) assign M_AXI_ARVALID	= axi_arvalid;
+    assign M_AXI_ARCACHE    = 4'b0011;
+    assign M_AXI_ARPROT     = 3'h0;
+    assign M_AXI_ARQOS      = 4'h0;
+    assign M_AXI_ARUSER     = 'b1;
+    (* mark_debug *) assign M_AXI_ARVALID   = axi_arvalid;
     //Read and Read Response (R)
     //
-    //assign M_AXI_RREADY	    = axi_rready;
+    //assign M_AXI_RREADY       = axi_rready;
     //Example design I/O
-    assign TXN_DONE	        = 1'b0;//compare_done;
+    assign TXN_DONE         = 1'b0;//compare_done;
     assign ERROR            = error_reg;
     //Burst size in bytes
-    assign burst_size_bytes	= C_M_AXI_BURST_LEN * C_M_AXI_DATA_WIDTH/8;
-    assign init_axi_txn	    = INIT_AXI_TXN; 
+    assign burst_size_bytes = C_M_AXI_BURST_LEN * C_M_AXI_DATA_WIDTH/8;
+    assign init_axi_txn     = INIT_AXI_TXN; 
     
     //assign din_rd           = M_AXI_RDATA;
-   reg ready_reg			                =		            1'b1;
+   reg ready_reg                            =                   1'b1;
     //assign ready_wc         = (addr_transaction_done && ready_wd) || (~addr_transaction_done && ready_wa);
-    assign ready_wc			= valid_wc & ready_reg;	
+    assign ready_wc         = valid_wc & ready_reg; 
     //assign valid_wd         = addr_transaction_done && valid_wc;
     //assign valid_wa         = ~addr_transaction_done && valid_wc;
-     localparam sections 	= C_M_AXI_BURST_LEN-1;
+     localparam sections    = C_M_AXI_BURST_LEN-1;
 
-    assign ack              = M_AXI_BREADY && M_AXI_BVALID;
-    reg  [1:0] curr_section 	=		0;
+    assign ack              = start_single_burst_write;//M_AXI_BREADY && M_AXI_BVALID;
+    reg  [1:0] curr_section     =       0;
 
-    reg [127:0] buffer_reg	[0:sections]	 ;
+    reg [127:0] buffer_reg  [0:sections]     ;
     assign din_rd           = buffer_reg [curr_section] ;
-    reg  [1:0] section_counter =		0;
-    reg    valid_reg			=		0;
-    assign valid_rd         = valid_reg;//M_AXI_RREADY && M_AXI_RVALID;	
+    reg  [1:0] section_counter =        0;
+    reg    valid_reg            =       0;
+    assign valid_rd         = valid_reg;//M_AXI_RREADY && M_AXI_RVALID; 
     
-    reg  [1:0] curr_section_wr          	=		         0;
-    reg  [1:0] section_counter_wr           =		         0;
+    reg  [1:0] curr_section_wr              =                0;
+    reg  [1:0] section_counter_wr           =                0;
     reg  start_single_burst_write          = 1'b0;
 
-    reg [127:0] buffer_reg_dat	[0:sections]	 ;
+    reg [127:0] buffer_reg_dat  [0:sections]     ;
     reg [31:0] address_reg=0;
-    reg write_begins		=0;
-	always @(posedge M_AXI_ACLK)                                   
-	 begin                                                                                                                                  
-	    if (M_AXI_ARESETN == 0 || init_txn_pulse == 1'b1 )                                           
-	    begin                                                            
-	        ready_reg 					<= 1'b1;
-	        start_single_burst_write   	<= 1'b0;
-	        write_begins				<= 1'b0;
-	    end   
-		else if (valid_wc & ready_reg)
-		begin
-			section_counter_wr 					<= section_counter_wr +1;
-			buffer_reg_dat[section_counter_wr] 	<= dout_wd;
-			start_single_burst_write 			<= (section_counter_wr==2'd2);
-			ready_reg							<= section_counter_wr !=2'd3;
-			axi_awaddr                          <= {dout_wa,2'b00};
-			write_begins						<=1'b1;
+    reg write_begins        =0;
+    always @(posedge M_AXI_ACLK)                                   
+     begin                                                                                                                                  
+        if (M_AXI_ARESETN == 0 || init_txn_pulse == 1'b1 )                                           
+        begin                                                            
+            ready_reg                   <= 1'b1;
+            start_single_burst_write    <= 1'b0;
+            write_begins                <= 1'b0;
+        end   
+        else if (valid_wc & ready_reg)
+        begin
+            section_counter_wr                  <= section_counter_wr +1;
+            buffer_reg_dat[section_counter_wr]  <= dout_wd;
+            start_single_burst_write            <= (section_counter_wr==2'd2);
+            ready_reg                           <= section_counter_wr !=2'd3;
+            axi_awaddr                          <= {dout_wa,2'b00};
+            write_begins                        <=1'b1;
 
-		end
-		else if (M_AXI_BREADY & M_AXI_BVALID)
-		begin
-			write_begins						<= 1'b0;
-			ready_reg 							<= 1'b1;
-		end
+        end
+        else if (M_AXI_BREADY & M_AXI_BVALID)
+        begin
+            write_begins                        <= 1'b0;
+            ready_reg                           <= 1'b1;
+        end
 
-	end
+    end
+
   always @(posedge M_AXI_ACLK)                                   
-	  begin                                                                
-	                                                                       
-	    if (M_AXI_ARESETN == 0 || init_txn_pulse == 1'b1 )                                           
-	      begin                                                            
-	        axi_awvalid <= 1'b0;                                           
-	      end                                                              
-	    // If previously not valid , start next transaction                
-	    else if (~axi_awvalid && start_single_burst_write)                 
-	      begin                                                            
-	        axi_awvalid <= 1'b1;                                           
-	      end                                                              
-	    /* Once asserted, VALIDs cannot be deasserted, so axi_awvalid      
-	    must wait until transaction is accepted */                         
-	    else if (M_AXI_AWREADY && axi_awvalid)                             
-	      begin                                                            
-	        axi_awvalid <= 1'b0;                                           
-	      end                                                              
-	    else                                                               
-	      axi_awvalid <= axi_awvalid;                                      
-	    end                                                                
-	                                                                       
-	                                                                       
-	// Next address after AWREADY indicates previous address acceptance    
-	  // always @(posedge M_AXI_ACLK)                                         
-	  // begin                                                                
-	  //   if (M_AXI_ARESETN == 0 || init_txn_pulse == 1'b1)                                            
-	  //     begin                                                            
-	  //       axi_awaddr <= 'b0;                                             
-	  //     end                                                              
-	  //   else if (~M_AXI_AWREADY && axi_awvalid)                             
-	  //     begin                                                            
-	  //       axi_awaddr <= address_reg;                   
-	  //     end                                                              
-	  //   else                                                               
-	  //     axi_awaddr <= axi_awaddr;                                        
-	  //   end                                                                
+      begin                                                                
+                                                                           
+        if (M_AXI_ARESETN == 0 || init_txn_pulse == 1'b1 )                                           
+          begin                                                            
+            axi_awvalid <= 1'b0;                                           
+          end                                                              
+        // If previously not valid , start next transaction                
+        else if (~axi_awvalid && start_single_burst_write)                 
+          begin                                                            
+            axi_awvalid <= 1'b1;                                           
+          end                                                              
+        /* Once asserted, VALIDs cannot be deasserted, so axi_awvalid      
+        must wait until transaction is accepted */                         
+        else if (M_AXI_AWREADY && axi_awvalid)                             
+          begin                                                            
+            axi_awvalid <= 1'b0;                                           
+          end                                                              
+        else                                                               
+          axi_awvalid <= axi_awvalid;                                      
+        end                                                                
+                                                                           
+                                                                           
+    // Next address after AWREADY indicates previous address acceptance    
+      // always @(posedge M_AXI_ACLK)                                         
+      // begin                                                                
+      //   if (M_AXI_ARESETN == 0 || init_txn_pulse == 1'b1)                                            
+      //     begin                                                            
+      //       axi_awaddr <= 'b0;                                             
+      //     end                                                              
+      //   else if (~M_AXI_AWREADY && axi_awvalid)                             
+      //     begin                                                            
+      //       axi_awaddr <= address_reg;                   
+      //     end                                                              
+      //   else                                                               
+      //     axi_awaddr <= axi_awaddr;                                        
+      //   end                                                                
 
 
-	//--------------------
-	//Write Data Channel
-	//--------------------
+    //--------------------
+    //Write Data Channel
+    //--------------------
 
-	//The write data will continually try to push write data across the interface.
+    //The write data will continually try to push write data across the interface.
 
-	//The amount of data accepted will depend on the AXI slave and the AXI
-	//Interconnect settings, such as if there are FIFOs enabled in interconnect.
+    //The amount of data accepted will depend on the AXI slave and the AXI
+    //Interconnect settings, such as if there are FIFOs enabled in interconnect.
 
-	//Note that there is no explicit timing relationship to the write address channel.
-	//The write channel has its own throttling flag, separate from the AW channel.
+    //Note that there is no explicit timing relationship to the write address channel.
+    //The write channel has its own throttling flag, separate from the AW channel.
 
-	//Synchronization between the channels must be determined by the user.
+    //Synchronization between the channels must be determined by the user.
 
-	//The simpliest but lowest performance would be to only issue one address write
-	//and write data burst at a time.
+    //The simpliest but lowest performance would be to only issue one address write
+    //and write data burst at a time.
 
-	//In this example they are kept in sync by using the same address increment
-	//and burst sizes. Then the AW and W channels have their transactions measured
-	//with threshold counters as part of the user logic, to make sure neither 
-	//channel gets too far ahead of each other.
+    //In this example they are kept in sync by using the same address increment
+    //and burst sizes. Then the AW and W channels have their transactions measured
+    //with threshold counters as part of the user logic, to make sure neither 
+    //channel gets too far ahead of each other.
 
-	//Forward movement occurs when the write channel is valid and ready
+    //Forward movement occurs when the write channel is valid and ready
 
-	  assign wnext = M_AXI_WREADY & axi_wvalid;                                   
-	                                                                                    
-	// WVALID logic, similar to the axi_awvalid always block above                      
-	  always @(posedge M_AXI_ACLK)                                                      
-	  begin                                                                             
-	    if (M_AXI_ARESETN == 0 || init_txn_pulse == 1'b1 )                                                        
-	      begin                                                                         
-	        axi_wvalid <= 1'b0;                                                         
-	      end                                                                           
-	    // If previously not valid, start next transaction                              
-	    else if (~axi_wvalid && start_single_burst_write)                               
-	      begin                                                                         
-	        axi_wvalid <= 1'b1;                                                         
-	      end                                                                           
-	    /* If WREADY and too many writes, throttle WVALID                               
-	    Once asserted, VALIDs cannot be deasserted, so WVALID                           
-	    must wait until burst is complete with WLAST */                                 
-	    else if (wnext && axi_wlast)                                                    
-	      axi_wvalid <= 1'b0;                                                           
-	    else                                                                            
-	      axi_wvalid <= axi_wvalid;                                                     
-	  end                                                                               
-	                                                                                    
-	                                                                                    
-	//WLAST generation on the MSB of a counter underflow                                
-	// WVALID logic, similar to the axi_awvalid always block above                      
-	  always @(posedge M_AXI_ACLK)                                                      
-	  begin                                                                             
-	    if (M_AXI_ARESETN == 0 || init_txn_pulse == 1'b1 )                                                        
-	      begin                                                                         
-	        axi_wlast <= 1'b0;                                                          
-	      end                                                                           
-	    // axi_wlast is asserted when the write index                                   
-	    // count reaches the penultimate count to synchronize                           
-	    // with the last write data when write_index is b1111                           
-	    // else if (&(write_index[C_TRANSACTIONS_NUM-1:1])&& ~write_index[0] && wnext)  
-	    else if (((write_index == C_M_AXI_BURST_LEN-2 && C_M_AXI_BURST_LEN >= 2) && wnext) || (C_M_AXI_BURST_LEN == 1 ))
-	      begin                                                                         
-	        axi_wlast <= 1'b1;                                                          
-	      end                                                                           
-	    // Deassrt axi_wlast when the last write data has been                          
-	    // accepted by the slave with a valid response                                  
-	    else if (wnext)                                                                 
-	      axi_wlast <= 1'b0;                                                            
-	    else if (axi_wlast && C_M_AXI_BURST_LEN == 1)                                   
-	      axi_wlast <= 1'b0;                                                            
-	    else                                                                            
-	      axi_wlast <= axi_wlast;                                                       
-	  end                                                                               
-	                                                                                    
-	                                                                                    
-	/* Burst length counter. Uses extra counter register bit to indicate terminal       
-	 count to reduce decode logic */                                                    
-	  always @(posedge M_AXI_ACLK)                                                      
-	  begin                                                                             
-	    if (M_AXI_ARESETN == 0 || init_txn_pulse == 1'b1 || start_single_burst_write == 1'b1)    
-	      begin                                                                         
-	        write_index <= 0;                                                           
-	      end                                                                           
-	    else if (wnext && (write_index != C_M_AXI_BURST_LEN-1))                         
-	      begin                                                                         
-	        write_index <= write_index + 1;                                             
-	      end                                                                           
-	    else                                                                            
-	      write_index <= write_index;                                                   
-	  end                                                                               
-	                                                                                    
-	                                                                                    
-	/* Write Data Generator                                                             
-	 // Data pattern is only a simple incrementing count from 0 for each burst  */         
-	 //  always @(posedge M_AXI_ACLK)                                                      
-	 //  begin                                                                             
-	 //    if (M_AXI_ARESETN == 0 || init_txn_pulse == 1'b1)                                                         
-	 //      axi_wdata <= 'b1;                                                             
-	 //    //else if (wnext && axi_wlast)                                                  
-	 //    //  axi_wdata <= 'b0;                                                           
-	 //    else if (wnext)                                                                 
-	                                                     
-	 //    else                                                                            
-	 //      axi_wdata <= axi_wdata;                                                       
-	 //    end                                                                             
+      assign wnext = M_AXI_WREADY & axi_wvalid;                                   
+                                                                                        
+    // WVALID logic, similar to the axi_awvalid always block above                      
+      always @(posedge M_AXI_ACLK)                                                      
+      begin                                                                             
+        if (M_AXI_ARESETN == 0 || init_txn_pulse == 1'b1 )                                                        
+          begin                                                                         
+            axi_wvalid <= 1'b0;                                                         
+          end                                                                           
+        // If previously not valid, start next transaction                              
+        else if (~axi_wvalid && start_single_burst_write)                               
+          begin                                                                         
+            axi_wvalid <= 1'b1;                                                         
+          end                                                                           
+        /* If WREADY and too many writes, throttle WVALID                               
+        Once asserted, VALIDs cannot be deasserted, so WVALID                           
+        must wait until burst is complete with WLAST */                                 
+        else if (wnext && axi_wlast)                                                    
+          axi_wvalid <= 1'b0;                                                           
+        else                                                                            
+          axi_wvalid <= axi_wvalid;                                                     
+      end                                                                               
+                                                                                        
+                                                                                        
+    //WLAST generation on the MSB of a counter underflow                                
+    // WVALID logic, similar to the axi_awvalid always block above                      
+      always @(posedge M_AXI_ACLK)                                                      
+      begin                                                                             
+        if (M_AXI_ARESETN == 0 || init_txn_pulse == 1'b1 )                                                        
+          begin                                                                         
+            axi_wlast <= 1'b0;                                                          
+          end                                                                           
+        // axi_wlast is asserted when the write index                                   
+        // count reaches the penultimate count to synchronize                           
+        // with the last write data when write_index is b1111                           
+        // else if (&(write_index[C_TRANSACTIONS_NUM-1:1])&& ~write_index[0] && wnext)  
+        else if (((write_index == C_M_AXI_BURST_LEN-2 && C_M_AXI_BURST_LEN >= 2) && wnext) || (C_M_AXI_BURST_LEN == 1 ))
+          begin                                                                         
+            axi_wlast <= 1'b1;                                                          
+          end                                                                           
+        // Deassrt axi_wlast when the last write data has been                          
+        // accepted by the slave with a valid response                                  
+        else if (wnext)                                                                 
+          axi_wlast <= 1'b0;                                                            
+        else if (axi_wlast && C_M_AXI_BURST_LEN == 1)                                   
+          axi_wlast <= 1'b0;                                                            
+        else                                                                            
+          axi_wlast <= axi_wlast;                                                       
+      end                                                                               
+                                                                                        
+                                                                                        
+    /* Burst length counter. Uses extra counter register bit to indicate terminal       
+     count to reduce decode logic */                                                    
+      always @(posedge M_AXI_ACLK)                                                      
+      begin                                                                             
+        if (M_AXI_ARESETN == 0 || init_txn_pulse == 1'b1 || start_single_burst_write == 1'b1)    
+          begin                                                                         
+            write_index <= 0;                                                           
+          end                                                                           
+        else if (wnext && (write_index != C_M_AXI_BURST_LEN-1))                         
+          begin                                                                         
+            write_index <= write_index + 1;                                             
+          end                                                                           
+        else                                                                            
+          write_index <= write_index;                                                   
+      end                                                                               
+                                                                                        
+                                                                                        
+    /* Write Data Generator                                                             
+     // Data pattern is only a simple incrementing count from 0 for each burst  */         
+     //  always @(posedge M_AXI_ACLK)                                                      
+     //  begin                                                                             
+     //    if (M_AXI_ARESETN == 0 || init_txn_pulse == 1'b1)                                                         
+     //      axi_wdata <= 'b1;                                                             
+     //    //else if (wnext && axi_wlast)                                                  
+     //    //  axi_wdata <= 'b0;                                                           
+     //    else if (wnext)                                                                 
+                                                         
+     //    else                                                                            
+     //      axi_wdata <= axi_wdata;                                                       
+     //    end                                                                             
 
 
-	//----------------------------
-	//Write Response (B) Channel
-	//----------------------------
+    //----------------------------
+    //Write Response (B) Channel
+    //----------------------------
 
-	//The write response channel provides feedback that the write has committed
-	//to memory. BREADY will occur when all of the data and the write address
-	//has arrived and been accepted by the slave.
+    //The write response channel provides feedback that the write has committed
+    //to memory. BREADY will occur when all of the data and the write address
+    //has arrived and been accepted by the slave.
 
-	//The write issuance (number of outstanding write addresses) is started by 
-	//the Address Write transfer, and is completed by a BREADY/BRESP.
+    //The write issuance (number of outstanding write addresses) is started by 
+    //the Address Write transfer, and is completed by a BREADY/BRESP.
 
-	//While negating BREADY will eventually throttle the AWREADY signal, 
-	//it is best not to throttle the whole data channel this way.
+    //While negating BREADY will eventually throttle the AWREADY signal, 
+    //it is best not to throttle the whole data channel this way.
 
-	//The BRESP bit [1] is used indicate any errors from the interconnect or
-	//slave for the entire write burst. This example will capture the error 
-	//into the ERROR output. 
+    //The BRESP bit [1] is used indicate any errors from the interconnect or
+    //slave for the entire write burst. This example will capture the error 
+    //into the ERROR output. 
 
-	  always @(posedge M_AXI_ACLK)                                     
-	  begin                                                                 
-	    if (M_AXI_ARESETN == 0 || init_txn_pulse == 1'b1 )                                            
-	      begin                                                             
-	        axi_bready <= 1'b0;                                             
-	      end                                                               
-	    // accept/acknowledge bresp with axi_bready by the master           
-	    // when M_AXI_BVALID is asserted by slave                           
-	    else if (M_AXI_BVALID && ~axi_bready)                               
-	      begin                                                             
-	        axi_bready <= 1'b1;                                             
-	      end                                                               
-	    // deassert after one clock cycle                                   
-	    else if (axi_bready)                                                
-	      begin                                                             
-	        axi_bready <= 1'b0;                                             
-	      end                                                               
-	    // retain the previous value                                        
-	    else                                                                
-	      axi_bready <= axi_bready;                                         
-	  end                                                                   
-	                                                                        
-	                                                                        
-	//Flag any write response errors                                        
-	  assign write_resp_error = axi_bready & M_AXI_BVALID & M_AXI_BRESP[1]; 
+      always @(posedge M_AXI_ACLK)                                     
+      begin                                                                 
+        if (M_AXI_ARESETN == 0 || init_txn_pulse == 1'b1 )                                            
+          begin                                                             
+            axi_bready <= 1'b0;                                             
+          end                                                               
+        // accept/acknowledge bresp with axi_bready by the master           
+        // when M_AXI_BVALID is asserted by slave                           
+        else if (M_AXI_BVALID && ~axi_bready)                               
+          begin                                                             
+            axi_bready <= 1'b1;                                             
+          end                                                               
+        // deassert after one clock cycle                                   
+        else if (axi_bready)                                                
+          begin                                                             
+            axi_bready <= 1'b0;                                             
+          end                                                               
+        // retain the previous value                                        
+        else                                                                
+          axi_bready <= axi_bready;                                         
+      end                                                                   
+                                                                            
+                                                                            
+    //Flag any write response errors                                        
+      assign write_resp_error = axi_bready & M_AXI_BVALID & M_AXI_BRESP[1]; 
 
 
 //----------------------------
@@ -531,7 +532,7 @@ module MEMORY_INTERFACE #
         ready_ra_reg <= 1'b0;                                             
      end
      else if(~ready_ra_reg && valid_ra && transaction_done_read  & !valid_reg/*& !write_begins & !valid_wc*/ ) begin
-     	     // delay_reg  <= delay_reg+1;
+             // delay_reg  <= delay_reg+1;
              ready_ra_reg <=1;
           end
      else if(ready_ra && valid_ra) begin
@@ -599,9 +600,9 @@ module MEMORY_INTERFACE #
  begin                                                                 
    if (M_AXI_ARESETN == 0 || init_axi_txn == 0)                  
      begin                                                             
-       valid_reg		<= 1'b0;      
-       section_counter    	<= 1'b0;    
-       curr_section	   <=1'b0;                             
+       valid_reg        <= 1'b0;      
+       section_counter      <= 1'b0;    
+       curr_section    <=1'b0;                             
      end                                                               
    // accept/acknowledge rdata/rresp with axi_rready by the master     
    // when M_AXI_RVALID is asserted by slave                           
@@ -613,8 +614,8 @@ module MEMORY_INTERFACE #
      end    
      else if (valid_reg & ready_rd)           
      begin
-     	curr_section     <= curr_section + 1;
-     	valid_reg		 <= curr_section !=2'b11;                   	
+        curr_section     <= curr_section + 1;
+        valid_reg        <= curr_section !=2'b11;                       
      end                         
    // retain the previous value                 
  end                                            

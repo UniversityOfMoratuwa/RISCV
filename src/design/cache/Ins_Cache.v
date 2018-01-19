@@ -14,7 +14,7 @@
 // Dependencies: 
 // 
 // Revision:
-// Revision 0.01 - File Created
+// Revision 0.01 - File Created 
 // Additional Comments:
 // 
 //////////////////////////////////////////////////////////////////////////////////
@@ -391,7 +391,7 @@ module Ins_Cache #(
     // Queue for requests currently being serviced by the L2 cache
     FIFO_FWFT #(
         //.DEPTH(pwr_ceil($ceil((L2_DELAY + 0.0) / (L2_BURST + 0.0)) + 1)),             //XST doesnt seem to work with $ceil
-        .DEPTH(pwr_ceil(L2_DELAY / L2_BURST + 2)),                                                                                         
+        .DEPTH(1),                                                                                         
         .WIDTH(STREAM_SEL_BITS)
     ) ongoing_L2_queue (
         .CLK(CLK),
@@ -596,7 +596,7 @@ module Ins_Cache #(
     assign PC =pc;
     initial begin
         // Processor always starts with the zeroth instruction
-        pc                    = 32'h00000008;   
+        pc                    = 32'h00000008; 
         pc_del_1              = 32'h00000004;
         pc_del_2              = 32'h00000000;
         DATA_TO_PROC          = 0;
