@@ -18,6 +18,7 @@ S_UPPER_SRCS += \
 ../src/riscv_isa_tests/csr.S \
 ../src/riscv_isa_tests/div.S \
 ../src/riscv_isa_tests/divu.S \
+../src/riscv_isa_tests/ecall.S \
 ../src/riscv_isa_tests/j.S \
 ../src/riscv_isa_tests/jal.S \
 ../src/riscv_isa_tests/jalr.S \
@@ -65,6 +66,7 @@ OBJS += \
 ./src/riscv_isa_tests/csr.o \
 ./src/riscv_isa_tests/div.o \
 ./src/riscv_isa_tests/divu.o \
+./src/riscv_isa_tests/ecall.o \
 ./src/riscv_isa_tests/j.o \
 ./src/riscv_isa_tests/jal.o \
 ./src/riscv_isa_tests/jalr.o \
@@ -112,6 +114,7 @@ S_UPPER_DEPS += \
 ./src/riscv_isa_tests/csr.d \
 ./src/riscv_isa_tests/div.d \
 ./src/riscv_isa_tests/divu.d \
+./src/riscv_isa_tests/ecall.d \
 ./src/riscv_isa_tests/j.d \
 ./src/riscv_isa_tests/jal.d \
 ./src/riscv_isa_tests/jalr.d \

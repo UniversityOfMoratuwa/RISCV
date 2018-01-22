@@ -7,6 +7,10 @@
 
 #include "stdlib.h"
 
+extern void isaTest();
+extern void dhrystoneBenchmark();
+extern void coremarkBenchmark();
+
 void risvISATestStartMsg(void){
 	printf("\n\n------------------------ RISC-V ISA Test's Begins ------------------------\n");
 }
@@ -20,5 +24,25 @@ void risvCoremarkStartMsg(void){
 }
 
 void init(void){
-	printf("\n\n------------------------ Welcome to RISC-V ------------------------\n");
+	while(1){
+		printf("\n------------------------ Welcome to RISC-V ------------------------\n");
+		printf("1) ISA Standard Tests\n");
+		printf("2) DHRYSTONE Benchmark\n");
+		printf("3) COREMARK Benchmark\n");
+		printf("Please Select a Choice\t:\t");
+		char c = scanf_c();
+		if(c=='1'){
+			isaTest();
+		}
+		else if(c=='2'){
+			dhrystoneBenchmark();
+		}
+		if(c=='3'){
+			coremarkBenchmark();
+		}
+		else{
+			printf("Wrong Input");
+		}
+	}
+
 }

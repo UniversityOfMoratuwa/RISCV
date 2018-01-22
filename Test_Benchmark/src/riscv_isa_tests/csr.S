@@ -11,7 +11,7 @@
 
 #define TEST_FUNC_NAME csr
 #define TEST_FUNC_TXT "csr \t"
-#define TEST_FUNC_RET isaTestEnd
+#define TEST_FUNC_RET ecall
 
 #include "riscv_test.h"
 #include "test_macros.h"

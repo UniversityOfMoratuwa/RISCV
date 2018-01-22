@@ -9,12 +9,15 @@
 
 	.section .text.boot
 	.global _start
+	.global isaTest
+	.global dhrystoneBenchmark
+	.global coremarkBenchmark
 	.global isaTestEnd
 
 /* Main program
  **********************************/
 _start:
-	jal ra,isaTest
+	jal ra,init
 	/* trap */
 	ebreak
 
@@ -59,21 +62,17 @@ isaTest:
 
 isaTestEnd:
 	jal ra,initReg
-	jal ra,dhrystoneBenchmark
+	jal ra,init
 
 dhrystoneBenchmark:
 	jal ra,risvDhrystoneStartMsg
 	jal ra,initReg
 	jal ra,DHRYSTONE
-	jal ra,initReg
-	jal ra,coremarkBenchmark
+	jal ra,init
 
 coremarkBenchmark:
 	jal ra,risvCoremarkStartMsg
 	jal ra,initReg
 	jal ra,COREMARK
-	jal ra,initReg
-	jal zero,end
+	jal ra,init
 
-end:
-	jal zero,end

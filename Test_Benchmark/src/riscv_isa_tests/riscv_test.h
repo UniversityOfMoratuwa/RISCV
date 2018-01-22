@@ -5,7 +5,7 @@
 #define _ENV_RV32_TEST_H
 
 
-#include "encoding.h"
+#include "../encoding.h"
 
 //-----------------------------------------------------------------------
 // Begin Macro
@@ -118,10 +118,6 @@
 #  define TEST_FUNC_RET mytest_ret
 #endif
 
-#ifndef OUTPORT
-#define OUTPORT 0x10000000
-#endif
-
 #define TESTNUM x28
 
 #define RVTEST_CODE_BEGIN		\
@@ -131,44 +127,45 @@
 TEST_FUNC_NAME:				\
 	lui	a0,%hi(.test_name);	\
 	addi	a0,a0,%lo(.test_name);	\
-	li	a2,OUTPORT;	\
 .prname_next:				\
-	lb	a1,0(a0);		\
-	beq	a1,zero,.prname_done;	\
-	sw	a1,0(a2);		\
-	addi	a0,a0,1;		\
-	jal	zero,.prname_next;	\
+	li sp, STACK_POINTER; \
+	jal ra, printf_s
 .test_name:				\
 	.ascii TEST_FUNC_TXT;		\
 	.byte 0x00;			\
-	.balign 4;			\
-.prname_done:				\
-	addi	a1,zero,'.';		\
-	sw	a1,0(a2);		\
-	sw	a1,0(a2);
+	.balign 4;
 
 #define RVTEST_PASS			\
-	li	a0,OUTPORT;	\
-	addi	a1,zero,'O';		\
-	addi	a2,zero,'K';		\
-	addi	a3,zero,'\n';		\
-	sw	a1,0(a0);		\
-	sw	a2,0(a0);		\
-	sw	a3,0(a0);		\
+	addi	a0,zero,'O';		\
+	li sp, STACK_POINTER; \
+	jal ra, printf_c	;	\
+	addi	a0,zero,'K';		\
+	li sp, STACK_POINTER; \
+	jal ra, printf_c	;	\
+	addi	a0,zero,'\n';		\
+	li sp, STACK_POINTER; \
+	jal ra, printf_c	;	\
 	jal	zero,TEST_FUNC_RET;
 
 #define RVTEST_FAIL			\
-	li	a0,OUTPORT;	\
-	addi	a1,zero,'E';		\
-	addi	a2,zero,'R';		\
-	addi	a3,zero,'O';		\
-	addi	a4,zero,'\n';		\
-	sw	a1,0(a0);		\
-	sw	a2,0(a0);		\
-	sw	a2,0(a0);		\
-	sw	a3,0(a0);		\
-	sw	a2,0(a0);		\
-	sw	a4,0(a0);		\
+	addi	a0,zero,'E';		\
+	li sp, STACK_POINTER; \
+	jal ra, printf_c	;	\
+	addi	a0,zero,'R';		\
+	li sp, STACK_POINTER; \
+	jal ra, printf_c	;	\
+	li sp, STACK_POINTER; \
+	jal ra, printf_c	;	\
+	addi	a0,zero,'O';		\
+	li sp, STACK_POINTER; \
+	jal ra, printf_c	;	\
+	li sp, STACK_POINTER; \
+	addi	a0,zero,'R';		\
+	li sp, STACK_POINTER; \
+	jal ra, printf_c	;	\
+	addi	a0,zero,'\n';		\
+	li sp, STACK_POINTER; \
+	jal ra, printf_c	;	\
 	jal	zero,TEST_FUNC_RET;
 
 #define RVTEST_CODE_END

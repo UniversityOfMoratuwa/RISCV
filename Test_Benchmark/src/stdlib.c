@@ -7,6 +7,7 @@
 
 #include "firmware.h"
 #include "stdlib.h"
+#include "encoding.h"
 
 #include <stdarg.h>
 #include <stdint.h>
@@ -15,15 +16,52 @@ char heap_memory[1024];
 int heap_memory_used = 0;
 
 long time(){
-	int cycles;
-	asm("rdcycle %0" : "=r"(cycles));
-	return cycles;
+	return read_csr(cycle);
 }
 
 long insn(){
-	int insns;
-	asm("rdinstret %0" : "=r"(insns));
-	return insns;
+	return read_csr(instret);
+}
+
+void enableIntr(){
+	set_csr(mstatus, MSTATUS_MIE);		// enable interrupt
+}
+
+void enableExternalIntr(){
+	set_csr(mie, MIP_MEIP);				// enable external interrupt in machine mode
+	set_csr(mstatus, MSTATUS_MIE);
+}
+
+void enableTimerIntr(){
+	set_csr(mie, MIP_MTIP);				// enable timer interrupt in machine mode
+	set_csr(mstatus, MSTATUS_MIE);
+}
+
+void disableIntr(){
+	clear_csr(mstatus, MSTATUS_MIE);	// disable interrupt
+}
+
+void disableExternalIntr(){
+	clear_csr(mie, MIP_MEIP);			// disable external interrupt in machine mode
+}
+
+void disableTimerIntr(){
+	clear_csr(mie, MIP_MTIP);			// disable timer interrupt in machine mode
+}
+
+unsigned long readMtime(){
+	volatile int *x_l = (int *)(MTIME_BASE+4);
+	return *x_l;
+}
+
+long readMtimeCmp(){
+	volatile int *x_l = (int *)(MTIME_CMP_BASE+4);
+	return *x_l;
+}
+
+void writeMtimeCmp(int cmp){
+	volatile int *x_l = (int *)(MTIME_CMP_BASE+4);
+	*x_l=cmp;
 }
 
 char *malloc(int size){
@@ -36,8 +74,11 @@ char *malloc(int size){
 }
 
 void printf_c(int c){
-	volatile char* serial_base = (char*) OUTPORT;
-	*serial_base = c;
+	//volatile char* serial_base = (char*) OUTPORT;
+	//*serial_base = c;
+	volatile int *x = (int *)0xe000102c;
+	while ((*x&16)==16);
+	*(int*) 0xe0001030= c;
 }
 
 void printf_s(char *s){
@@ -115,6 +156,25 @@ void printf(const char *format, ...){
 		} else
 			printf_c(format[i]);
 	va_end(ap);
+}
+
+
+char scanf_c(){
+	volatile int *x = (int*)0xe000102c;
+	while ((*x&2)==2);
+	volatile char c =*(int*)0xe0001030;
+	printf_c(c);
+	return c;
+}
+
+char* scanf(){
+	char* str="";
+	char *r = str;
+	volatile char c = scanf_c();
+	while(c != 'n'){
+		*(str++) = c;
+	}
+	return r;
 }
 
 void *memcpy(void *aa, const void *bb, long n){
