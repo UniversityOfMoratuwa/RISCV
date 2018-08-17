@@ -442,6 +442,7 @@ module RISCV_PROCESSOR#(
         if(EXT_FIFO_WR_ENB)
         begin                 
             $fwrite(writeFiles,"%c",EXT_FIFO_WR_DATA);   
+            $write("%c",EXT_FIFO_WR_DATA);   
             EXIT_FIFO_BUFFER[0]<=EXT_FIFO_WR_DATA;
             for(vk=0;vk<FIFO_BUFFER_DEPTH-1;vk=vk+1)
             begin

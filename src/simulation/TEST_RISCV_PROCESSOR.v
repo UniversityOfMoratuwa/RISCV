@@ -141,25 +141,25 @@ module Test_RISCV_PROCESSOR ();
     
     initial
     begin
-        writeFiles = $fopen("prints.txt", "w")  ;
-        $fclose(writeFiles)                     ; 
+//        writeFiles = $fopen("prints.txt", "w")  ;
+//        $fclose(writeFiles)                     ; 
         P0_INIT_AXI_TXN     = 1                 ;
     end
    
    
    always@(posedge CLK)
    begin
-   writeFiles = $fopen("prints.txt", "a");
+//   writeFiles = $fopen("prints.txt", "a");
         if(EXT_FIFO_WR_ENB)
         begin                 
-            $fwrite(writeFiles,"%c",EXT_FIFO_WR_DATA);   
+//            $fwrite(writeFiles,"%c",EXT_FIFO_WR_DATA);   
             EXIT_FIFO_BUFFER[0]<=EXT_FIFO_WR_DATA;
             for(vk=0;vk<FIFO_BUFFER_DEPTH-1;vk=vk+1)
             begin
                 EXIT_FIFO_BUFFER[vk+1]<=EXIT_FIFO_BUFFER[vk];
             end
         end
-    $fclose(writeFiles);
+//    $fclose(writeFiles);
     end
     
       
@@ -369,9 +369,6 @@ module Test_RISCV_PROCESSOR ();
                     dat_memory[WR_ADDR_TO_L2_DAT[ADDR_WIDTH - 3 : 0] + current_section * (1 << (W - 5)) + m] <= DATA_TO_L2_DAT[m * DATA_WIDTH +: DATA_WIDTH];
                 end
                 
-                writeFile = $fopen("E:/University/GrandFinale/Project/riscv_fpga/Simulation/RISCV_Processor/DataMemoryWrites.trac", "a");
-                $fwrite("%d \t %d \t%d \n", WR_ADDR_TO_L2_DAT, DATA_TO_L2_DAT, WR_CONTROL_TO_L2_DAT);  
-                $fclose(writeFile);     
             end    
         end else begin
             if (l2_wr_input_state[L2_DELAY_WR + L2_BURST  - 1]) begin
