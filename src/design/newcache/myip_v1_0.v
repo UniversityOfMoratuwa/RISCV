@@ -108,6 +108,7 @@
         wire [address_width-offset_width-1:0]     addr_to_l2       ;
         wire  [cache_width-1:0]   data_from_l2                    ;
         wire                      data_from_l2_valid              ;
+        wire [address_width-1:0 ] addr_out						;
 // Instantiation of Axi Bus Interface M00_AXI
 	myip_v1_0_M00_AXI # ( 
 		.C_M_TARGET_SLAVE_BASE_ADDR(C_M00_AXI_TARGET_SLAVE_BASE_ADDR),
@@ -236,7 +237,6 @@
 
 	// User logic ends
 	initial begin
-		$fsdbDumpMDA;
 		m00_axi_aclk = 0;
 	flush =0;
 		forever	begin 
@@ -272,20 +272,34 @@
         .DATA_FROM_L2_VALID (data_from_l2_valid)             
 
     ); 
-      initial begin
-      	addr_valid=0;
-      	addr=0;
-            #1000;
-            for (int j = 0 ; j<100; j=j+1)
-            begin
-                addr_valid=1;
-                 @(posedge  m00_axi_aclk);
-                while (~cache_ready)
-                    @(posedge  m00_axi_aclk);
-                $display("value is %d %x" ,addr,data);
-                addr+=4;
-            end
-            $finish;
+    always@(posedge m00_axi_aclk)
+    begin
+    	if (m00_axi_aresetn)
+    	begin
+    		addr <=0;
+    		addr_valid <=0;
+    	end
+    	else if(cache_ready)
+    	begin
+    	
+    		addr<= addr+4;
+    	end
+    end
+      // initial begin
+      	// addr_valid=0;
+      	// addr=0;
+       //      #1000;
+       //      for (int j = 0 ; j<100; j=j+1)
+       //      begin
+       //          addr_valid=1;
+       //           @(posedge  m00_axi_aclk);
+  
+       //          while (~cache_ready)
+       //              @(posedge  m00_axi_aclk);
+       //          $display("value is %d %x" ,addr,data);
+       //          addr+=4;
+       //      end
+       //      $finish;
 
-        end
+       //  end
 	endmodule

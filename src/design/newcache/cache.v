@@ -22,16 +22,17 @@ module Icache
         output                   ADDR_TO_L2_VALID                ,
         output [address_width - offset_width-1:0]   ADDR_TO_L2                      ,
         input  [cache_width-1:0] DATA_FROM_L2                    ,
-        input                    DATA_FROM_L2_VALID              
+        input                    DATA_FROM_L2_VALID              ,
+        output [address_width-1:0] ADDR_OUT
 
 
 
 
     );
-    reg                     addr_d1             ;
-    reg                     addr_d2             ;
-    reg                     addr_d3             ;
-    reg                     addr_d4             ;
+    reg  [address_width-1:0] addr_d1             ;
+    reg  [address_width-1:0] addr_d2             ;
+    reg  [address_width-1:0] addr_d3             ;
+    reg  [address_width-1:0] addr_d4             ;
     reg                     flag                ;
     reg                     addr_to_l2_valid    ;
     reg [address_width- offset_width -1:0] addr_to_l2          ;
@@ -190,9 +191,10 @@ module Icache
     assign tag_portc_raddr      = cache_portc_raddr                                         ;
     assign state_raddr          = cache_portc_raddr                                         ;
     assign tag_addr             = addr_d4[address_width-1:offset_width+line_width]             ;
-    assign CACHE_READY          = (tag_portc_data_out == tag_addr) & state                  ;
+    assign CACHE_READY          = ~ADDR_VALID? 1: (tag_portc_data_out == tag_addr) & state                  ;
     assign ADDR_TO_L2_VALID     = addr_to_l2_valid                                          ;
     assign ADDR_TO_L2           = addr_to_l2                                                ;
+    assign ADDR_OUT             = addr_d4;
 endmodule
 module STATE_MEMORY         
     #(

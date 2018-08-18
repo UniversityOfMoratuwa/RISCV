@@ -9,7 +9,7 @@
 		// Do not modify the parameters beyond this line
 
 		// Base address of targeted slave
-		parameter  C_M_TARGET_SLAVE_BASE_ADDR	= 32'h00000000,
+		parameter  C_M_TARGET_SLAVE_BASE_ADDR	= 32'h00010000,
 		// Burst Length. Supports 1, 2, 4, 8, 16, 32, 64, 128, 256 burst lengths
 		parameter integer C_M_AXI_BURST_LEN	= 16,
 		// Thread ID Width
