@@ -184,7 +184,7 @@ module PIPELINE #(
         .CSR_CNT            (csr_cnt_fb_ex)                         ,
         .ZIMM               (zimm_fb_ex)                            ,
         .CACHE_READY        ( CACHE_READY&CACHE_READY_DATA)         ,
-        .TYPE_IN            (ins_fb_ex==32'h00100073 ?0:type_fb_ex ),
+        .TYPE_IN            (ins_fb_ex==32'h00100073 ?2'b0:type_fb_ex ),
         .PROC_IDLE          (!(pc_ex_ex2!=0 && CACHE_READY && CACHE_READY_DATA && !flush_internal))    ,  
         .MEIP               (MEIP)                                  ,   
         .MTIP               (MTIP)                                  ,  

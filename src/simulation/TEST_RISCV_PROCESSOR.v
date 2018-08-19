@@ -568,4 +568,18 @@ module Test_RISCV_PROCESSOR
         .S_AXI_RVALID(m00_axi_rvalid),
         .S_AXI_RREADY(m00_axi_rready)
     );
+    reg [7:0] byte_ram[0: (1<<24)-1][0:3];
+
+    reg [31:0] word_ram[0: (1<<24)-1];
+
+    initial begin
+        $readmemh("data_hex.txt",word_ram);
+        for (int j=0; j < (1<<24_); j=j+1)
+        begin
+            for (int i=0; i<4; i=i+1)
+            begin
+                byte_ram[j][i]=  word_ram[j][8*i +: 8];
+            end
+        end
+    end
 endmodule

@@ -337,7 +337,7 @@ module RISCV_PROCESSOR#(
     // Status signals between processor and cache
     .CACHE_READY(cache_ready_dat),
     // Ports towards the processor
-    .CONTROL_FROM_PROC((addr_from_proc_dat != EXT_FIFO_ADDRESS & addr_from_proc_dat < PERIPHERAL_BASE_ADDR)? control_from_proc_dat : 0),  // CONTROL_FROM_PROC = {00(idle), 01(read), 10(write), 11(flush address from cache)}
+    .CONTROL_FROM_PROC((addr_from_proc_dat != EXT_FIFO_ADDRESS & addr_from_proc_dat < PERIPHERAL_BASE_ADDR)? control_from_proc_dat : 2'b0),  // CONTROL_FROM_PROC = {00(idle), 01(read), 10(write), 11(flush address from cache)}
     .BYTE_ENB_FROM_PROC(byte_enb_proc),
     .ADDR_FROM_PROC(addr_from_proc_dat),
     .DATA_FROM_PROC(data_from_proc_dat),
@@ -592,7 +592,7 @@ module RISCV_PROCESSOR#(
     (
         .CLK(CLK)                                   ,
         .RST(~RSTN)                                   ,
-        .FLUSH(0)                               ,
+        .FLUSH(1'b0)                               ,
         .ADDR(prd_addr)                                 ,
         .ADDR_VALID(proc_ready_ins & !exstage_stalled & P0_INIT_AXI_TXN!=0 & !stop_ins_cache)                     ,
         .DATA (data_to_proc_ins)                                ,

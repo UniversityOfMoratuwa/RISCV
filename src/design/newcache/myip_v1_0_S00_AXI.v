@@ -162,7 +162,7 @@
     // accept the read data and response information.
 		input wire  S_AXI_RREADY
 	);
-
+	`define BYTE_RAM Test_RISCV_PROCESSOR.byte_ram
 	// AXI4FULL signals
 	reg [C_S_AXI_ADDR_WIDTH-1 : 0] 	axi_awaddr;
 	reg  	axi_awready;
@@ -552,12 +552,12 @@
 	    end
 	endgenerate
 	 integer val;
-	 reg [31:0]  word_ram [0:1<<24];
-	 initial
-	 begin
-	 	$readmemh("data_hex.txt",word_ram);
-	 end
-	// implement Block RAM(s)
+	//  reg [31:0]  word_ram [0:1<<24];
+	//  initial
+	//  begin
+	//  	$readmemh("data_hex.txt",word_ram);
+	//  end
+	// // implement Block RAM(s)
 	generate 
 	  for(i=0; i<= USER_NUM_MEM-1; i=i+1)
 	    begin:BRAM_GEN
@@ -572,26 +572,25 @@
 	      begin:BYTE_BRAM_GEN
 	        wire [8-1:0] data_in ;
 	        wire [8-1:0] data_out;
-	        reg  [8-1:0] byte_ram [0 : (1<<16)];
 
-	        initial begin
-	        #1;
-	        	for (val=0;val<(1<<24);val=val+1)
-	        	begin
-	        		byte_ram[val]=word_ram[val][8*mem_byte_index +: 8];
-	        	end
-	        end
+	        // initial begin
+	        // #1;
+	        // 	for (val=0;val<(1<<24);val=val+1)
+	        // 	begin
+	        // 		byte_ram[val]=word_ram[val][8*mem_byte_index +: 8];
+	        // 	end
+	        // end
 	        integer  j;
 	     
 	        //assigning 8 bit data
 	        assign data_in  = S_AXI_WDATA[(mem_byte_index*8+7) -: 8];
-	        assign data_out = byte_ram[mem_address];
+	        assign data_out = `BYTE_RAM[mem_address][mem_byte_index] ;
 	     
 	        always @( posedge S_AXI_ACLK )
 	        begin
 	          if (mem_wren && S_AXI_WSTRB[mem_byte_index])
 	            begin
-	              byte_ram[mem_address] <= data_in;
+	              `BYTE_RAM[mem_address][mem_byte_index] <= data_in;
 	            end   
 	        end    
 	      
