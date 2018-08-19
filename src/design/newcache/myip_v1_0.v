@@ -21,7 +21,7 @@
 	    localparam offset_width  = $clog2(data_width*block_size/8 )               ,
 	    localparam tag_width     = address_width - line_width -  offset_width   ,
 	    localparam cache_width   = block_size*data_width                        ,
-		parameter  C_M00_AXI_TARGET_SLAVE_BASE_ADDR	= 32'h00010000,
+		parameter  C_M00_AXI_TARGET_SLAVE_BASE_ADDR	= 32'h00000000,
 		parameter integer C_M00_AXI_BURST_LEN	= block_size,
 		parameter integer C_M00_AXI_ID_WIDTH	= 1,
 		parameter integer C_M00_AXI_ADDR_WIDTH	= 32,
@@ -100,6 +100,9 @@
 	                
         reg                      flush                           ;
         reg  [address_width-1:0]    addr                            ;
+        wire  [address_width-1:0]    addr_out                            ;
+        reg  [address_width-1:0]    curr_addr                            ;
+
         reg                      addr_valid                      ;
         wire [data_width-1:0]    data                            ;
         wire                     cache_ready                     ;
@@ -108,7 +111,6 @@
         wire [address_width-offset_width-1:0]     addr_to_l2       ;
         wire  [cache_width-1:0]   data_from_l2                    ;
         wire                      data_from_l2_valid              ;
-        wire [address_width-1:0 ] addr_out						;
 // Instantiation of Axi Bus Interface M00_AXI
 	myip_v1_0_M00_AXI # ( 
 		.C_M_TARGET_SLAVE_BASE_ADDR(C_M00_AXI_TARGET_SLAVE_BASE_ADDR),
@@ -269,20 +271,29 @@
         .ADDR_TO_L2_VALID(addr_to_l2_valid)         ,
         .ADDR_TO_L2 (addr_to_l2)                    ,
         .DATA_FROM_L2 (data_from_l2)                ,
-        .DATA_FROM_L2_VALID (data_from_l2_valid)             
+        .DATA_FROM_L2_VALID (data_from_l2_valid)     ,
+        .CURR_ADDR(curr_addr)        ,
+        .ADDR_OUT(addr_out)
 
     ); 
+    always@(*)
+    begin
+    	if (~m00_axi_aresetn)
+    	begin
+    		addr =0;
+    		addr_valid =0;
+    	end
+    	else 
+    	begin
+    		addr_valid =1;
+    		addr = curr_addr+4;
+    	end
+    end
     always@(posedge m00_axi_aclk)
     begin
-    	if (m00_axi_aresetn)
+    	if(cache_ready )
     	begin
-    		addr <=0;
-    		addr_valid <=0;
-    	end
-    	else if(cache_ready)
-    	begin
-    	
-    		addr<= addr+4;
+    		$display("output addr: %h data %h", addr_out, data );
     	end
     end
       // initial begin

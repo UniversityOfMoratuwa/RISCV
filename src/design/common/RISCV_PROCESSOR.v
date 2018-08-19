@@ -20,6 +20,35 @@
 //////////////////////////////////////////////////////////////////////////////////
 
 module RISCV_PROCESSOR#(
+    parameter  ram_addr_width= 20                                         ,
+    localparam ram_depth     = 2**ram_addr_width                            ,
+    parameter data_width     = 32                                          ,
+    parameter address_width  = 32                                           ,
+    parameter block_size     = 8                                           ,
+    parameter cache_depth    = 512                                          ,
+    parameter l2_delay_read  = 10                                           ,
+    localparam line_width    = $clog2(cache_depth)                          ,
+    localparam offset_width  = $clog2(data_width*block_size/8 )               ,
+    localparam tag_width     = address_width - line_width -  offset_width   ,
+    localparam cache_width   = block_size*data_width                        ,
+    parameter  C_M00_AXI_TARGET_SLAVE_BASE_ADDR    = 32'h00000000,
+    parameter integer C_M00_AXI_BURST_LEN    = block_size,
+    parameter integer C_M00_AXI_ID_WIDTH    = 1,
+    parameter integer C_M00_AXI_ADDR_WIDTH    = 32,
+    parameter integer C_M00_AXI_DATA_WIDTH    = 32,
+    parameter integer C_M00_AXI_AWUSER_WIDTH    = 0,
+    parameter integer C_M00_AXI_ARUSER_WIDTH    = 0,
+    parameter integer C_M00_AXI_WUSER_WIDTH    = 0,
+    parameter integer C_M00_AXI_RUSER_WIDTH    = 0,
+    parameter integer C_M00_AXI_BUSER_WIDTH    = 0,
+    parameter integer C_S00_AXI_ID_WIDTH    = 1,
+    parameter integer C_S00_AXI_DATA_WIDTH    = 32,
+    parameter integer C_S00_AXI_ADDR_WIDTH    = 32,
+    parameter integer C_S00_AXI_AWUSER_WIDTH    = 0,
+    parameter integer C_S00_AXI_ARUSER_WIDTH    = 0,
+    parameter integer C_S00_AXI_WUSER_WIDTH    = 0,
+    parameter integer C_S00_AXI_RUSER_WIDTH    = 0,
+    parameter integer C_S00_AXI_BUSER_WIDTH    = 0,
         // Fixed parameters
         localparam ADDR_WIDTH           = 32,
         localparam DATA_WIDTH           = 32,
@@ -132,7 +161,54 @@ module RISCV_PROCESSOR#(
         output  [3:0]                      WSTRB_OUT,
         input                                           MEIP                            ,   //machine external interupt pending
         input                                           MTIP                            ,   //machine timer interupt pending
-        input                                           MSIP                                //machine software interupt pending, from external hart
+        input                                           MSIP                   ,
+        input wire  m00_axi_init_axi_txn,
+        output wire  m00_axi_txn_done,
+        output wire  m00_axi_error,
+        input wire  m00_axi_aclk,
+        input wire  m00_axi_aresetn,
+        output wire [C_M00_AXI_ID_WIDTH-1 : 0] m00_axi_awid,
+        output wire [C_M00_AXI_ADDR_WIDTH-1 : 0] m00_axi_awaddr,
+        output wire [7 : 0] m00_axi_awlen,
+        output wire [2 : 0] m00_axi_awsize,
+        output wire [1 : 0] m00_axi_awburst,
+        output wire  m00_axi_awlock,
+        output wire [3 : 0] m00_axi_awcache,
+        output wire [2 : 0] m00_axi_awprot,
+        output wire [3 : 0] m00_axi_awqos,
+        output wire [C_M00_AXI_AWUSER_WIDTH-1 : 0] m00_axi_awuser,
+        output wire  m00_axi_awvalid,
+        input wire  m00_axi_awready,
+        output wire [C_M00_AXI_DATA_WIDTH-1 : 0] m00_axi_wdata,
+        output wire [C_M00_AXI_DATA_WIDTH/8-1 : 0] m00_axi_wstrb,
+        output wire  m00_axi_wlast,
+        output wire [C_M00_AXI_WUSER_WIDTH-1 : 0] m00_axi_wuser,
+        output wire  m00_axi_wvalid,
+        input wire  m00_axi_wready,
+        input wire [C_M00_AXI_ID_WIDTH-1 : 0] m00_axi_bid,
+        input wire [1 : 0] m00_axi_bresp,
+        input wire [C_M00_AXI_BUSER_WIDTH-1 : 0] m00_axi_buser,
+        input wire  m00_axi_bvalid,
+        output wire  m00_axi_bready,
+        output wire [C_M00_AXI_ID_WIDTH-1 : 0] m00_axi_arid,
+        output wire [C_M00_AXI_ADDR_WIDTH-1 : 0] m00_axi_araddr,
+        output wire [7 : 0] m00_axi_arlen,
+        output wire [2 : 0] m00_axi_arsize,
+        output wire [1 : 0] m00_axi_arburst,
+        output wire  m00_axi_arlock,
+        output wire [3 : 0] m00_axi_arcache,
+        output wire [2 : 0] m00_axi_arprot,
+        output wire [3 : 0] m00_axi_arqos,
+        output wire [C_M00_AXI_ARUSER_WIDTH-1 : 0] m00_axi_aruser,
+        output wire  m00_axi_arvalid,
+        input wire  m00_axi_arready,
+        input wire [C_M00_AXI_ID_WIDTH-1 : 0] m00_axi_rid,
+        input wire [C_M00_AXI_DATA_WIDTH-1 : 0] m00_axi_rdata,
+        input wire [1 : 0] m00_axi_rresp,
+        input wire  m00_axi_rlast,
+        input wire [C_M00_AXI_RUSER_WIDTH-1 : 0] m00_axi_ruser,
+        input wire  m00_axi_rvalid,
+        output wire  m00_axi_rready
         
         
     );
@@ -185,11 +261,23 @@ module RISCV_PROCESSOR#(
      wire branch;
      wire prd_valid;
      wire [31:0] prd_addr;
-     wire flush;
+     wire flush_w;
      wire [31:0] return_addr;
      wire  return;
      wire [31:0] ins_id_ex;
-     
+         reg                      flush                           ;
+        reg  [address_width-1:0]    addr                            ;
+        wire  [address_width-1:0]    addr_out                            ;
+        wire  [address_width-1:0]    curr_addr                            ;
+
+        reg                      addr_valid                      ;
+        wire [data_width-1:0]    data                            ;
+        wire                     cache_ready                     ;
+        wire                     addr_to_l2_valid                ;
+        wire [cache_width-1:0]  datas                           ;
+        wire [address_width-offset_width-1:0]     addr_to_l2       ;
+        wire  [cache_width-1:0]   data_from_l2                    ;
+        wire                      data_from_l2_valid              ;
      //reg [63:0]     mtime;
      //reg [63:0]     mtimecmp;
      //reg            timer_interrupt;
@@ -204,37 +292,7 @@ module RISCV_PROCESSOR#(
      
     wire    exstage_stalled ;
      
-    Ins_Cache # (
-    .S(S),
-    .B(B),
-    .a(a),
-    .T(T),
-    .W(W),
-    .L2_DELAY(L2_DELAY_RD),
-    .N(N),
-    .n(n),
-    .p(p)
-    ) ins_cache (
-    // Standard inputs
-    .CLK(CLK),
-    .RSTN(RSTN),
-    .PC(pc) ,
-    // Status signals between processor and cache
-    .CACHE_READY(cache_ready_ins),
-    .PROC_READY(proc_ready_ins & !exstage_stalled & P0_INIT_AXI_TXN!=0 & !stop_ins_cache),
-    // Ports towards the processor
-    .BRANCH_ADDR_IN(prd_addr),
-    .BRANCH(1),
-    .DATA_TO_PROC(data_to_proc_ins),
-    .PC_TO_PROC(pc_to_proc_ins),
-    /// Read port towards the L2 cache    
-    .ADDR_TO_L2(ADDR_TO_L2_INS),
-    .ADDR_TO_L2_READY(ADDR_TO_L2_READY_INS),
-    .ADDR_TO_L2_VALID(ADDR_TO_L2_VALID_INS),
-    .DATA_FROM_L2(DATA_FROM_L2_INS),
-    .DATA_FROM_L2_VALID(DATA_FROM_L2_VALID_INS),
-    .DATA_FROM_L2_READY(DATA_FROM_L2_READY_INS)
-     );
+
     
      PIPELINE pipeline(
     .CLK(CLK),
@@ -254,7 +312,7 @@ module RISCV_PROCESSOR#(
     .CACHE_READY_DATA(cache_ready_dat & !stop_dat_cache),
     .EX_PC(ex_pc),
     .BRANCH(branch),
-    .FLUSH(flush),
+    .FLUSH(flush_w),
     .RETURN_ADDR(return_addr),
     .RETURN(return),
     .PREDICTED(predicted),
@@ -310,7 +368,7 @@ module RISCV_PROCESSOR#(
     .BRANCH_ADDR (branch_address)          ,
     .PRD_VALID (prd_valid)                 ,
     .PRD_ADDR  (prd_addr)                  ,
-    .FLUSH(flush)                          ,
+    .FLUSH(flush_w)                          ,
     .CACHE_READY(cache_ready_ins & !exstage_stalled & P0_INIT_AXI_TXN!=0 & !stop_ins_cache)          ,
     .CACHE_READY_DATA(cache_ready_dat & !stop_dat_cache),
     .RETURN_ADDR(return_addr),
@@ -346,7 +404,6 @@ module RISCV_PROCESSOR#(
     
     
     // Intercepting and extracting certain data writes
-    reg [DATA_WIDTH - 1 : 0] data;
     reg [2          - 1 : 0] control;
     reg [ADDR_WIDTH - 1 : 0] address;
     
@@ -451,5 +508,153 @@ module RISCV_PROCESSOR#(
         end
         $fclose(writeFiles);
     end
+        myip_v1_0_M00_AXI # ( 
+        .C_M_TARGET_SLAVE_BASE_ADDR(C_M00_AXI_TARGET_SLAVE_BASE_ADDR),
+        .C_M_AXI_BURST_LEN(C_M00_AXI_BURST_LEN),
+        .C_M_AXI_ID_WIDTH(C_M00_AXI_ID_WIDTH),
+        .C_M_AXI_ADDR_WIDTH(C_M00_AXI_ADDR_WIDTH),
+        .C_M_AXI_DATA_WIDTH(C_M00_AXI_DATA_WIDTH),
+        .C_M_AXI_AWUSER_WIDTH(C_M00_AXI_AWUSER_WIDTH),
+        .C_M_AXI_ARUSER_WIDTH(C_M00_AXI_ARUSER_WIDTH),
+        .C_M_AXI_WUSER_WIDTH(C_M00_AXI_WUSER_WIDTH),
+        .C_M_AXI_RUSER_WIDTH(C_M00_AXI_RUSER_WIDTH),
+        .C_M_AXI_BUSER_WIDTH(C_M00_AXI_BUSER_WIDTH),
+        .cache_width(cache_width)
+    ) myip_v1_0_M00_AXI_inst (
+        .INIT_AXI_TXN(m00_axi_init_axi_txn),
+        .TXN_DONE(m00_axi_txn_done),
+        .ERROR(m00_axi_error),
+        .M_AXI_ACLK(m00_axi_aclk),
+        .M_AXI_ARESETN(m00_axi_aresetn),
+        .M_AXI_AWID(m00_axi_awid),
+        .M_AXI_AWADDR(m00_axi_awaddr),
+        .M_AXI_AWLEN(m00_axi_awlen),
+        .M_AXI_AWSIZE(m00_axi_awsize),
+        .M_AXI_AWBURST(m00_axi_awburst),
+        .M_AXI_AWLOCK(m00_axi_awlock),
+        .M_AXI_AWCACHE(m00_axi_awcache),
+        .M_AXI_AWPROT(m00_axi_awprot),
+        .M_AXI_AWQOS(m00_axi_awqos),
+        .M_AXI_AWUSER(m00_axi_awuser),
+        .M_AXI_AWVALID(m00_axi_awvalid),
+        .M_AXI_AWREADY(m00_axi_awready),
+        .M_AXI_WDATA(m00_axi_wdata),
+        .M_AXI_WSTRB(m00_axi_wstrb),
+        .M_AXI_WLAST(m00_axi_wlast),
+        .M_AXI_WUSER(m00_axi_wuser),
+        .M_AXI_WVALID(m00_axi_wvalid),
+        .M_AXI_WREADY(m00_axi_wready),
+        .M_AXI_BID(m00_axi_bid),
+        .M_AXI_BRESP(m00_axi_bresp),
+        .M_AXI_BUSER(m00_axi_buser),
+        .M_AXI_BVALID(m00_axi_bvalid),
+        .M_AXI_BREADY(m00_axi_bready),
+        .M_AXI_ARID(m00_axi_arid),
+        .M_AXI_ARADDR(m00_axi_araddr),
+        .M_AXI_ARLEN(m00_axi_arlen),
+        .M_AXI_ARSIZE(m00_axi_arsize),
+        .M_AXI_ARBURST(m00_axi_arburst),
+        .M_AXI_ARLOCK(m00_axi_arlock),
+        .M_AXI_ARCACHE(m00_axi_arcache),
+        .M_AXI_ARPROT(m00_axi_arprot),
+        .M_AXI_ARQOS(m00_axi_arqos),
+        .M_AXI_ARUSER(m00_axi_aruser),
+        .M_AXI_ARVALID(m00_axi_arvalid),
+        .M_AXI_ARREADY(m00_axi_arready),
+        .M_AXI_RID(m00_axi_rid),
+        .M_AXI_RDATA(m00_axi_rdata),
+        .M_AXI_RRESP(m00_axi_rresp),
+        .M_AXI_RLAST(m00_axi_rlast),
+        .M_AXI_RUSER(m00_axi_ruser),
+        .M_AXI_RVALID(m00_axi_rvalid),
+        .M_AXI_RREADY(m00_axi_rready),
+        // user defined ports
+        .data_from_l2(data_from_l2)         ,
+        .addr_to_l2_valid(addr_to_l2_valid) ,
+        .addr_to_l2({addr_to_l2,{offset_width{1'b0}}})              ,
+        .data_from_l2_valid(data_from_l2_valid)
+    );
     
+    // Add user logic here
+
+    // User logic ends
+
+
+        Icache
+    #(
+        .data_width     (data_width)                                         ,
+        .address_width  (address_width)                                     ,
+        .block_size     (block_size)                                        ,
+        .cache_depth    ( cache_depth)                                      
+        
+        )
+    cache
+    (
+        .CLK(CLK)                                   ,
+        .RST(~RSTN)                                   ,
+        .FLUSH(0)                               ,
+        .ADDR(prd_addr)                                 ,
+        .ADDR_VALID(proc_ready_ins & !exstage_stalled & P0_INIT_AXI_TXN!=0 & !stop_ins_cache)                     ,
+        .DATA (data_to_proc_ins)                                ,
+        .CACHE_READY(cache_ready_ins)                   ,
+        .ADDR_TO_L2_VALID(addr_to_l2_valid)         ,
+        .ADDR_TO_L2 (addr_to_l2)                    ,
+        .DATA_FROM_L2 (data_from_l2)                ,
+        .DATA_FROM_L2_VALID (data_from_l2_valid)     ,
+        .CURR_ADDR(pc)        ,
+        .ADDR_OUT(pc_to_proc_ins)
+
+    ); 
+
+//        Ins_Cache # (
+//        .S(S),
+//        .B(B),
+//        .a(a),
+//        .T(T),
+//        .W(W),
+//        .L2_DELAY(L2_DELAY_RD),
+//        .N(N),
+//        .n(n),
+//        .p(p)
+//        ) ins_cache (
+//        // Standard inputs
+//        .CLK(CLK),
+//        .RSTN(RSTN),
+//        .PC(pc) ,
+//        // Status signals between processor and cache
+//        .CACHE_READY(cache_ready_ins),
+//        .PROC_READY(proc_ready_ins & !exstage_stalled & P0_INIT_AXI_TXN!=0 & !stop_ins_cache),
+//        // Ports towards the processor
+//        .BRANCH_ADDR_IN(prd_addr),
+//        .BRANCH(1),
+//        .DATA_TO_PROC(data_to_proc_ins),
+//        .PC_TO_PROC(pc_to_proc_ins),
+//        /// Read port towards the L2 cache    
+//        .ADDR_TO_L2(ADDR_TO_L2_INS),
+//        .ADDR_TO_L2_READY(ADDR_TO_L2_READY_INS),
+//        .ADDR_TO_L2_VALID(ADDR_TO_L2_VALID_INS),
+//        .DATA_FROM_L2(DATA_FROM_L2_INS),
+//        .DATA_FROM_L2_VALID(DATA_FROM_L2_VALID_INS),
+//        .DATA_FROM_L2_READY(DATA_FROM_L2_READY_INS)
+//         );
+//    always@(*)
+//    begin
+//        if (~m00_axi_aresetn)
+//        begin
+//            addr =0;
+//            addr_valid =0;
+//        end
+//        else 
+//        begin
+//            addr_valid =1;
+//            addr = curr_addr+4;
+//        end
+//    end
+//    always@(posedge m00_axi_aclk)
+//    begin
+//        if(cache_ready )
+//        begin
+//            $display("output addr: %h data %h", addr_out, data );
+//        end
+//    end
 endmodule

@@ -1,11 +1,10 @@
 `timescale 1 ps  /  1 ps
-module Icache
+module Dcache
     #(
         parameter data_width    = 32                                            ,
         parameter address_width = 32                                            ,
         parameter block_size    = 32                                             ,
         parameter cache_depth   = 512                                           ,
-        parameter addr_init_val = 32'h0001_0000                                 ,
         localparam line_width   = $clog2(cache_depth)                           ,
         localparam offset_width = $clog2(data_width*block_size  /8)               ,
         localparam tag_width    = address_width - line_width -  offset_width    ,
@@ -14,6 +13,7 @@ module Icache
         )
     (
         input                    CLK                             ,
+        input   [1:0]			 CONTROL               			,		
         input                    RST                             ,
         input                    FLUSH                           ,
         input  [address_width-1:0] ADDR                              ,
@@ -23,9 +23,7 @@ module Icache
         output                   ADDR_TO_L2_VALID                ,
         output [address_width - offset_width-1:0]   ADDR_TO_L2                      ,
         input  [cache_width-1:0] DATA_FROM_L2                    ,
-        input                    DATA_FROM_L2_VALID              ,
-        output [address_width-1:0] ADDR_OUT                        ,
-        output [address_width-1:0] CURR_ADDR                        
+        input                    DATA_FROM_L2_VALID              
 
 
 
@@ -60,24 +58,71 @@ module Icache
     wire                    cache_ready;
     wire       [data_width-1:0]            data ;
 
-    `include "i_cache_inst.vh"
+        MEMORY  
+    #(
+        .data_width(cache_width ),
+        .address_width(line_width),
+        .depth(cache_depth)
+        )
+    cache_memory
+    (
+        .CLK(CLK),
+        .PORTA_WREN(cache_porta_wren)           ,
+        .PORTA_RADDR(cache_porta_raddr)         ,
+        .PORTA_WADDR(cache_porta_waddr)         ,
+        .PORTA_DATA_IN(cache_porta_data_in)     ,
+        .PORTA_DATA_OUT(cache_porta_data_out)
+
+        );
+    MEMORY  
+    #(
+        .data_width(tag_width   )               ,
+        .address_width(line_width)              ,
+        .depth(cache_depth)
+        )
+    tag_memory
+    (
+        .CLK(CLK)                               ,
+        .PORTA_WREN(tag_porta_wren)             ,
+        .PORTA_RADDR(tag_porta_raddr)           ,
+        .PORTA_WADDR(tag_porta_waddr)           ,
+        .PORTA_DATA_IN(tag_porta_data_in)       ,
+        .PORTA_DATA_OUT(tag_porta_data_out)
+
+        );
+    STATE_MEMORY
+    #(
+        .depth(cache_depth),
+        .address_width(line_width)
+
+    )
+    state_memory_inst
+    (
+        .CLK(CLK)               ,
+        .RST(RST)               ,
+        .FLUSH(FLUSH)           ,
+        .WREN(state_wren)       ,
+        .WADDR (state_waddr)    ,
+        .RADDR(state_raddr)     ,
+        .STATE(state)   
+     );
+     
     always@(*)
     begin
         CACHE_READY = cache_ready;
     end
     always @(posedge CLK) begin
         if (RST) begin
-            addr_d1 <=   addr_init_val+12;
-            addr_d2 <=   addr_init_val+8;
-            addr_d3 <=   addr_init_val+4;      
-            addr_d4 <=   addr_init_val;      
+            addr_d1 <=   0;
+            addr_d2 <=   0;
+            addr_d3 <=   0;    
+            addr_d4 <=   0;  
             
         end
         else if (cache_ready & ADDR_VALID) begin
             addr_d1  <= ADDR;
             addr_d2  <= addr_d1 ;
             addr_d3  <= addr_d2 ;
-            addr_d4 <= addr_d3;
         end
     
     
@@ -152,8 +197,6 @@ module Icache
     assign cache_ready          =  (tag_porta_data_out == tag_addr) & state                  ;
     assign ADDR_TO_L2_VALID     = addr_to_l2_valid                                          ;
     assign ADDR_TO_L2           = addr_to_l2                                                ;
-    assign ADDR_OUT             = addr_d4                                                   ;
-    assign CURR_ADDR            = addr_d1                                                   ;
 endmodule
 
 
