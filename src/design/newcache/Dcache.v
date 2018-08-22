@@ -56,6 +56,7 @@ module Dcache
     reg  [cache_width-1:0]  cache_porta_data_in ;
     reg  [cache_width-1:0]  cache_porta_data_in_int ;
     wire  [cache_width-1:0]  cache_porta_data_out ;
+    wire  [cache_width-1:0]  cache_porta_data_out_i ;
 
 
     reg                     tag_porta_wren      ;
@@ -92,7 +93,7 @@ module Dcache
         .PORTA_RADDR(cache_porta_raddr)         ,
         .PORTA_WADDR(cache_porta_waddr)         ,
         .PORTA_DATA_IN(cache_porta_data_in)     ,
-        .PORTA_DATA_OUT(cache_porta_data_out)
+        .PORTA_DATA_OUT(cache_porta_data_out_i)
 
         );
     MEMORY  
@@ -187,7 +188,7 @@ module Dcache
         end
         else if (~cache_ready & ~state_wren )
         begin
-            if(~addr_to_l2_valid & ~flag)
+            if(~addr_to_l2_valid & ~flag & ~dirty_wren)
             begin
                 addr_to_l2_valid    <= 1        ;
                 addr_to_l2          <= addr_d3[address_width  -1 : offset_width] ;
@@ -215,33 +216,45 @@ module Dcache
         else if (cache_ready & control_d3 == 2'b10)
         begin
             cache_porta_wren      <= 1;
-            cache_porta_data_in  <=  
+            cache_porta_data_in  <=  cache_porta_data_in_int;
+            cache_porta_waddr    <= cache_porta_raddr;
+            dirty_wren           <= 1;
+            dirty_waddr          <= dirty_raddr;
         end
         else if (DATA_FROM_L2_VALID)
         begin
-            cache_porta_wren    <= 1                ;
-            cache_porta_data_in <= DATA_FROM_L2     ;
-            cache_porta_waddr   <= cache_porta_raddr;
-            tag_porta_wren      <= 1                ;
-            tag_porta_waddr     <= tag_porta_raddr  ;
-            state_wren          <= 1                ; 
-            state_waddr         <= state_raddr      ;  
-            tag_porta_data_in   <= tag_addr         ;
-            flag                <= 0                ;       
+            if(dirty)
+            begin
+                
+            end
+            else
+            begin
+                cache_porta_wren    <= 1                ;
+                cache_porta_data_in <= control_d3 == 2'b10 ? data_to_be_writen : DATA_FROM_L2     ;
+                cache_porta_waddr   <= cache_porta_raddr;
+                tag_porta_wren      <= 1                ;
+                tag_porta_waddr     <= tag_porta_raddr  ;
+                state_wren          <= 1                ; 
+                state_waddr         <= state_raddr      ;  
+                tag_porta_data_in   <= tag_addr         ;
+                flag                <= 0                ; 
+            end      
+
         end
         else
         begin
             cache_porta_wren   <=  0            ;
             tag_porta_wren     <=  0            ;
             state_wren         <=  0            ;
+            dirty_wren         <=  0            ;
         end
     end
     generate
-     if (offset_width>2)
-        assign data                 = cache_porta_data_out[{addr_d3[offset_width-1:2],2'b0}*8 +:data_width]       ;
-    else begin
-        assign data                 = cache_porta_data_out                                                ;
-    end
+        if (offset_width>2)
+            assign data                 = cache_porta_data_out[{addr_d3[offset_width-1:2],2'b0}*8 +:data_width]       ;
+        else begin
+            assign data                 = cache_porta_data_out                                                        ;
+        end
     endgenerate
     
     assign cache_porta_raddr    = addr_d3[offset_width+line_width-1:offset_width]              ;
@@ -249,40 +262,37 @@ module Dcache
     assign tag_porta_raddr      = cache_porta_raddr                                         ;
     assign state_raddr          = cache_porta_raddr                                         ;
     assign tag_addr             = addr_d3[address_width-1:offset_width+line_width]             ;
-    assign cache_ready          =  (tag_porta_data_out == tag_addr) & state & (control_d3>2'b0)                ;
+    assign cache_ready          =  (tag_porta_data_out == tag_addr) & state & (control_d3>2'b0)        & ~dirty_wren        ;
     assign ADDR_TO_L2_VALID     = addr_to_l2_valid                                          ;
     assign ADDR_TO_L2           = addr_to_l2                                                ;
     
-    generate
 
-        reg [data_width-1:0] data_to_be_writen;
-        integer i;
-     
-       always@(*)  
+
+    reg [data_width-1:0] data_to_be_writen;
+    integer i;
+ 
+   always@(*)  
+   begin
+       for (i=0;i<$clog2(data_width);i=i+1)
        begin
-           for (i=0;i<$clog2(data_width);i=i+1)
+           if(wstrb[i])
            begin
-               if(wstrb[i])
-               begin
-                   data_to_be_writen[i*8 +: 8] = data_d3[i*8 +: 8];
-               end
-               else begin
-                   data_to_be_writen[i*8 +: 8] = data[i*8 +: 8];
-               end
+               data_to_be_writen[i*8 +: 8] = data_d3[i*8 +: 8];
+           end
+           else begin
+               data_to_be_writen[i*8 +: 8] = data[i*8 +: 8];
            end
        end
-        if (offset_width>2)
-        begin
-            data_to_be_writen[0 +: {addr_d3[offset_width-1:2],2'b0}*8]                                      = cache_porta_data_out[0 +: {addr_d3[offset_width-1:2],2'b0}*8]       ;
-            data_to_be_writen[cache_width -: {addr_d3[offset_width-1:2],2'b0}*8+data_width]                 = cache_porta_data_out[0 +: {addr_d3[offset_width-1:2],2'b0}*8]       ;
-            data_to_be_writen[{addr_d3[offset_width-1:2],2'b0}*8 +:data_width]                              = data_d3                                                ;
+        data_to_be_writen[0 +: {addr_d3[offset_width-1:2],2'b0}*8]                                      = cache_porta_data_out[0 +: {addr_d3[offset_width-1:2],2'b0}*8]       ;
+        data_to_be_writen[cache_width -: {addr_d3[offset_width-1:2],2'b0}*8+data_width]                 = cache_porta_data_out[0 +: {addr_d3[offset_width-1:2],2'b0}*8]       ;
+        data_to_be_writen[{addr_d3[offset_width-1:2],2'b0}*8 +:data_width]                              = data_d3                                                ;
+
+   end
+   assign cache_porta_data_out = DATA_FROM_L2_VALID ? DATA_FROM_L2 : cache_porta_data_out_i;
 
 
-        end
-        else begin 
-            assign data                 = cache_porta_data_out                ;                                
-        end
-    endgenerate
+
+
 endmodule
 
 
