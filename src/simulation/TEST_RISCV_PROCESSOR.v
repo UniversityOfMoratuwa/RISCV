@@ -211,6 +211,7 @@ module Test_RISCV_PROCESSOR
        .P0_INIT_AXI_TXN(P0_INIT_AXI_TXN),
        .EXT_FIFO_WR_ENB(EXT_FIFO_WR_ENB),
        .EXT_FIFO_WR_DATA(EXT_FIFO_WR_DATA),
+       //axi interface
        .m00_axi_aclk(m00_axi_aclk),
        .m00_axi_aresetn(m00_axi_aresetn),
        .m00_axi_awid(m00_axi_awid),

@@ -31,7 +31,6 @@ module Icache
 
     );
     reg  [address_width-1:0] addr_d1             ;
-    reg  [address_width-1:0] addr_d1_tmp             ;
     reg  [address_width-1:0] addr_d2             ;
     reg  [address_width-1:0] addr_d3             ;
     reg  [address_width-1:0] addr_d4             ;
@@ -95,7 +94,7 @@ module Icache
             addr_to_l2        <=0;
             flag              <=0;
         end
-        else if (~cache_ready & ~state_wren )
+        else if (~cache_ready & ~state_wren )   //check whether cache ready and make sure flag goes 0 one cycle before data get written
         begin
             if(~addr_to_l2_valid & ~flag)
             begin

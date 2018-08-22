@@ -145,7 +145,7 @@ module BHT #(
 
         else 
         begin
-           PRD_ADDR = /*( ( tag[pc_line_add] == PC[ADDR_WIDTH-1:H_ADDR_WIDTH+2]) & return[pc_line_add]) ? RETURN_ADDR :*/  ((( history[pc_line_add][1] & ( tag[pc_line_add] == PC[ADDR_WIDTH-1:H_ADDR_WIDTH+2]) & state[pc_line_add] ) ?   target[pc_line_add] : PC + (CACHE_READY<<2)) );
+           PRD_ADDR = /*( ( tag[pc_line_add] == PC[ADDR_WIDTH-1:H_ADDR_WIDTH+2]) & return[pc_line_add]) ? RETURN_ADDR :*/  ((( history[pc_line_add][1] & ( tag[pc_line_add] == PC[ADDR_WIDTH-1:H_ADDR_WIDTH+2]) & state[pc_line_add] ) ?   target[pc_line_add] : PC + (1<<2)) );
         end
     end
     
