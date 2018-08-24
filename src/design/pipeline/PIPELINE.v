@@ -56,7 +56,7 @@ module PIPELINE #(
     //    DATA CACHE SIGNALS    //
     //////////////////////////////
     
-    output              [    2      - 1 : 0]        CONTROL_DATA_CACHE              , // CONTROL_FROM_PROC = {00(idle), 01(read), 10(write), 11(flush address from cache)}
+    output              [    2      - 1 : 0]        CONTROL_DATA_CACHE          , // CONTROL_FROM_PROC = {00(idle), 01(read), 10(write), 11(flush address from cache)}
     output    reg       [ADDR_WIDTH - 1 : 0]        ADDR_TO_DATA_CACHE =32'd0       ,
     output    reg       [4          - 1 : 0]        BYTE_ENB_TO_CACHE =4'b1111      ,
     output              [DATA_WIDTH - 1 : 0]        DATA_TO_DATA_CACHE              ,
@@ -317,7 +317,12 @@ module PIPELINE #(
     end      
                                                                               
     reg         flag            ; 
-
+    integer cache_file;
+    integer cache_file2;
+    initial begin
+        cache_file =$fopen("dcache_dump.txt", "w");
+        cache_file2 =$fopen("dcache_dump1.txt", "w");
+    end
     always@(*)
     begin
         if(type_mem3_wb==ld)
@@ -365,6 +370,8 @@ module PIPELINE #(
                 end
                 default : wb_data_final = DATA_TO_PROC;
             endcase
+//            $fdisplay(cache_file,wb_data_final);
+//            $fdisplay(cache_file1   ,$time);
         end
         else
             wb_data_final = alu_mem3_wb;

@@ -1,7 +1,7 @@
 
 `timescale 1 ns / 1 ps
 
-	module myip_v1_0 #
+	module Test_dcache_PROCESSOR #
 	(
 		// Users to add parameters here
 
@@ -21,7 +21,7 @@
 	    localparam offset_width  = $clog2(data_width*block_size/8 )               ,
 	    localparam tag_width     = address_width - line_width -  offset_width   ,
 	    localparam cache_width   = block_size*data_width                        ,
-		parameter  C_M00_AXI_TARGET_SLAVE_BASE_ADDR	= 32'h00000000,
+		parameter  C_M00_AXI_TARGET_SLAVE_BASE_ADDR	= 32'h00010000,
 		parameter integer C_M00_AXI_BURST_LEN	= block_size,
 		parameter integer C_M00_AXI_ID_WIDTH	= 1,
 		parameter integer C_M00_AXI_ADDR_WIDTH	= 32,
@@ -110,7 +110,11 @@
         wire [cache_width-1:0]  datas                           ;
         wire [address_width-offset_width-1:0]     addr_to_l2       ;
         wire  [cache_width-1:0]   data_from_l2                    ;
+        wire  [cache_width-1:0]   data_to_l2                    ;
         wire                      data_from_l2_valid              ;
+        wire                      data_to_l2_valid              ;
+        wire  [address_width-offset_width-1:0] waddr_to_l2      ;
+        wire                      write_done;
 // Instantiation of Axi Bus Interface M00_AXI
 	myip_v1_0_M00_AXI # ( 
 		.C_M_TARGET_SLAVE_BASE_ADDR(C_M00_AXI_TARGET_SLAVE_BASE_ADDR),
@@ -176,7 +180,12 @@
 		.data_from_l2(data_from_l2)			,
 		.addr_to_l2_valid(addr_to_l2_valid)	,
 		.addr_to_l2({addr_to_l2,{offset_width{1'b0}}})				,
-		.data_from_l2_valid(data_from_l2_valid)
+		.data_from_l2_valid(data_from_l2_valid),
+		
+		.waddr_to_l2({waddr_to_l2,{offset_width{1'b0}}}),
+		.data_to_l2(data_to_l2),
+		.data_to_l2_valid(data_to_l2_valid),
+		.data_written(write_done)
 	);
 	myip_v1_0_S00_AXI # ( 
 		.C_S_AXI_ID_WIDTH 	(C_S00_AXI_ID_WIDTH),
@@ -251,7 +260,35 @@
 		#100;
 		m00_axi_aresetn =1;
 	end
-	    Icache
+//	    Icache
+//    #(
+//        .data_width     (data_width)                                        ,
+//        .address_width  (address_width)                                     ,
+//        .block_size     (block_size)                                        ,
+//        .cache_depth    ( cache_depth)                                      
+        
+//        )
+//    cache
+//    (
+//        .CLK(m00_axi_aclk)                                   ,
+//        .RST(~m00_axi_aresetn)                                   ,
+//        .FLUSH(flush)                               ,
+//        .ADDR(addr)                                 ,
+//        .ADDR_VALID(addr_valid)                     ,
+//        .DATA (data)                                ,
+//        .CACHE_READY(cache_ready)                   ,
+//        .ADDR_TO_L2_VALID(addr_to_l2_valid)         ,
+//        .ADDR_TO_L2 (addr_to_l2)                    ,
+//        .DATA_FROM_L2 (data_from_l2)                ,
+//        .DATA_FROM_L2_VALID (data_from_l2_valid)     ,
+//        .CURR_ADDR(curr_addr)        ,
+//        .ADDR_OUT(addr_out)
+
+//    ); 
+
+reg [1:0] control =2'b10;
+
+   Dcache
     #(
         .data_width     (data_width)                                        ,
         .address_width  (address_width)                                     ,
@@ -259,43 +296,50 @@
         .cache_depth    ( cache_depth)                                      
         
         )
-    cache
-    (
-        .CLK(m00_axi_aclk)                                   ,
+   dcache (
+    	   .CLK(m00_axi_aclk)                                   ,
         .RST(~m00_axi_aresetn)                                   ,
         .FLUSH(flush)                               ,
         .ADDR(addr)                                 ,
-        .ADDR_VALID(addr_valid)                     ,
+        .ADDR_VALID(1)                     ,
         .DATA (data)                                ,
         .CACHE_READY(cache_ready)                   ,
         .ADDR_TO_L2_VALID(addr_to_l2_valid)         ,
         .ADDR_TO_L2 (addr_to_l2)                    ,
         .DATA_FROM_L2 (data_from_l2)                ,
-        .DATA_FROM_L2_VALID (data_from_l2_valid)     ,
-        .CURR_ADDR(curr_addr)        ,
-        .ADDR_OUT(addr_out)
+        .DATA_FROM_L2_VALID (data_from_l2_valid)    ,
+         .CONTROL (control)              			,	
+        .WSTRB (4'b1111)                           ,
+        .DATA_in(addr),
+        .DATA_TO_L2_VALID(data_to_l2_valid)                ,
+        .WADDR_TO_L2(waddr_to_l2)    ,
+        .WRITE_DONE(write_done),
+        .DATA_TO_L2(data_to_l2)
 
-    ); 
-    always@(*)
+    );
+    always@(posedge m00_axi_aclk)
     begin
     	if (~m00_axi_aresetn)
     	begin
     		addr =0;
     		addr_valid =0;
     	end
-    	else 
+    	else if(cache_ready) 
     	begin
     		addr_valid =1;
-    		addr = curr_addr+4;
+    		addr = addr+4;
+    		if(addr==32'h00010000)
+    		begin
+    		  addr=0;
+    		  control = 3 -control;
+    		end
+    		if(control == 2'b01)
+    		begin
+    		  $display("data %h",  data );
+    		end
     	end
     end
-    always@(posedge m00_axi_aclk)
-    begin
-    	if(cache_ready )
-    	begin
-    		$display("output addr: %h data %h", addr_out, data );
-    	end
-    end
+
       // initial begin
       	// addr_valid=0;
       	// addr=0;
@@ -313,4 +357,18 @@
        //      $finish;
 
        //  end
+           reg [7:0] byte_ram[0: (1<<24)-1][0:3];
+   
+       reg [31:0] word_ram[0: (1<<24)-1];
+   
+       initial begin
+           $readmemh("data_hex.txt",word_ram);
+           for (int j=0; j < (1<<24_); j=j+1)
+           begin
+               for (int i=0; i<4; i=i+1)
+               begin
+                   byte_ram[j][i]=  word_ram[j][8*i +: 8];
+               end
+           end
+       end
 	endmodule

@@ -424,11 +424,13 @@
 	begin                                                                             
 		if (M_AXI_ARESETN == 0 || initiate_write)    
 		begin                                                                         
-			write_index <= 					0		;                                                           
+			write_index <= 					0		;  
+			axi_wdata   <=                  data_w[0 +: 32]       ;                                                            
 		end                                                                           
 		else if (wnext && (write_index != C_M_AXI_BURST_LEN-1))                         
 		begin                                                                         
-			write_index <= write_index + 	1		;                                             
+			write_index <= write_index + 	1		;     
+			axi_wdata <= data_w[(write_index+1)*32 +: 32];                                         
 		end                                                                           
 		else                                                                            
 			write_index <= write_index				;                                                   
@@ -437,14 +439,14 @@
 	                                                                                    
 	/* Write Data Generator                                                             
 	 Data pattern is only a simple incrementing count from 0 for each burst  */         
-	always @(posedge M_AXI_ACLK)                                                      
-	begin                                                                             
-		if (M_AXI_ARESETN == 0 )                                                         
-			axi_wdata <= 'b0;    
-		else                                                                 
-			axi_wdata <= data_w[write_index*32 +: 32]; 
+//	always @(posedge M_AXI_ACLK)                                                      
+//	begin                                                                             
+//		if (M_AXI_ARESETN == 0 )                                                         
+			 
+//		else                                                                 
+			
 	                                                    
-	end                                                                             
+//	end                                                                             
 
 
 	always @(posedge M_AXI_ACLK)                                     

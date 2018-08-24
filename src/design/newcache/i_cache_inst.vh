@@ -44,5 +44,6 @@
         .WREN(state_wren)       ,
         .WADDR (state_waddr)    ,
         .RADDR(state_raddr)     ,
-        .STATE(state)   
+        .STATE(state) ,
+        .DATA(1'b1)  
      );
