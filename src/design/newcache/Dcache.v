@@ -32,19 +32,23 @@ module Dcache
         input                         WRITE_DONE 
 
     );
+    reg  [address_width-1:0] addr_d0             ;
     reg  [address_width-1:0] addr_d1             ;
     reg  [address_width-1:0] addr_d2             ;
     reg  [address_width-1:0] addr_d3             ;
     reg  [address_width-1:0] addr_d4             ;
     reg  [address_width- offset_width -1:0] addr_reg             ;
+    reg  [1:0]               control_d0          ;
     reg  [1:0]               control_d1          ;
     reg  [1:0]               control_d2          ;
     reg  [1:0]               control_d3          ;
 
+    reg  [data_width/8-1:0]               wstrb_d0          ;
     reg  [data_width/8-1:0]               wstrb_d1          ;
     reg  [data_width/8-1:0]               wstrb_d2          ;
     reg  [data_width/8-1:0]               wstrb_d3          ;
 
+    reg [data_width-1:0]  data_d0;
     reg [data_width-1:0]  data_d1;
     reg [data_width-1:0]  data_d2;
     reg [data_width-1:0]  data_d3;
@@ -172,20 +176,24 @@ module Dcache
             
         end
         else if (cache_ready & ADDR_VALID) begin
-            addr_d1  <= ADDR;
+            addr_d0  <= ADDR;
+            addr_d1  <= addr_d0;
             addr_d2  <= addr_d1 ;
             addr_d3  <= addr_d2 ;
             addr_d4 <= addr_d3;
 
-            control_d1 <= CONTROL;
+            control_d0 <= CONTROL;
+            control_d1 <= control_d0;
             control_d2 <= control_d1;
             control_d3 <= control_d2;
 
-            data_d1    <= DATA_in;
+            data_d0    <= DATA_in;
+            data_d1    <= data_d0;
             data_d2    <= data_d1;
             data_d3    <= data_d2;
             
-            wstrb_d1   <= WSTRB;
+            wstrb_d0   <= WSTRB;
+            wstrb_d1   <= wstrb_d0;
             wstrb_d2   <= wstrb_d1;
             wstrb_d3   <= wstrb_d2;
         end
@@ -194,7 +202,7 @@ module Dcache
     end
     always@(*)
     begin
-            DATA    = data ;
+        DATA    = data ;
     end
 
     always@(posedge CLK)

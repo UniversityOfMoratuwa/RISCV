@@ -719,7 +719,7 @@ module Test_RISCV_PROCESSOR
     // A
     reg [7:0] byte_ram[0: (1<<24)-1][0:3];
 
-    reg [31:0] word_ram[0: (1<<24)-1];
+    bit [31:0] word_ram[0: (1<<24)-1];
 
     initial begin
         $readmemh("data_hex.txt",word_ram);
