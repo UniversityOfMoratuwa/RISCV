@@ -337,8 +337,7 @@ module CSR_FILE (
             TSR            <= 0     ;                                                                                             
             TVM            <= 0     ;                                                                                             
             TW             <= 0     ;                                                                                             
-            OUTPUT_DATA    <= 0     ;                                                                                             
-            PRIV_JUMP_ADD  <= 0     ;                                                                                             
+                                                                                                     
                                                                                                                               
             {sd,mxr,sum,mprv,mpp,spp,mpie,spie,upie,m_ie,s_ie,u_ie}           <= 13'b011000011101        ;                        
             {heip,seip,ueip,htip,stip,utip,hsip,ssip,usip}                    <= 9'd0                    ;                        

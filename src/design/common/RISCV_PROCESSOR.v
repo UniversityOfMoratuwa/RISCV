@@ -55,89 +55,13 @@ module RISCV_PROCESSOR#(
         localparam EXT_FIFO_ADDRESS     = 32'h10150,
    //     localparam EXT_FIFO_ADDRESS     = 32'h10150,
         parameter  PERIPHERAL_BASE_ADDR = 32'h10000000,
-           
-        // Primary parameters
-        parameter S                     = 17,                    // Size of the cache will be 2^S bits
-        parameter B                     = 9,                     // Size of a block will be 2^B bits
-        parameter a                     = 1,//1,                     // Associativity of the cache would be 2^a
-        parameter T                     = 1,                     // Width to depth translation amount
-        parameter W                     = 7,                     // Width of the L2-L1 bus would be 2^W
-        parameter N                     = 3,                     // Number of stream buffers
-        parameter n                     = 1,                     // Depth of stream buffers would be 2^n
-        parameter p                     = 2,                     // Prefetch queue's depth is 2^p
-        parameter V                     = 2,                     // Size of the victim cache will be 2^V cache lines
-        parameter L2_DELAY_RD           = 7,                     // Delay of the second level of cache
-        parameter HISTORY_DEPTH         = 32,                                  
-        // Calculated parameters
-        localparam BYTES_PER_WORD       = logb2(DATA_WIDTH/8),
-        
-        localparam CACHE_SIZE           = 1 << S,
-        localparam BLOCK_SIZE           = 1 << B,
-        localparam ASSOCIATIVITY        = 1 << a,
-        
-        localparam TAG_WIDTH            = ADDR_WIDTH + 3 + a - S,
-        localparam LINE_ADDR_WIDTH      = S - a - B + T,
-        localparam TAG_ADDR_WIDTH       = S - a - B,
-        
-        localparam L2_BUS_WIDTH         = 1 << W,
-        localparam BLOCK_SECTIONS       = 1 << T,
-        
-        localparam SET_SIZE             = CACHE_SIZE / ASSOCIATIVITY,
-        localparam LINE_RAM_WIDTH       = 1 << (B - T),
-        localparam LINE_RAM_DEPTH       = 1 << LINE_ADDR_WIDTH,
-        localparam TAG_RAM_WIDTH        = TAG_WIDTH + BLOCK_SECTIONS,
-        localparam TAG_RAM_DEPTH        = 1 << TAG_ADDR_WIDTH,
-        
-        localparam PREFETCH_QUEUE_DEPTH = 1 << p,
-        localparam STREAM_BUF_DEPTH     = 1 << n,
-        localparam STREAM_SEL_BITS      = logb2(N + 1),
-        
-        localparam L2_BURST             = 1 << (B - W)
+                              // Delay of the second level of cache
+        parameter HISTORY_DEPTH         = 32
     ) (
         // Standard inputs
         input                               CLK,
         input                               RSTN,
-            
-        ////////////////////////
-        // INSTRUCTION CACHE  //
-        ////////////////////////
-        
-        // Output address bus from Instruction Cache to Memory
-        (* mark_debug *) input                               ADDR_TO_L2_READY_INS,
-        (* mark_debug *) output                              ADDR_TO_L2_VALID_INS,      
-        (* mark_debug *) output     [ADDR_WIDTH - 2 - 1 : 0] ADDR_TO_L2_INS,
-                
-        // Input data bus to Insruction Cache from Memory       
-        (* mark_debug *) input                               DATA_FROM_L2_VALID_INS,
-        (* mark_debug *) output                              DATA_FROM_L2_READY_INS,
-        (* mark_debug *) input      [L2_BUS_WIDTH   - 1 : 0] DATA_FROM_L2_INS,
-        
-        
-        ////////////////////////
-        //    DATA CACHE      //
-        ////////////////////////
-        
-        // Write bus between Data Cache and Memory 
-        (* mark_debug *) input                               WR_TO_L2_READY_DAT,
-        (* mark_debug *) output                              WR_TO_L2_VALID_DAT,
-        (* mark_debug *) output     [ADDR_WIDTH - 2 - 1 : 0] WR_ADDR_TO_L2_DAT,
-        (* mark_debug *) output     [L2_BUS_WIDTH   - 1 : 0] DATA_TO_L2_DAT,
-        (* mark_debug *) output                              WR_CONTROL_TO_L2_DAT,
-        (* mark_debug *) input                               WR_COMPLETE_DAT,
-        
-        // Read address from Data Cache to Memory
-        (* mark_debug *) input                               RD_ADDR_TO_L2_READY_DAT,
-        (* mark_debug *) output                              RD_ADDR_TO_L2_VALID_DAT,
-        (* mark_debug *) output     [ADDR_WIDTH - 2 - 1 : 0] RD_ADDR_TO_L2_DAT,
-        
-        // Read data to Data Cache from Memory
-        (* mark_debug *) input                               DATA_FROM_L2_VALID_DAT,
-        (* mark_debug *) output                              DATA_FROM_L2_READY_DAT,
-        (* mark_debug *) input      [L2_BUS_WIDTH   - 1 : 0] DATA_FROM_L2_DAT,
-                         input  P0_INIT_AXI_TXN,
-        ////////////////////////
-        //   EXTRACTION FIFO  //
-        ////////////////////////
+        input  P0_INIT_AXI_TXN,
                    
        output reg                                            EXT_FIFO_WR_ENB,
        output reg [DATA_WIDTH     - 1 : 0]                   EXT_FIFO_WR_DATA=32,
@@ -357,7 +281,7 @@ module RISCV_PROCESSOR#(
     .CLK(CLK),
     .RST(~RSTN),
     // Towards instruction cache
-    .CACHE_READY(cache_ready_ins & !exstage_stalled & P0_INIT_AXI_TXN!=0 & !stop_ins_cache),
+    .CACHE_READY(cache_ready_ins & !exstage_stalled  & !stop_ins_cache),
     .PIPELINE_STALL(proc_ready_ins),
     .BRANCH_TAKEN(branch_taken),
     .BYTE_ENB_TO_CACHE( byte_enb_proc),
@@ -388,6 +312,7 @@ module RISCV_PROCESSOR#(
     
     BHT bht (
     .CLK(CLK)                              ,
+    .RST(~RSTN)                            ,
     .PC(pc)                                ,
     .EX_PC(ex_pc)                          ,
     .BRANCH(branch)                        ,
@@ -396,7 +321,7 @@ module RISCV_PROCESSOR#(
     .PRD_VALID (prd_valid)                 ,
     .PRD_ADDR  (prd_addr)                  ,
     .FLUSH(flush_w)                          ,
-    .CACHE_READY(cache_ready_ins & !exstage_stalled & P0_INIT_AXI_TXN!=0 & !stop_ins_cache)          ,
+    .CACHE_READY(cache_ready_ins & !exstage_stalled  & !stop_ins_cache)          ,
     .CACHE_READY_DATA(cache_ready_dat & !stop_dat_cache),
     .RETURN_ADDR(return_addr),
     .RETURN(return),
@@ -492,7 +417,7 @@ module RISCV_PROCESSOR#(
     always @ (posedge CLK) begin 
 //         EXT_FIFO_WR_ENB  <=P0_INIT_AXI_TXN & cache_ready_dat & cache_ready_ins ;//<= data_to_proc_ins;
 //         EXT_FIFO_WR_DATA <= {ex_pc[31:2],cache_ready_dat,cache_ready_ins};
-         if (((addr_from_proc_dat == EXT_FIFO_ADDRESS) & (control_from_proc_dat == 2)  & cache_ready_dat & cache_ready_ins  & P0_INIT_AXI_TXN))
+         if (((addr_from_proc_dat == EXT_FIFO_ADDRESS) & (control_from_proc_dat == 2)  & cache_ready_dat & cache_ready_ins ))
          begin
              EXT_FIFO_WR_ENB  <= 1;
              EXT_FIFO_WR_DATA <= data_from_proc_dat;
@@ -674,9 +599,6 @@ myip_v1_0_M00_AXI # (
         .data_to_l2_valid(data_to_l2_valid),
         .data_written(write_done)
     );
-    // Add user logic here
-
-    // User logic ends
 
 
         Icache
@@ -693,7 +615,7 @@ myip_v1_0_M00_AXI # (
         .RST(~RSTN)                                   ,
         .FLUSH(1'b0)                               ,
         .ADDR(prd_addr)                                 ,
-        .ADDR_VALID(proc_ready_ins & !exstage_stalled & P0_INIT_AXI_TXN!=0 & !stop_ins_cache)                     ,
+        .ADDR_VALID(proc_ready_ins & !exstage_stalled  & !stop_ins_cache)                     ,
         .DATA (data_to_proc_ins)                                ,
         .CACHE_READY(cache_ready_ins)                   ,
         .ADDR_TO_L2_VALID(addr_to_l2_valid)         ,
@@ -734,89 +656,5 @@ myip_v1_0_M00_AXI # (
         .DATA_TO_L2(data_to_l2)
 
     );
-// Data_Cache # (
-//     .S(S),
-//     .B(B),
-//     .a(a),
-//     .T(T),
-//     .W(W),
-//     .L2_DELAY_RD(L2_DELAY_RD),
-//     .V(V)
-//     ) data_cache (
-//     // Standard inputs
-//     .CLK(CLK),
-//     // Status signals between processor and cache
-//     .CACHE_READY(cache_ready_dat),
-//     // Ports towards the processor
-//     .CONTROL_FROM_PROC((addr_from_proc_dat != EXT_FIFO_ADDRESS & addr_from_proc_dat < PERIPHERAL_BASE_ADDR)? control_from_proc_dat : 2'b0),  // CONTROL_FROM_PROC = {00(idle), 01(read), 10(write), 11(flush address from cache)}
-//     .BYTE_ENB_FROM_PROC(byte_enb_proc),
-//     .ADDR_FROM_PROC(addr_from_proc_dat),
-//     .DATA_FROM_PROC(data_from_proc_dat),
-//     .DATA_TO_PROC(data_to_proc_dat),
-//     // Write port towards the L2 cache
-//     .WR_TO_L2_READY(WR_TO_L2_READY_DAT),
-//     .WR_TO_L2_VALID(WR_TO_L2_VALID_DAT),
-//     .WR_ADDR_TO_L2(WR_ADDR_TO_L2_DAT),
-//     .DATA_TO_L2(DATA_TO_L2_DAT),
-//     .WR_CONTROL_TO_L2(WR_CONTROL_TO_L2_DAT),
-//     .WR_COMPLETE(WR_COMPLETE_DAT),
-//     // Read port towards the L2 cache
-//     .RD_ADDR_TO_L2_READY(RD_ADDR_TO_L2_READY_DAT),
-//     .RD_ADDR_TO_L2_VALID(RD_ADDR_TO_L2_VALID_DAT),
-//     .RD_ADDR_TO_L2(RD_ADDR_TO_L2_DAT),
-//     .DATA_FROM_L2_VALID(DATA_FROM_L2_VALID_DAT),
-//     .DATA_FROM_L2_READY(DATA_FROM_L2_READY_DAT),
-//     .DATA_FROM_L2(DATA_FROM_L2_DAT)       
-//     );
-//        Ins_Cache # (
-//        .S(S),
-//        .B(B),
-//        .a(a),
-//        .T(T),
-//        .W(W),
-//        .L2_DELAY(L2_DELAY_RD),
-//        .N(N),
-//        .n(n),
-//        .p(p)
-//        ) ins_cache (
-//        // Standard inputs
-//        .CLK(CLK),
-//        .RSTN(RSTN),
-//        .PC(pc) ,
-//        // Status signals between processor and cache
-//        .CACHE_READY(cache_ready_ins),
-//        .PROC_READY(proc_ready_ins & !exstage_stalled & P0_INIT_AXI_TXN!=0 & !stop_ins_cache),
-//        // Ports towards the processor
-//        .BRANCH_ADDR_IN(prd_addr),
-//        .BRANCH(1),
-//        .DATA_TO_PROC(data_to_proc_ins),
-//        .PC_TO_PROC(pc_to_proc_ins),
-//        /// Read port towards the L2 cache    
-//        .ADDR_TO_L2(ADDR_TO_L2_INS),
-//        .ADDR_TO_L2_READY(ADDR_TO_L2_READY_INS),
-//        .ADDR_TO_L2_VALID(ADDR_TO_L2_VALID_INS),
-//        .DATA_FROM_L2(DATA_FROM_L2_INS),
-//        .DATA_FROM_L2_VALID(DATA_FROM_L2_VALID_INS),
-//        .DATA_FROM_L2_READY(DATA_FROM_L2_READY_INS)
-//         );
-//    always@(*)
-//    begin
-//        if (~m00_axi_aresetn)
-//        begin
-//            addr =0;
-//            addr_valid =0;
-//        end
-//        else 
-//        begin
-//            addr_valid =1;
-//            addr = curr_addr+4;
-//        end
-//    end
-//    always@(posedge m00_axi_aclk)
-//    begin
-//        if(cache_ready )
-//        begin
-//            $display("output addr: %h data %h", addr_out, data );
-//        end
-//    end
+
 endmodule

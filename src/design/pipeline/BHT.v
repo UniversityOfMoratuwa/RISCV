@@ -40,7 +40,8 @@ module BHT #(
         input   [ADDR_WIDTH - 1 : 0]    RETURN_ADDR                     ,
         output reg                      PRD_VALID                       ,
         output reg  [ADDR_WIDTH - 1 : 0]PRD_ADDR                        ,
-        input PREDICTED
+        input PREDICTED,
+        input RST
     );
     
     reg     [ADDR_WIDTH - 1 : 0] target     [0: HISTORY_DEPTH - 1   ]   ;
@@ -66,22 +67,42 @@ module BHT #(
     
     initial
     begin
-        prd_valid_reg   <= 1'b0                 ;
-        prd_addr_reg    <= {ADDR_WIDTH{1'b0}}   ;
-        for(i=0;i<HISTORY_DEPTH;i=i+1)
-        begin
-            target[i]   <= {ADDR_WIDTH{1'b0}}   ;
-            tag[i]      <= {TAG_WIDTH{1'b0}}    ;
-            history[i]  <= 2'b01                ;
-        end
-        state=0;
-        return=0;
-    end
+    
+        
+        for(i=0;i<HISTORY_DEPTH;i=i+1)                      
+        begin                                               
+            target[i]   <= {ADDR_WIDTH{1'b0}}   ;           
+            tag[i]      <= {TAG_WIDTH{1'b0}}    ;           
+            history[i]  <= 2'b01                ;           
+        end                                                 
+    end                                         
+    
+    
+    
+    
+    
+    
+    
+  
     reg [31:0] branch_count=0;
     reg [31:0] predicted_count=0;
     always @(posedge CLK)
     begin
-        if (CACHE_READY & CACHE_READY_DATA)
+        if(RST)
+        begin
+            branch          <=       0 ;
+            branch_count    <=       0 ;
+            predicted_count <=       0 ;
+            branch_taken    <=       0 ;
+            predicted       <=       0 ;
+            branch_addr     <=       0 ;
+                                      
+            ex_line_add     <=       0 ;
+            ex_pc           <=       0 ;
+            return_reg      <=       0 ;
+            flush           <=       0 ;
+        end
+        else if (CACHE_READY & CACHE_READY_DATA)
         begin
             branch          <= BRANCH                               ;
             branch_count    <= branch_count +BRANCH                 ;
@@ -95,20 +116,29 @@ module BHT #(
             return_reg      <= RETURN                               ;
             flush           <= FLUSH                                ;
         end
-		if (branch & CACHE_READY & CACHE_READY_DATA)
+        if (RST)
+        begin
+            prd_valid_reg   <= 1'b0                 ;           
+            prd_addr_reg    <= {ADDR_WIDTH{1'b0}}   ;           
+               
+            state<=0;                                            
+            return<=0;                                           
+        end
+	    else if (branch & CACHE_READY & CACHE_READY_DATA)
 		begin
-		   if ( target[ex_line_add] != branch_addr      )                      
+		   if ( (target[ex_line_add] != branch_addr ) | ~state[ex_line_add]      )                      
 		   begin
-		      target[ex_line_add] <= branch_addr   ;
-		      history[ex_line_add] <= 2'b01;
-		   end
-			target[ex_line_add]    <= branch_addr                           ;
-			state[ex_line_add]     <= 1                                     ;
-	    	tag[ex_line_add]       <= ex_pc[ADDR_WIDTH-1:H_ADDR_WIDTH+2]    ;
-	    	return[ex_line_add]    <= return_reg                            ;
+                target[ex_line_add]  <= branch_addr   ;
+                history[ex_line_add] <= 2'b01;
+                
+                target[ex_line_add]    <= branch_addr                           ;
+                state[ex_line_add]     <= 1                                     ;
+                tag[ex_line_add]       <= ex_pc[ADDR_WIDTH-1:H_ADDR_WIDTH+2]    ;
+                return[ex_line_add]    <= return_reg                            ;
+	     end
 		end
 	    
-	    if(branch_taken & (tag[ex_line_add]==ex_pc[ADDR_WIDTH-1:H_ADDR_WIDTH+2]) & CACHE_READY_DATA & CACHE_READY & !flush)
+	    if(branch_taken & (tag[ex_line_add]==ex_pc[ADDR_WIDTH-1:H_ADDR_WIDTH+2]) & CACHE_READY_DATA & CACHE_READY & !flush & state[ex_line_add])
 	    begin
 			case (history[ex_line_add])
 				2'b00: history[ex_line_add] <= 2'b01    ;
@@ -117,7 +147,7 @@ module BHT #(
 				2'b11: history[ex_line_add] <= 2'b11    ;
 			endcase
 	    end
-	    else if ((tag[ex_line_add]==ex_pc[ADDR_WIDTH-1:H_ADDR_WIDTH+2]) & CACHE_READY_DATA & CACHE_READY & !flush)
+	    else if ((tag[ex_line_add]==ex_pc[ADDR_WIDTH-1:H_ADDR_WIDTH+2]) & CACHE_READY_DATA & CACHE_READY & !flush &   state[ex_line_add])
 	    begin
 			case (history[ex_line_add])
 				2'b00: history[ex_line_add] <= 2'b00    ;

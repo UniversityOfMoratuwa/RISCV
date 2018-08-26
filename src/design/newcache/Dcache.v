@@ -314,7 +314,7 @@ module Dcache
  
    always@(*)  
    begin
-       for (i=0;i<$clog2(data_width);i=i+1)
+       for (i=0;i<data_width/8;i=i+1)
        begin
            if(wstrb_d3[i])
            begin
