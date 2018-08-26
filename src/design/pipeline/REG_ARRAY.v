@@ -25,6 +25,7 @@ module REG_ARRAY(
     input [4:0] RS1_SEL,
     input [4:0] RS2_SEL,
     input CLK,
+    input RST,
     input RD_WB_VALID_MEM3_WB,
     input [4:0] RD_WB_MEM3_WB,         // register which is written back to 
     output [31:0] RS1_DATAOUT,
@@ -38,16 +39,7 @@ module REG_ARRAY(
     reg [31:0] RS2_DATAOUT_L=0;
  
     integer i;
-    initial
-    begin
-        for(i=1;i<32;i=i+1)
-        begin
-        if(i==2)
-            REGISTER[i] = 32'd1024;
-        else
-            REGISTER[i] = 32'd0;
-        end
-    end   
+ 
     //debugging purposes ////////////////////////////////////////////////////////////////////
 //      integer writeFile;
 //      reg [31:0] last_data=0;
@@ -86,11 +78,19 @@ module REG_ARRAY(
     
     always@(posedge CLK)
     begin
+        if(RST)
         begin
-        if(RD_WB_VALID_MEM3_WB)
+             for(i=1;i<32;i=i+1)
+             begin
+             if(i==2)
+                 REGISTER[i] <= 32'd1024;
+             else
+                 REGISTER[i] <= 32'd0;
+             end
+        end
+        else if(RD_WB_VALID_MEM3_WB)
         begin
             REGISTER[RD_WB_MEM3_WB] <= DATA_IN;
-        end
         end
     end
     assign RS1_DATAOUT = RS1_SEL== 5'd0 ? 32'd0 : REGISTER[RS1_SEL]; 

@@ -21,6 +21,7 @@
 
 module STATE_REG(
     input           CLK                 ,
+    input           RST                 ,
     input   [ 4:0]  RS1_SEL             ,
     input   [ 4:0]  RS2_SEL             ,
     input   [ 4:0]  RD_IN               ,
@@ -45,13 +46,6 @@ module STATE_REG(
     wire [ 4:0] rs2_state               ;
       
     integer i;
-    initial
-    begin
-        for(i=0;i<32;i=i+1)
-        begin
-            reg_state[i] = direct;
-        end
-    end
     
     reg  [      4:0] rs1_state_reg              ;
     reg  [      4:0] rs2_state_reg              ;
@@ -156,10 +150,13 @@ module STATE_REG(
     always @(posedge CLK)
     begin
         //feed back mux select
-        for(i=1;i<32;i=i+1)
-        begin
+    for(i=0;i<32;i=i+1)
+    begin
+        if(RST)
+            reg_state[i] <= direct;
+        else
             reg_state[i] <= next_state[i];      
-        end     
+    end 
     end                                    
 
     always@(*)

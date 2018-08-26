@@ -37,6 +37,7 @@ module PIPELINE #(
     
     //Standard inputs
     input                                           CLK                             ,
+    input                                           RST                             ,
     
     //Status signals between processor and cache
     input                                           CACHE_READY                     ,    
@@ -155,7 +156,8 @@ module PIPELINE #(
         .FLUSH              (flush_e)                       ,
         .STALL_ENABLE_FB    (stall_enable_id_fb)            ,
         .RS1_TYPE           (rs1_type)                      ,
-        .RS2_TYPE           (rs2_type)                  
+        .RS2_TYPE           (rs2_type)                  ,
+        .RST                (RST)                           
         );        
   
     EXSTAGE exstage(
@@ -199,7 +201,8 @@ module PIPELINE #(
         //   .CACHE_READY_DATA   (CACHE_READY_DATA)             ,
         .FLUSH(flush_e)                                             ,
         .FLUSH_I(flush_internal)                                    ,              
-        .PREDICTED(PREDICTED)
+        .PREDICTED(PREDICTED),
+        .RST(RST)
         );
    
     Multiplexer #(
@@ -412,9 +415,63 @@ module PIPELINE #(
     
     always@(posedge CLK)
     begin
-        cache_ready_data            <= CACHE_READY_DATA             ;//dummy
-        
-        if(CACHE_READY_DATA & CACHE_READY)
+        // cache_ready_data            <= CACHE_READY_DATA             ;//dummy
+        if(RST)
+        begin
+                rs1_type_fb              <= 0                ; 
+                rs2_type_fb              <= 0                ; 
+                stall_enable_id_fb       <= 0            ;
+                feed_back_muxb_sel_id_fb <= 0      ;  
+                feed_back_muxa_sel_id_fb <= 0      ;  
+                a_bus_sel_id_fb          <= 0               ;  
+                b_bus_sel_id_fb          <= 0               ;                  
+                imm_out_id_fb            <= 0                 ;   
+                alu_cnt_id_fb            <= 0                 ;    
+                fun3_id_fb               <= 0                    ;
+                csr_cnt_id_fb            <= 0                 ;
+                zimm_id_fb               <= 0                    ; 
+                type_id_fb               <= 0                 ;    
+                jump_id_fb               <= 0                  ; 
+                jumpr_id_fb              <= 0                 ;  
+                cbranch_id_fb            <= 0               ;
+                rd_id_fb                 <= 0                  ;
+                pc_id_fb                 <= 0                ;  
+                rs1_id_fb                <= 0                 ;      
+                rs2_id_fb                <= 0                 ;    
+                data_cache_control_id_fb <= 0    ;
+                ins_id_fb                <= 0               ;            
+                ins_fb_ex                <= 0               ;
+                alu_cnt_fb_ex            <= 0           ;                   
+                fun3_fb_ex               <= 0              ;
+                csr_cnt_fb_ex            <= 0           ;
+                zimm_fb_ex               <= 0              ;    
+                type_fb_ex               <= 0              ;    
+                jump1_fb_ex              <= 0             ;  
+                jump2_fb_ex              <= 0             ;   
+                comp1_fb_ex              <= 0            ;  
+                comp2_fb_ex              <= 0            ;
+                a_bus_fb_ex              <= 0         ;   
+                b_bus_fb_ex              <= 0         ;   
+                jump_fb_ex               <= 0              ;
+                cbranch_fb_ex            <= 0           ;
+                jumpr_fb_ex              <= 0             ;
+                rd_fb_ex                 <= 0;
+                rs2_fb_ex                <= 0               ;      
+                rs1_fb_ex                <= 0               ;      
+                a_bus_sel_fb_ex          <= 0         ;         
+                b_bus_sel_fb_ex          <= 0         ;          
+                imm_out_fb_ex            <= 0           ;
+                pc_fb_ex                 <= 0                ;
+                data_cache_control_fb_ex <= 0;
+                rs2_ex_ex2               <= 0               ;
+                rs1_ex_ex2               <= 0               ;
+                rd_ex_ex2                <= 0                ;   
+                op_type_ex_ex2           <= 0              ;     
+                pc_ex_ex2                <= 0                ;   
+                imm_ex_ex2               <= 0           ;     
+            
+        end
+        else if(CACHE_READY_DATA & CACHE_READY)
         begin  
             flush_e_i               <= flush_e                      ;
             stall_enable_fb_ex      <= stall_enable_id_fb           ;
@@ -531,7 +588,42 @@ module PIPELINE #(
             pc_ex_mem1               <=    pc_fb_ex                 ;                                              
             imm_fb_ex                <=    imm_out_id_fb            ;    
         end
-        
+        if(RST)
+        begin
+            type_ex_mem1             <=                 0       ;
+            alu_ex_mem1              <=      0                  ;
+            op_type_ex_mem1          <=      0                  ;
+            feed_back_muxa_sel_id_fb <=0;
+            rs1_id_fb<=0; 
+            rs2_id_fb <=0;
+            type_ex_mem1<=0;
+            pc_ex_mem1<=0;
+            alu_ex_mem1<=0;
+            op_type_ex_mem1<=0;
+           alu_mem1_mem2<=0;
+           alu_mem2_mem3<=0;
+           alu_mem3_wb<=0;
+            type_mem1_mem2<=0;
+            type_mem2_mem3<=0;
+            type_mem3_wb<=0;
+            alu_mem1_mem2<=0;
+            alu_mem2_mem3<=0;
+            alu_mem3_wb<=0;
+            return_addr<=0;
+            alu_written_back<=0;
+            rd_mem1_mem2<=0;
+            rd_mem2_mem3<=0;
+            rd_mem3_wb<=0;
+            pc_mem1_mem2<=0;
+            pc_mem2_mem3<=0;
+            pc_mem3_wb<=0;
+            return_addr<=0;
+            op_type_mem1_mem2<=0;
+            op_type_mem2_mem3<=0;
+            op_type_mem3_wb<=0;
+
+
+        end
         if (CACHE_READY_DATA)
         begin       
             if (!CACHE_READY)

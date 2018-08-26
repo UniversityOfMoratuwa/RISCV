@@ -355,6 +355,7 @@ module RISCV_PROCESSOR#(
     
      PIPELINE pipeline(
     .CLK(CLK),
+    .RST(~RSTN),
     // Towards instruction cache
     .CACHE_READY(cache_ready_ins & !exstage_stalled & P0_INIT_AXI_TXN!=0 & !stop_ins_cache),
     .PIPELINE_STALL(proc_ready_ins),

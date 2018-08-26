@@ -20,6 +20,7 @@
 //////////////////////////////////////////////////////////////////////////////////
 module DECODE_UNIT(
     input               CLK                     ,
+    input               RST                     ,
     input       [ 1:0]  TYPE_MEM3_WB            ,
     input               DATA_CACHE_READY        ,
     input               INS_CACHE_READY         ,
@@ -95,11 +96,13 @@ module DECODE_UNIT(
         .RD_WB_VALID_MEM3_WB (TYPE_MEM3_WB!=idle)   ,
         .RD_WB_MEM3_WB       (WB_DES)               ,         
         .RS1_DATAOUT         (rs1_out)              ,
-        .RS2_DATAOUT         (rs2_out)                 
+        .RS2_DATAOUT         (rs2_out)              ,
+        .RST                 (RST)
         );
            
      STATE_REG  state_reg(   
         .CLK                (CLK)                   ,
+        .RST                (RST)                   ,
         .RS1_SEL            (rs1_sel)               ,
         .RS2_SEL            (rs2_sel)               ,
         .RD_IN              (INSTRUCTION[11: 7])    ,

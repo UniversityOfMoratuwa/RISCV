@@ -22,6 +22,7 @@
 
 module EXSTAGE(
     input                   CLK                     ,
+    input                   RST                     ,
     input signed    [31:0]  COMP1                   ,
     input signed    [31:0]  COMP2                   ,
     input           [31:0]  COMP1_U                 ,
@@ -219,7 +220,8 @@ module EXSTAGE(
         .PRIV_JUMP(priv_jump),
         .MEIP(MEIP),   
         .MTIP(MTIP),   
-        .MSIP(MSIP)                        
+        .MSIP(MSIP)  ,
+        .RST(RST)                      
         );
         
     RV32M rv32m(

@@ -721,7 +721,8 @@ module Test_RISCV_PROCESSOR
 
     bit [31:0] word_ram[0: (1<<24)-1];
 
-    initial begin
+    always@(negedge RSTN)
+    begin
         $readmemh("data_hex.txt",word_ram);
         for (int j=0; j < (1<<24_); j=j+1)
         begin

@@ -22,6 +22,7 @@
 
 module CSR_FILE (
     input               CLK             ,
+    input               RST             ,
     input       [31:0]  PC              ,
     input       [ 3:0]  CSR_CNT         ,
     input       [11:0]  CSR_ADDRESS     ,
@@ -154,19 +155,19 @@ module CSR_FILE (
     wire    [31 : 0] instret_r   = minsret_reg [31 :  0]                ;
     wire    [31 : 0] instreth_r  = minsret_reg [63 : 32]                ;
     
-    initial
-    begin
-        TSR             = 0     ;
-        TVM             = 0     ;
-        TW              = 0     ;
-        OUTPUT_DATA     = 0     ;
-        PRIV_JUMP_ADD   = 0     ;     
+    // initial
+    // begin
+    //     TSR             = 0     ;
+    //     TVM             = 0     ;
+    //     TW              = 0     ;
+    //     OUTPUT_DATA     = 0     ;
+    //     PRIV_JUMP_ADD   = 0     ;     
             
-        {sd,mxr,sum,mprv,mpp,spp,mpie,spie,upie,m_ie,s_ie,u_ie}           = 13'b011000011101        ;
-        {heip,seip,ueip,htip,stip,utip,hsip,ssip,usip}                    = 9'd0                    ;
-        {meie,heie,seie,ueie,mtie,htie,stie,utie,msie,hsie,ssie,usie}     = 12'd0                   ;
-        mpp=2'b11;
-    end
+    //     {sd,mxr,sum,mprv,mpp,spp,mpie,spie,upie,m_ie,s_ie,u_ie}           = 13'b011000011101        ;
+    //     {heip,seip,ueip,htip,stip,utip,hsip,ssip,usip}                    = 9'd0                    ;
+    //     {meie,heie,seie,ueie,mtie,htie,stie,utie,msie,hsie,ssie,usie}     = 12'd0                   ;
+    //     mpp=2'b11;
+    // end
     
     reg     [1  : 0] curr_prev          = mmode                                                     ;
     
@@ -322,16 +323,63 @@ module CSR_FILE (
     
     //Write to CSR Registers and Increment counters
     always@(posedge CLK)
-    begin    
-        mcycle_reg   <= mcycle_reg + 1'b1       ;
-        if(!PROC_IDLE)
+    begin 
+        if(RST)
         begin
-            minsret_reg <= minsret_reg + 1'b1   ;
+             mcycle_reg <=0;  
+        end  
+        else 
+             mcycle_reg   <= mcycle_reg + 1'b1       ;
+
+        if(RST)
+        begin
+            minsret_reg <= 0;
+            TSR            <= 0     ;                                                                                             
+            TVM            <= 0     ;                                                                                             
+            TW             <= 0     ;                                                                                             
+            OUTPUT_DATA    <= 0     ;                                                                                             
+            PRIV_JUMP_ADD  <= 0     ;                                                                                             
+                                                                                                                              
+            {sd,mxr,sum,mprv,mpp,spp,mpie,spie,upie,m_ie,s_ie,u_ie}           <= 13'b011000011101        ;                        
+            {heip,seip,ueip,htip,stip,utip,hsip,ssip,usip}                    <= 9'd0                    ;                        
+            {meie,heie,seie,ueie,mtie,htie,stie,utie,msie,hsie,ssie,usie}     <= 12'd0                   ;                        
+            mpp             <=2'b11                      ;                                                                    
+            mt_base       <=0                            ;    
+            mt_mode       <=0                            ;    
+            medeleg_reg   <=0                            ;    
+            mideleg_reg   <=0                                ;
+            mcycle_reg    <=0                            ;    
+            minsret_reg   <=0                            ;    
+            {mir,mtm,mcy}   <=0                            ;    
+            mscratch_reg  <=0                            ;    
+            mepc_reg      <=0                            ;    
+            mtval_reg     <=0                            ;    
+            mecode_reg    <=0                            ;    
+            minterrupt    <=0                            ;    
+                                                
+                                                
+            st_base       <=0                            ;    
+            st_mode       <=0                            ;    
+            sedeleg_reg   <=0                            ;    
+            sideleg_reg   <=0                            ;    
+            sinsret_reg   <=0                            ;    
+            {sir,stm,scy}   <=0                            ;    
+            sscratch_reg  <=0                            ;    
+            sepc_reg      <=0                            ;    
+            stval_reg     <=0                            ;    
+            secode_reg    <=0                            ;    
+            sinterrupt    <=0                            ;    
+            smode_reg     <=0                            ;    
+            asid          <=0                            ;                                                                                                                      
+                                                                                                                      
+                                                                                                                              
+                                                                                                                              
+
         end
-        
-        if (!PROC_IDLE)
+        else if (!PROC_IDLE)
         begin
             //external interupts >> software interupts >> timer interupts >> synchornous traps
+             minsret_reg <= minsret_reg + 1'b1   ;
             if(m_ie & meie & MEIP)
             begin
                 curr_prev      <=   mmode                                       ;
@@ -411,103 +459,104 @@ module CSR_FILE (
                      mpie        <= 1'b0         ;
                  end
                  default     :   ;
-             endcase
-             end
-        end
-        if(csr_write_allowed)
-        begin
-            case (CSR_ADDRESS)
-                ustatus         :   {upie,u_ie}         <=  {
-                                                            input_data_final[4]         ,
-                                                            input_data_final[0]
-                                                            }                           ;
-                uie            :    {ueie,utie,usie}    <=  {
-                                                            input_data_final[8]         ,
-                                                            input_data_final[4]         ,
-                                                            input_data_final[0]
-                                                            }                           ;
-                utvec          :    {ut_base,ut_mode}   <=  input_data_final            ;   
-                uscratch       :    uscratch_reg        <=  input_data_final            ;
-                uepc           :    uepc_reg            <=  input_data_final            ;
-                ucause         :    {uinterrupt,
-                                           uecode_reg}  <=  input_data_final            ;
-                utval          :    utval_reg           <=  input_data_final            ;
-                uip            :    {ueip,utip,usip}    <=  {
-                                                            input_data_final[8]         ,
-                                                            input_data_final[4]         ,
-                                                            input_data_final[0]
-                                                            }                           ;
-                sstatus        :    {mxr,sum,spp,spie,
-                                    upie,s_ie,u_ie}     <=  {
-                                                            input_data_final[19:18]     ,
-                                                            input_data_final[8]         ,
-                                                            input_data_final[5:4]       ,
-                                                            input_data_final[1:0]
-                                                            }                           ;
-                sedeleg        :    sedeleg_reg         <=  input_data_final            ;
-                sideleg        :    sideleg_reg         <=  input_data_final            ;
-                sie            :    {seie,ueie,stie,
-                                    utie,ssie,usie}     <=  {
-                                                            input_data_final[9:8]       ,
-                                                            input_data_final[5:4]       ,
-                                                            input_data_final[1:0]
-                                                            }                           ;
-                stvec          :    {st_base,st_mode}   <=  input_data_final            ;
-                scounteren     :    {sir,stm,scy}       <=  input_data_final[2:0]       ;
-                sscratch       :    sscratch_reg        <=  input_data_final            ;
-                sepc           :    sepc_reg            <=  input_data_final            ;
-                scause         :    {sinterrupt,
-                                     secode_reg}        <=  input_data_final            ;
-                stval          :    stval_reg           <=  input_data_final            ;
-                sip            :    {seip,ueip,stip,
-                                     utip,ssip,usip}    <=  {
-                                                            input_data_final[9:8]       ,
-                                                            input_data_final[5:4]       ,
-                                                            input_data_final[1:0]
-                                                            }                           ;
-                satp           :    {smode_reg,
-                                     asid,ppn}          <=  input_data_final            ;
-                mstatus        :    {sd,TSR,TW,TVM,
-                                    mxr,sum,mprv,mpp,
-                                    spp,mpie,spie,
-                                    upie,m_ie,
-                                    s_ie,u_ie}          <=  {
-                                                            input_data_final[31]        ,
-                                                            input_data_final[22:17]     ,
-                                                            input_data_final[12:11]     ,
-                                                            input_data_final[8:7]       ,
-                                                            input_data_final[5:3]       ,
-                                                            input_data_final[1:0]
-                                                            }                           ;
-                medeleg        :    medeleg_reg         <=  input_data_final            ;
-                mideleg        :    mideleg_reg         <=  input_data_final            ;
-                mie            :    {meie,seie,ueie,
-                                    mtie,stie,utie,
-                                    msie,ssie,usie}     <=  {
-                                                            input_data_final[11]        ,
-                                                            input_data_final[9:7]       ,
-                                                            input_data_final[5:3]       ,
-                                                            input_data_final[1:0]
-                                                            }                           ;
-                mtvec          :    {mt_base,mt_mode}   <=  input_data_final            ;
-                mcounteren     :    {mir,mtm,mcy}       <=  input_data_final[2:0]       ;
-                mscratch       :    mscratch_reg        <=  input_data_final            ;
-                mepc           :    mepc_reg            <=  input_data_final            ;
-                mcause         :    {minterrupt,
-                                    mecode_reg}         <=  input_data_final            ;
-                mtval          :    mtval_reg           <=  input_data_final            ;
-                mip            :    {seip,ueip,stip,
-                                    utip,ssip,usip}     <=  {
-                                                            input_data_final[9:8]       ,
-                                                            input_data_final[5:4]       ,
-                                                            input_data_final[1:0]
-                                                            }                           ;
-                mcycle         :    mcycle_reg[31 : 0]  <=  input_data_final            ;
-                minstret       :    minsret_reg [31:0]  <=  input_data_final            ;
-                mcycleh        :    mcycle_reg[63:32]   <=  input_data_final            ;
-                minstreth      :    minsret_reg[63:32]  <=  input_data_final            ;
-                default        :    ; 
             endcase
+            end
+        
+            if(csr_write_allowed)
+            begin
+                case (CSR_ADDRESS)
+                    ustatus         :   {upie,u_ie}         <=  {
+                                                                input_data_final[4]         ,
+                                                                input_data_final[0]
+                                                                }                           ;
+                    uie            :    {ueie,utie,usie}    <=  {
+                                                                input_data_final[8]         ,
+                                                                input_data_final[4]         ,
+                                                                input_data_final[0]
+                                                                }                           ;
+                    utvec          :    {ut_base,ut_mode}   <=  input_data_final            ;   
+                    uscratch       :    uscratch_reg        <=  input_data_final            ;
+                    uepc           :    uepc_reg            <=  input_data_final            ;
+                    ucause         :    {uinterrupt,
+                                               uecode_reg}  <=  input_data_final            ;
+                    utval          :    utval_reg           <=  input_data_final            ;
+                    uip            :    {ueip,utip,usip}    <=  {
+                                                                input_data_final[8]         ,
+                                                                input_data_final[4]         ,
+                                                                input_data_final[0]
+                                                                }                           ;
+                    sstatus        :    {mxr,sum,spp,spie,
+                                        upie,s_ie,u_ie}     <=  {
+                                                                input_data_final[19:18]     ,
+                                                                input_data_final[8]         ,
+                                                                input_data_final[5:4]       ,
+                                                                input_data_final[1:0]
+                                                                }                           ;
+                    sedeleg        :    sedeleg_reg         <=  input_data_final            ;
+                    sideleg        :    sideleg_reg         <=  input_data_final            ;
+                    sie            :    {seie,ueie,stie,
+                                        utie,ssie,usie}     <=  {
+                                                                input_data_final[9:8]       ,
+                                                                input_data_final[5:4]       ,
+                                                                input_data_final[1:0]
+                                                                }                           ;
+                    stvec          :    {st_base,st_mode}   <=  input_data_final            ;
+                    scounteren     :    {sir,stm,scy}       <=  input_data_final[2:0]       ;
+                    sscratch       :    sscratch_reg        <=  input_data_final            ;
+                    sepc           :    sepc_reg            <=  input_data_final            ;
+                    scause         :    {sinterrupt,
+                                         secode_reg}        <=  input_data_final            ;
+                    stval          :    stval_reg           <=  input_data_final            ;
+                    sip            :    {seip,ueip,stip,
+                                         utip,ssip,usip}    <=  {
+                                                                input_data_final[9:8]       ,
+                                                                input_data_final[5:4]       ,
+                                                                input_data_final[1:0]
+                                                                }                           ;
+                    satp           :    {smode_reg,
+                                         asid,ppn}          <=  input_data_final            ;
+                    mstatus        :    {sd,TSR,TW,TVM,
+                                        mxr,sum,mprv,mpp,
+                                        spp,mpie,spie,
+                                        upie,m_ie,
+                                        s_ie,u_ie}          <=  {
+                                                                input_data_final[31]        ,
+                                                                input_data_final[22:17]     ,
+                                                                input_data_final[12:11]     ,
+                                                                input_data_final[8:7]       ,
+                                                                input_data_final[5:3]       ,
+                                                                input_data_final[1:0]
+                                                                }                           ;
+                    medeleg        :    medeleg_reg         <=  input_data_final            ;
+                    mideleg        :    mideleg_reg         <=  input_data_final            ;
+                    mie            :    {meie,seie,ueie,
+                                        mtie,stie,utie,
+                                        msie,ssie,usie}     <=  {
+                                                                input_data_final[11]        ,
+                                                                input_data_final[9:7]       ,
+                                                                input_data_final[5:3]       ,
+                                                                input_data_final[1:0]
+                                                                }                           ;
+                    mtvec          :    {mt_base,mt_mode}   <=  input_data_final            ;
+                    mcounteren     :    {mir,mtm,mcy}       <=  input_data_final[2:0]       ;
+                    mscratch       :    mscratch_reg        <=  input_data_final            ;
+                    mepc           :    mepc_reg            <=  input_data_final            ;
+                    mcause         :    {minterrupt,
+                                        mecode_reg}         <=  input_data_final            ;
+                    mtval          :    mtval_reg           <=  input_data_final            ;
+                    mip            :    {seip,ueip,stip,
+                                        utip,ssip,usip}     <=  {
+                                                                input_data_final[9:8]       ,
+                                                                input_data_final[5:4]       ,
+                                                                input_data_final[1:0]
+                                                                }                           ;
+                    mcycle         :    mcycle_reg[31 : 0]  <=  input_data_final            ;
+                    minstret       :    minsret_reg [31:0]  <=  input_data_final            ;
+                    mcycleh        :    mcycle_reg[63:32]   <=  input_data_final            ;
+                    minstreth      :    minsret_reg[63:32]  <=  input_data_final            ;
+                    default        :    ; 
+                endcase
+            end
         end
         
      
