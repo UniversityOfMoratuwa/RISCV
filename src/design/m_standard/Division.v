@@ -41,15 +41,15 @@ module Division #(
         reg     [2*INPUT_WIDTH - 1          :0]     diff                                ;
         reg                                         negative_output                     ;
         
-        reg     [$clog2(INPUT_WIDTH)        :0]     bit                                 ;
+        reg     [$clog2(INPUT_WIDTH)        :0]     bit_reg                                 ;
 
    
-        assign  READY = !bit                                                            ;
+        assign  READY = !bit_reg                                                            ;
 
         initial
         begin
             quotient        = 0                                 ;
-            bit             = 0                                 ;
+            bit_reg             = 0                                 ;
             negative_output = 0                                 ;
         end
 
@@ -59,7 +59,7 @@ module Division #(
             begin
                 if( START ) 
                 begin
-                    bit             = 1 << ( $clog2(INPUT_WIDTH)  ) ;
+                    bit_reg             = 1 << ( $clog2(INPUT_WIDTH)  ) ;
                     quotient        = 0;
                     quotient_temp   = 0;
                     dividend_copy   = (!SIGN || !DIVIDEND[INPUT_WIDTH - 1]) ? 
@@ -74,7 +74,7 @@ module Division #(
                                       ((DIVIDER[INPUT_WIDTH-1] && !DIVIDEND[INPUT_WIDTH-1]) 
                                     ||(!DIVIDER[INPUT_WIDTH-1] && DIVIDEND[INPUT_WIDTH-1]));
                  end 
-                 else if ( bit > 0 ) 
+                 else if ( bit_reg > 0 ) 
                  begin
                     diff          = dividend_copy - divider_copy;
             
@@ -91,7 +91,7 @@ module Division #(
                                     ~quotient_temp + 1'b1;
             
                     divider_copy  = divider_copy >> 1;
-                    bit           = bit - 1'b1;
+                    bit_reg           = bit_reg - 1'b1;
                  end
             end
         end

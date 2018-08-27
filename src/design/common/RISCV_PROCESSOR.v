@@ -236,7 +236,7 @@ module RISCV_PROCESSOR#(
      wire [31:0] prd_addr;
      wire flush_w;
      wire [31:0] return_addr;
-     wire  return;
+     wire  return_w;
      wire [31:0] ins_id_ex;
          reg                      flush                           ;
         reg  [address_width-1:0]    addr                            ;
@@ -298,7 +298,7 @@ module RISCV_PROCESSOR#(
     .BRANCH(branch),
     .FLUSH(flush_w),
     .RETURN_ADDR(return_addr),
-    .RETURN(return),
+    .RETURN(return_w),
     .PREDICTED(predicted),
     .EXSTAGE_STALLED(exstage_stalled),
     .INS_ID_EX(ins_id_ex),
@@ -325,7 +325,7 @@ module RISCV_PROCESSOR#(
     .CACHE_READY(cache_ready_ins & !exstage_stalled  & !stop_ins_cache)          ,
     .CACHE_READY_DATA(cache_ready_dat & !stop_dat_cache),
     .RETURN_ADDR(return_addr),
-    .RETURN(return),
+    .RETURN(return_w),
     .PREDICTED(predicted)
     );
     

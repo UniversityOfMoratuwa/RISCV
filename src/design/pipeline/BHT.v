@@ -48,7 +48,7 @@ module BHT #(
     reg     [TAG_WIDTH - 1  : 0] tag        [0: HISTORY_DEPTH - 1   ]   ;
     reg     [1              : 0] history    [0: HISTORY_DEPTH - 1   ]   ;
     reg     [HISTORY_DEPTH - 1 : 0  ]                     state         ;
-    reg     [HISTORY_DEPTH - 1 : 0  ]                     return        ;
+    reg     [HISTORY_DEPTH - 1 : 0  ]                     return_reg        ;
 
     reg                          prd_valid_reg                          ;
     reg     [ADDR_WIDTH - 1 : 0] prd_addr_reg                           ;
@@ -122,7 +122,7 @@ module BHT #(
             prd_addr_reg    <= {ADDR_WIDTH{1'b0}}   ;           
                
             state<=0;                                            
-            return<=0;                                           
+            return_reg<=0;                                           
         end
 	    else if (branch & CACHE_READY & CACHE_READY_DATA)
 		begin
@@ -134,7 +134,7 @@ module BHT #(
                 target[ex_line_add]    <= branch_addr                           ;
                 state[ex_line_add]     <= 1                                     ;
                 tag[ex_line_add]       <= ex_pc[ADDR_WIDTH-1:H_ADDR_WIDTH+2]    ;
-                return[ex_line_add]    <= return_reg                            ;
+                return_reg[ex_line_add]    <= return_reg                            ;
 	     end
 		end
 	    
@@ -175,7 +175,7 @@ module BHT #(
 
         else 
         begin
-           PRD_ADDR = /*( ( tag[pc_line_add] == PC[ADDR_WIDTH-1:H_ADDR_WIDTH+2]) & return[pc_line_add]) ? RETURN_ADDR :*/  ((( history[pc_line_add][1] & ( tag[pc_line_add] == PC[ADDR_WIDTH-1:H_ADDR_WIDTH+2]) & state[pc_line_add] ) ?   target[pc_line_add] : PC + (1<<2)) );
+           PRD_ADDR = /*( ( tag[pc_line_add] == PC[ADDR_WIDTH-1:H_ADDR_WIDTH+2]) & return_reg[pc_line_add]) ? RETURN_ADDR :*/  ((( history[pc_line_add][1] & ( tag[pc_line_add] == PC[ADDR_WIDTH-1:H_ADDR_WIDTH+2]) & state[pc_line_add] ) ?   target[pc_line_add] : PC + (1<<2)) );
         end
     end
     

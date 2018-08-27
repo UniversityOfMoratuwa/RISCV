@@ -76,17 +76,17 @@ module DECODE_UNIT(
    
     wire [ 4:0]     rs1_sel                 ;
     wire [ 4:0]     rs2_sel                 ;
-    wire [ 2:0]     type                    ;
+    wire [ 2:0]     type_w                    ;
     wire            fence_w                 ;
 
     INS_TYPE_ROM ins_rom( 
         .INS(INSTRUCTION[6:0]) ,
-        .TYPE(type)
+        .TYPE(type_w)
         );
         
     IMM_EXT imm_ext( 
         .INS(INSTRUCTION[31:7]),
-        .TYPE(type),
+        .TYPE(type_w),
         .OUTPUT(imm_out)
         );
         
@@ -141,7 +141,7 @@ module DECODE_UNIT(
         .ORDER(3),
         .WIDTH(5)  
         )rs1_sel_mux (
-        .SELECT(type)           ,
+        .SELECT(type_w)           ,
         .IN({
             20'd0               ,
             INSTRUCTION[19:15]  ,
@@ -156,7 +156,7 @@ module DECODE_UNIT(
         .ORDER(3),
         .WIDTH(5) 
         )rs2_sel_mux (
-        .SELECT(type),
+        .SELECT(type_w),
         .IN({    
             20'd0,
             INSTRUCTION[24:20] , 
@@ -198,6 +198,6 @@ module DECODE_UNIT(
         STALL_ENABLE              =    stall_enable           ;   
     end
     
-    assign undefined = (type==rtype) & INSTRUCTION[25] && !FLUSH;
+    assign undefined = (type_w==rtype) & INSTRUCTION[25] && !FLUSH;
 
 endmodule

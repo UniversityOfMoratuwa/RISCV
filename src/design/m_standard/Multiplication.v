@@ -104,15 +104,15 @@ module Multiplication #(
         reg     [2*INPUT_WIDTH - 1          :0]     multiplicand_copy   ;
         reg                                         negative_output     ;
    
-        reg     [$clog2(INPUT_WIDTH)        :0]     bit                 ; 
+        reg     [$clog2(INPUT_WIDTH)        :0]     bit_reg                 ; 
         
-        assign                                      READY = !bit        ;
+        assign                                      READY = !bit_reg        ;
 
         initial 
         begin
             product_temp    = 0;
             product         = 0;
-            bit             = 1;
+            bit_reg             = 1;
             negative_output = 0;
         end
 
@@ -122,7 +122,7 @@ module Multiplication #(
             begin
                 if( START )  
                 begin
-                    bit               = 9; 
+                    bit_reg               = 9; 
                     product           = 0;
                     product_temp      = 0;
                     multiplicand_copy = (!SIGN2 || !MULTIPLICAND[INPUT_WIDTH - 1]) ? 
@@ -134,7 +134,7 @@ module Multiplication #(
             
                     negative_output   = (SIGN1 & MULTIPLIER[INPUT_WIDTH - 1]) ^ (SIGN2 & MULTIPLICAND[INPUT_WIDTH - 1]);
                 end
-                else if ( bit > 0 )
+                else if ( bit_reg > 0 )
                 begin
                     a0 = {{32{multiplier_copy[0]}} & multiplicand_copy};
                     a1 = {{{32{multiplier_copy[1]}} & multiplicand_copy},{1'b0}};
@@ -244,7 +244,7 @@ module Multiplication #(
                         
                     product_temp <= S71+C71;
                     
-                    bit               <= bit - 1'b1;
+                    bit_reg               <= bit_reg - 1'b1;
                 end
                 product           = (!negative_output) ? product_temp : ~product_temp + 1'b1;
             end
