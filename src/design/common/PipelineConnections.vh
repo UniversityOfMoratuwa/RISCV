@@ -58,6 +58,8 @@ reg                     cbranch_id_fb    =0 ;    //
 reg                     jump_fb_ex      =0  ;    //
 reg                     jumpr_fb_ex     =0  ;    //
 reg                     cbranch_fb_ex   =0  ;    //
+reg                     fence_id_fb   =0  ;    //
+reg                     fence_fb_ex   =0  ;    //
                                                //
 /////////////////////////////////////////////////
 

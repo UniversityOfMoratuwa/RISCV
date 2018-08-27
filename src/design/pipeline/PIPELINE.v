@@ -74,7 +74,8 @@ module PIPELINE #(
            
     input                                           MEIP                            ,   //machine external interupt pending
     input                                           MTIP                            ,   //machine timer interupt pending
-    input                                           MSIP                                //machine software interupt pending, from external hart
+    input                                           MSIP                             ,   //machine software interupt pending, from external hart
+    output                                          FENCE                          
     );
     
     `include "PipelineParams.vh"
@@ -98,6 +99,7 @@ module PIPELINE #(
     wire        flush                       ;
     wire [ 1:0] type_out                    ;
     wire        flush_e                     ;
+    wire        fence_out                   ;
     
     reg  [ 1:0] data_cache_control_fb_ex    ;
     reg  [31:0] alu_written_back            ;
@@ -157,7 +159,8 @@ module PIPELINE #(
         .STALL_ENABLE_FB    (stall_enable_id_fb)            ,
         .RS1_TYPE           (rs1_type)                      ,
         .RS2_TYPE           (rs2_type)                  ,
-        .RST                (RST)                           
+        .RST                (RST)                         ,
+        .FENCE              (fence_out)  
         );        
   
     EXSTAGE exstage(
@@ -167,7 +170,8 @@ module PIPELINE #(
         .COMP1_U            (comp1_fb_ex)                           ,
         .COMP2_U            (comp2_fb_ex)                           , 
         .JUMP_BUS1          (jump1_fb_ex)                           ,
-        .JUMP_BUS2          (jump2_fb_ex)                           ,  
+        .JUMP_BUS2          (jump2_fb_ex)                           ,
+        .FENCE              (fence_fb_ex)                           ,  
         //.A                  ( ins_fb_ex == 32'hc0002573 ? clock: (ins_fb_ex == 32'hc0202573 ? ins : a_bus_fb_ex))                  ,//clock,ins
         .A                  (a_bus_fb_ex)                           ,
         .B                  (b_bus_fb_ex)                           , 
@@ -202,7 +206,8 @@ module PIPELINE #(
         .FLUSH(flush_e)                                             ,
         .FLUSH_I(flush_internal)                                    ,              
         .PREDICTED(PREDICTED),
-        .RST(RST)
+        .RST(RST),
+        .FENCE_OUT(FENCE)
         );
    
     Multiplexer #(
@@ -468,7 +473,9 @@ module PIPELINE #(
                 rd_ex_ex2                <= 0                ;   
                 op_type_ex_ex2           <= 0              ;     
                 pc_ex_ex2                <= 0                ;   
-                imm_ex_ex2               <= 0           ;     
+                imm_ex_ex2               <= 0           ;  
+                fence_id_fb              <=0;
+                fence_fb_ex              <= 0;  
             
         end
         else if(CACHE_READY_DATA & CACHE_READY)
@@ -478,6 +485,8 @@ module PIPELINE #(
             
             if (stall_enable_id_fb||flush_e_i||flush_e)   
             begin  
+                fence_id_fb              <= fence_out               ;
+                fence_fb_ex              <= fence_id_fb             ;
                 rs1_type_fb              <= rs1_type                ; 
                 rs2_type_fb              <= rs2_type                ; 
                 stall_enable_id_fb       <= stall_enable            ;
@@ -580,7 +589,9 @@ module PIPELINE #(
                 rd_ex_ex2                <=    0                    ; 
                 op_type_ex_ex2           <=    0                    ; 
                 pc_ex_ex2                <=    0                    ; 
-                imm_ex_ex2               <=    0                    ;                  
+                imm_ex_ex2               <=    0                    ; 
+                 fence_id_fb             <= 0                       ;
+                fence_fb_ex              <= 0                       ;                 
             end
             
             rd_fb_ex                 <=    rd_id_fb                 ;                      

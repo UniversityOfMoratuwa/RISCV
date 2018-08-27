@@ -61,7 +61,9 @@ module EXSTAGE(
     output                  EXSTAGE_STALLED         ,//mstd
     output                  FLUSH_I                 ,
     output reg              FLUSH =1'b0             ,
-    output reg              PREDICTED                  
+    output reg              PREDICTED               ,
+    input                   FENCE          ,
+    output                  FENCE_OUT             
     );
     //     reg        comp_out;
      wire [31:0] wb_data;
@@ -262,7 +264,7 @@ module EXSTAGE(
             data_cache_control  <= DATA_CACHE_CONTROL_IN        ;
             type_out            <= TYPE_IN                      ;
             
-            JUMP_ADDR           <= priv_jump ? priv_jump_add : (JUMP_BUS1+JUMP_BUS2)    ;  
+            JUMP_ADDR           <= FENCE? PC_FB_EX+4 : (priv_jump ? priv_jump_add : (JUMP_BUS1+JUMP_BUS2))    ;  
             jump_reg            <= JUMP                                                 ;          
             jumpr_reg           <= JUMPR                                                ;
             DATA_ADDRESS        <= (A_signed+B_signed)                                  ;
@@ -296,8 +298,8 @@ module EXSTAGE(
              
              if (JUMP_FINAL)
              begin
-                FLUSH               <=    PC_ID_FB!=JUMP_ADDR;
-                flush_internal      <=    PC_ID_FB!=JUMP_ADDR;
+                FLUSH               <=    (PC_ID_FB!=JUMP_ADDR) | FENCE;
+                flush_internal      <=    (PC_ID_FB!=JUMP_ADDR) | FENCE  ;
              end
              else if (STALL_ENABLE_EX & !flush_internal & cache_ready_ex2)
              begin
@@ -349,11 +351,12 @@ module EXSTAGE(
         end    
     end
     
-    assign JUMP_FINAL           = (priv_jump ? priv_jump : (cbranch ? comp_out_w :jump_reg|jumpr_reg )) & !flush_internal   ; 
+    assign JUMP_FINAL           = (FENCE ? 1:((priv_jump ? priv_jump : (cbranch ? comp_out_w :jump_reg|jumpr_reg )))) & !flush_internal   ; 
     assign WB_DATA              = wb_data & {32{!flush_internal}}                                                           ;
     assign DATA_CACHE_CONTROL   = data_cache_control & {2{!flush_internal}}   & {2{!priv_jump}}                             ;
     assign TYPE_OUT             = type_out & {2{!flush_internal}} & {2{!priv_jump}}                                         ;
     assign FLUSH_I              = flush_internal                                                                            ;
     assign EXSTAGE_STALLED      = ((ALU_CNT==alu_mstd) & !rv32m_ready ) & !flush_internal & {!priv_jump}                    ;
+    assign FENCE_OUT            = FENCE & !flush_internal;
   
 endmodule

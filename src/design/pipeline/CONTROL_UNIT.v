@@ -32,7 +32,8 @@ module CONTROL_UNIT(
     output reg              CBRANCH         ,
     output reg [1:0]        TYPE            ,
     output reg              A_BUS_SEL       ,
-    output reg              B_BUS_SEL
+    output reg              B_BUS_SEL       ,
+    output reg              FENCE           
     );
     
     `include "PipelineParams.vh"
@@ -46,7 +47,9 @@ module CONTROL_UNIT(
         JUMP            = INS1[6:0]==jump                       ;
         JUMPR           = INS1[6:0]==jumpr                      ;
         CBRANCH         = INS1[6:0]==cjump                      ;
-        undefined =0                                            ;
+        undefined =0   ;
+        FENCE           = INS1[6:0] == fence                     ;
+       
         
         case (INS1[6:0])
         
@@ -234,7 +237,8 @@ module CONTROL_UNIT(
                     end
                 endcase
             end
-            default :
+  
+           default :
             begin
                 A_BUS_SEL           = a_bus_imm_sel ;
                 B_BUS_SEL           = b_bus_pc_sel  ;
@@ -242,7 +246,8 @@ module CONTROL_UNIT(
                 CSR_CNT             = sys_idle      ;
                 TYPE                = idle          ;
                 undefined=INS!=32'd0;
-            end          
+            end 
+                     
 //            mops    :   TYPE=rtype;
 //            fence   :   TYPE=ntype;
 //            amos    :   TYPE=ntype;

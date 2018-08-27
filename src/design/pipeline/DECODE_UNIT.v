@@ -49,7 +49,8 @@ module DECODE_UNIT(
     output reg  [ 1:0]  OP_TYPE            =0   ,  
     output reg  [ 4:0]  RD_OUT                  ,
     output      [ 1:0]  RS1_TYPE                ,
-    output      [ 1:0]  RS2_TYPE
+    output      [ 1:0]  RS2_TYPE                ,
+    output reg          FENCE                   
     );
     
     `include "PipelineParams.vh"
@@ -76,6 +77,7 @@ module DECODE_UNIT(
     wire [ 4:0]     rs1_sel                 ;
     wire [ 4:0]     rs2_sel                 ;
     wire [ 2:0]     type                    ;
+    wire            fence_w                 ;
 
     INS_TYPE_ROM ins_rom( 
         .INS(INSTRUCTION[6:0]) ,
@@ -131,7 +133,8 @@ module DECODE_UNIT(
         .CBRANCH            (cbranch)                                               ,
         .TYPE               (op_type)                                               ,
         .A_BUS_SEL          (a_bus_sel)                                             ,
-        .B_BUS_SEL          (b_bus_sel)
+        .B_BUS_SEL          (b_bus_sel)                                             ,
+        .FENCE              (fence_w)
         );
                
     Multiplexer #(
@@ -185,7 +188,8 @@ module DECODE_UNIT(
             A_BUS_SEL                 =    a_bus_sel              ;    
             B_BUS_SEL                 =    b_bus_sel              ;    
             OP_TYPE                   =    op_type                ;         
-            RD_OUT                    =    INSTRUCTION[11: 7]     ;        
+            RD_OUT                    =    INSTRUCTION[11: 7]     ;   
+            FENCE                     =    fence_w                ;     
         end
     end  
                                 

@@ -65,8 +65,7 @@ module RISCV_PROCESSOR#(
                    
        output reg                                            EXT_FIFO_WR_ENB,
        output reg [DATA_WIDTH     - 1 : 0]                   EXT_FIFO_WR_DATA=32,
-        
-        
+
         ///////////////////////////
         //    DATA PERIPHERAL    //
         ///////////////////////////
@@ -199,7 +198,8 @@ module RISCV_PROCESSOR#(
      wire                               peri_complete;
      reg                                peri_done = 0;
      reg        [3 :0]                  wstrb_to_peri;
-     
+             
+        wire fence;
      
      // Status signals between processor and instruction cache
      wire                               proc_ready_ins;
@@ -304,7 +304,8 @@ module RISCV_PROCESSOR#(
     .INS_ID_EX(ins_id_ex),
     .MEIP(MEIP),
     .MSIP(MSIP),
-    .MTIP(MTIP)
+    .MTIP(MTIP),
+    .FENCE(fence)
     );
     
 
@@ -613,7 +614,7 @@ myip_v1_0_M00_AXI # (
     (
         .CLK(CLK)                                   ,
         .RST(~RSTN)                                   ,
-        .FLUSH(1'b0)                               ,
+        .FLUSH(fence)                               ,
         .ADDR(prd_addr)                                 ,
         .ADDR_VALID(proc_ready_ins & !exstage_stalled  & !stop_ins_cache)                     ,
         .DATA (data_to_proc_ins)                                ,
@@ -638,7 +639,7 @@ myip_v1_0_M00_AXI # (
    dcache (
            .CLK(CLK)                                   ,
         .RST(~RSTN)                                   ,
-        .FLUSH(1'b0)                               ,
+        .FLUSH(fence)                               ,
         .ADDR(addr_from_proc_dat)                                 ,
         .ADDR_VALID(1)                     ,
         .DATA (data_to_proc_dat)                                ,
