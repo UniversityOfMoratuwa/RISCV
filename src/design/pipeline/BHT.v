@@ -60,7 +60,7 @@ module BHT #(
     reg                          branch=0                               ;
     reg                          branch_taken=0                         ;
     reg                          predicted =1                           ;
-    reg                          return_reg=0                           ;
+    reg                          return_reg_w=0                           ;
     reg                          flush=0                                ;
     
     integer i;
@@ -99,7 +99,7 @@ module BHT #(
                                       
             ex_line_add     <=       0 ;
             ex_pc           <=       0 ;
-            return_reg      <=       0 ;
+            return_reg_w      <=       0 ;
             flush           <=       0 ;
         end
         else if (CACHE_READY & CACHE_READY_DATA)
@@ -113,7 +113,7 @@ module BHT #(
     
             ex_line_add     <= EX_PC[H_ADDR_WIDTH+1:2]              ;
             ex_pc           <= EX_PC                                ;
-            return_reg      <= RETURN                               ;
+            return_reg_w      <= RETURN                               ;
             flush           <= FLUSH                                ;
         end
         if (RST)
@@ -134,7 +134,7 @@ module BHT #(
                 target[ex_line_add]    <= branch_addr                           ;
                 state[ex_line_add]     <= 1                                     ;
                 tag[ex_line_add]       <= ex_pc[ADDR_WIDTH-1:H_ADDR_WIDTH+2]    ;
-                return_reg[ex_line_add]    <= return_reg                            ;
+                return_reg[ex_line_add]    <= return_reg_w                            ;
 	     end
 		end
 	    
