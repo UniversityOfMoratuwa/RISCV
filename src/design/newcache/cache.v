@@ -42,8 +42,10 @@ module Icache
     wire  [line_width-1:0]   cache_porta_raddr   ;
     reg  [cache_width-1:0]  cache_porta_data_in ;
     wire  [cache_width-1:0]  cache_porta_data_out ;
-
-
+    reg                     flush_d1            ;
+    reg                     flush_d2           ;
+    reg                     flush_d3            ;
+    reg                     flush_d4            ;
     reg                     tag_porta_wren      ;
     reg  [line_width-1:0]   tag_porta_waddr     ;
     wire  [line_width-1:0]   tag_porta_raddr     ;
@@ -56,7 +58,7 @@ module Icache
     wire  [line_width-1:0]  state_raddr         ;
     reg                     state_wren          ;
     wire                    state               ;
-    wire                    cache_ready;
+        wire                    cache_ready;
     wire       [data_width-1:0]            data ;
 
     `include "i_cache_inst.vh"
@@ -70,6 +72,10 @@ module Icache
             addr_d2 <=   addr_init_val+8;
             addr_d3 <=   addr_init_val+4;      
             addr_d4 <=   addr_init_val;      
+            flush_d1 <= 0;
+            flush_d2 <= 0;
+            flush_d3 <= 0;
+            flush_d4 <= 0;
             
         end
         else if (cache_ready & ADDR_VALID) begin
@@ -77,6 +83,11 @@ module Icache
             addr_d2  <= addr_d1 ;
             addr_d3  <= addr_d2 ;
             addr_d4 <= addr_d3;
+
+            flush_d1 <= FLUSH;
+            flush_d2 <= flush_d1;
+            flush_d3 <= flush_d2;
+            flush_d4 <= flush_d3;
         end
     
     
@@ -96,7 +107,7 @@ module Icache
         end
         else if (~cache_ready & ~state_wren )   //check whether cache ready and make sure flag goes 0 one cycle before data get written
         begin
-            if(~addr_to_l2_valid & ~flag)
+            if(~addr_to_l2_valid & ~flag & (ADDR_VALID | ~flush_d4))
             begin
                 addr_to_l2_valid    <= 1        ;
                 addr_to_l2          <= addr_d4[address_width  -1 : offset_width] ;

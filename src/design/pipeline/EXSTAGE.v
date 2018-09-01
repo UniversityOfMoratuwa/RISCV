@@ -339,7 +339,7 @@ module EXSTAGE(
     begin
         if (JUMP_FINAL & CACHE_READY)
         begin
-            PREDICTED=PC_ID_FB==JUMP_ADDR;
+            PREDICTED=PC_ID_FB==JUMP_ADDR & ~FENCE;
         end
         else if (STALL_ENABLE_EX & !flush_internal & cache_ready_ex2 & CACHE_READY)
         begin

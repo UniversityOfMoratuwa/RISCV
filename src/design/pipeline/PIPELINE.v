@@ -425,7 +425,7 @@ module PIPELINE #(
         begin
                 rs1_type_fb              <= 0                ; 
                 rs2_type_fb              <= 0                ; 
-                stall_enable_id_fb       <= 0            ;
+                stall_enable_id_fb       <= 1            ;
                 feed_back_muxb_sel_id_fb <= 0      ;  
                 feed_back_muxa_sel_id_fb <= 0      ;  
                 a_bus_sel_id_fb          <= 0               ;  
@@ -688,10 +688,10 @@ module PIPELINE #(
     assign RETURN               = (ins_fb_ex== 31'h00008067)                        ;
     assign RETURN_ADDR          = return_addr                                       ;
     assign EX_PC                = pc_fb_ex                                          ;
-    assign BRANCH               = (jump_fb_ex |cbranch_fb_ex  |jumpr_fb_ex) &  ! flush_internal ;  
+    assign BRANCH               = (jump_fb_ex |cbranch_fb_ex  |jumpr_fb_ex | fence_fb_ex) &  ! flush_internal ;  
     assign FLUSH                = flush_internal                                    ;
     assign BRANCH_TAKEN         = branch_taken                                      ;
-    assign PIPELINE_STALL       = (stall_enable_id_fb  ||  branch_taken ||flush_e || flush_e_i || !CACHE_READY) & CACHE_READY_DATA  ;
+    assign PIPELINE_STALL       = (stall_enable_id_fb  ||  branch_taken ||flush_e || flush_e_i ) & CACHE_READY_DATA  ;
     assign c1_mux_final         = rs1_final                                         ; 
     assign c2_mux_final         = rs2_final                                         ;
     assign jmux1_final          = imm_out_id_fb                                     ;

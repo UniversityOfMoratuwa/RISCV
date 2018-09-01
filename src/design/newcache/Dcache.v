@@ -1,4 +1,4 @@
-`timescale 1 ps  /  1 ps
+ `timescale 1 ps  /  1 ps
 module Dcache
     #(
         parameter data_width    = 32                                            ,
@@ -42,6 +42,7 @@ module Dcache
     reg  [1:0]               control_d1          ;
     reg  [1:0]               control_d2          ;
     reg  [1:0]               control_d3          ;
+    reg                      state_wdata;
 
     reg  [data_width/8-1:0]               wstrb_d0          ;
     reg  [data_width/8-1:0]               wstrb_d1          ;
@@ -52,6 +53,10 @@ module Dcache
     reg [data_width-1:0]  data_d1;
     reg [data_width-1:0]  data_d2;
     reg [data_width-1:0]  data_d3;
+    reg                   flush_d0;
+    reg                   flush_d1;
+    reg                   flush_d2;
+    reg                   flush_d3;
 
     reg                     flag                ;
     reg                     addr_to_l2_valid    ;
@@ -89,6 +94,9 @@ module Dcache
     wire                    cache_ready;
     reg                     writing ;
     wire       [data_width-1:0]            data ;
+    wire                   full_state;
+    reg [line_width-1:0]   flush_addr   ;
+
 
         MEMORY  
     #(
@@ -132,12 +140,13 @@ module Dcache
     (
         .CLK(CLK)               ,
         .RST(RST)               ,
-        .FLUSH(FLUSH)           ,
+        .FLUSH(0)               ,
         .WREN(state_wren)       ,
         .WADDR (state_waddr)    ,
         .RADDR(state_raddr)     ,
         .STATE(state)   ,
-        .DATA(1'b1)
+        .DATA(state_wdata)             ,
+        .ONE_STATE(full_state)
      );
      
     STATE_MEMORY
@@ -150,7 +159,7 @@ module Dcache
     (
         .CLK(CLK)               ,
         .RST(RST)               ,
-        .FLUSH(FLUSH)           ,
+        .FLUSH(0)           ,
         .WREN(dirty_wren)       ,
         .WADDR (dirty_waddr)    ,
         .RADDR(dirty_raddr)     ,
@@ -164,15 +173,24 @@ module Dcache
     end
     always @(posedge CLK) begin
         if (RST) begin
+            addr_d0 <=0;
             addr_d1 <=   0;
             addr_d2 <=   0;
-            addr_d3 <=   0;    
+            addr_d3 <=   0;
+            control_d0 <= 0;    
             control_d1 <=0;
             control_d2 <=0;
             control_d3 <=0;
+            data_d0 <=0;
             data_d1   <=0;
             data_d2  <=0;
             data_d3 <=0;
+
+            flush_d0 <=0;
+            flush_d1 <=0;
+            flush_d2 <=0;
+            flush_d3 <=0;
+
             
         end
         else if (cache_ready & ADDR_VALID) begin
@@ -196,6 +214,11 @@ module Dcache
             wstrb_d1   <= wstrb_d0;
             wstrb_d2   <= wstrb_d1;
             wstrb_d3   <= wstrb_d2;
+
+            flush_d0   <= FLUSH;
+            flush_d1   <= flush_d0;
+            flush_d2   <= flush_d1;
+            flush_d3   <= flush_d2;
         end
     
     
@@ -217,7 +240,7 @@ module Dcache
         end
         else if (~cache_ready  )
         begin
-            if(~addr_to_l2_valid & ~flag & ~dirty_reg  & ~state_wren & ~writing)
+            if(~addr_to_l2_valid & ~flag & ~dirty_reg  & ~state_wren & ~writing & ~flush_d3)
             begin
                 addr_to_l2_valid    <= 1        ;
                 addr_to_l2          <= addr_d3[address_width  -1 : offset_width] ;
@@ -262,6 +285,7 @@ module Dcache
             cache_porta_wren        <= 0        ;
             cache_porta_waddr       <= 0        ;   
             cache_porta_data_in     <= 0        ;
+            flush_addr              <= -1        ;
         end
         else if (cache_ready & control_d3 == 2'b10)
         begin
@@ -290,8 +314,25 @@ module Dcache
                 dirty_din          <=   control_d3 == 2'b10 ;
                 dirty_waddr        <= dirty_raddr;
                 addr_reg            <= {tag_porta_data_out,addr_d3[address_width-tag_width-1 : offset_width]};
+                state_wdata        <=1;
             end      
 
+        end
+        else if ((flush_d3 & full_state & ~dirty_reg & ~writing))
+        begin
+                flush_addr          <=   flush_addr +1;
+                cache_porta_wren    <= 0                ;
+                state_wren          <= 1                ; 
+                state_waddr         <= state_raddr      ;  
+                flag                <= 0                ; 
+                dirty_reg           <= dirty            ;
+                dirty_wren          <= 1    ;
+                cache_porta_data_out_reg <= cache_porta_data_out_i;
+                dirty_din          <=   0 ;
+                dirty_waddr        <= dirty_raddr;
+                addr_reg            <=  {tag_porta_data_out,flush_addr} ;
+                state_wdata        <=0; 
+                tag_porta_wren     <=1;                                                           
         end
 
         else
@@ -300,8 +341,10 @@ module Dcache
             tag_porta_wren     <=  0            ;
             state_wren         <=  0            ;
             dirty_wren         <=  0            ;
-            dirty_din          <= 0;
-            dirty_reg          <=0;
+            dirty_din          <=  0            ;
+            dirty_reg          <=  0            ;
+        if (~dirty_reg & ~writing)
+            flush_addr         <=  -1            ;
         end
     end
 
@@ -328,7 +371,7 @@ module Dcache
        begin
            if (i== {addr_d3[offset_width-1:2],2'b0}*8 )
            begin
-            cache_porta_data_in_int[i +:data_width]                                      = data_to_be_writen;
+            cache_porta_data_in_int[i +:data_width]                = data_to_be_writen;
            end
            else
            begin
@@ -345,12 +388,12 @@ module Dcache
     endgenerate
     assign cache_porta_data_out = DATA_FROM_L2_VALID ? DATA_FROM_L2 :  ((dirty_wren & addr_d3[offset_width+line_width-1:offset_width]==addr_d4[offset_width+line_width-1:offset_width])? cache_porta_data_in: cache_porta_data_out_i);
 
-    assign cache_porta_raddr    = addr_d3[offset_width+line_width-1:offset_width]              ;
+    assign cache_porta_raddr    = ~flush_d3? addr_d3[offset_width+line_width-1:offset_width]: flush_addr           ;
     assign dirty_raddr          = cache_porta_raddr                                         ;
     assign tag_porta_raddr      = cache_porta_raddr                                         ;
     assign state_raddr          = cache_porta_raddr                                         ;
-    assign tag_addr             = addr_d3[address_width-1:offset_width+line_width]             ;
-    assign cache_ready          =  ((tag_porta_data_out == tag_addr) & state  & ~writing) | (control_d3!==2'b01 & control_d3!==2'b10)    ;
+    assign tag_addr             = addr_d3[address_width-1:offset_width+line_width]          ;
+    assign cache_ready          =  ((((tag_porta_data_out == tag_addr) & state  & ~writing) | (control_d3!==2'b01 & control_d3!==2'b10) )) & (~flush_d3| ~full_state)   ;
     assign ADDR_TO_L2_VALID     = addr_to_l2_valid                                          ;
     assign ADDR_TO_L2           = addr_to_l2                                                ;
     

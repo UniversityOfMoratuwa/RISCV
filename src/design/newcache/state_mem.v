@@ -13,7 +13,8 @@ module STATE_MEMORY
         input [address_width-1:0] WADDR     ,
         input [address_width-1:0] RADDR     ,
         output                    STATE     ,
-        input                     DATA
+        input                     DATA      ,
+        output                    ONE_STATE
      );
     reg [depth-1:0] state_mem;  
     always@(posedge CLK)
@@ -29,4 +30,5 @@ module STATE_MEMORY
         end
     end
     assign STATE = state_mem[RADDR]     ;
+    assign ONE_STATE = |state_mem       ;
 endmodule
