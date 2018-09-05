@@ -63,7 +63,10 @@ module EXSTAGE(
     output reg              FLUSH =1'b0             ,
     output reg              PREDICTED               ,
     input                   FENCE          ,
-    output                  FENCE_OUT             
+    output                  FENCE_OUT             ,
+    input        [4:0]      AMO_OP_in,
+    input        [4:0]      AMO_OP_out
+    
     );
     //     reg        comp_out;
      wire [31:0] wb_data;
@@ -358,5 +361,6 @@ module EXSTAGE(
     assign FLUSH_I              = flush_internal                                                                            ;
     assign EXSTAGE_STALLED      = ((ALU_CNT==alu_mstd) & !rv32m_ready ) & !flush_internal & {!priv_jump}                    ;
     assign FENCE_OUT            = FENCE & !flush_internal;
+    assign AMO_OP_out         = AMO_OP_in & {5{!flush_internal}};
   
 endmodule

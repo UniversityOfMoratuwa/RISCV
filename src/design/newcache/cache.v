@@ -107,7 +107,7 @@ module Icache
         end
         else if (~cache_ready & ~state_wren )   //check whether cache ready and make sure flag goes 0 one cycle before data get written
         begin
-            if(~addr_to_l2_valid & ~flag & (ADDR_VALID | ~flush_d4))
+            if(~addr_to_l2_valid & ~flag & (ADDR_VALID | ~flush_d4)) 
             begin
                 addr_to_l2_valid    <= 1        ;
                 addr_to_l2          <= addr_d4[address_width  -1 : offset_width] ;

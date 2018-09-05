@@ -255,7 +255,7 @@
     localparam     mhpmevent31    =    12'h33F      ;
     localparam     tselect        =    12'h7A0      ;
     localparam     tdata1         =    12'h7A1      ;
-    localparam     tdata2         =    12'h7A2      ;
+    localparam     tdata2         =    12'h7A2      ;   
     localparam     tdata3         =    12'h7A3      ;
     localparam     dcsr           =    12'h7B0      ;
     localparam     dpc            =    12'h7B1      ;
@@ -267,3 +267,17 @@
     localparam     smode          =    2'b01        ;
     localparam     umode          =    2'b00        ;
    
+    localparam amolr    =   5'b00010;
+    localparam amosc    =   5'b00011;
+    localparam amoswap  =   5'b00001;
+    localparam amoadd   =   5'b00000;
+    localparam amoxor   =   5'b00100;
+    localparam amoand   =   5'b01100;
+    localparam amoor    =   5'b01000;
+    localparam amomin   =   5'b10000;
+    localparam amomax   =   5'b10100;
+    localparam amominu  =   5'b11000;
+    localparam amomaxu  =   5'b11100;
+    localparam amoidle  =   5;
+
+

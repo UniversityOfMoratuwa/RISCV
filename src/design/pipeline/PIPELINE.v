@@ -75,7 +75,8 @@ module PIPELINE #(
     input                                           MEIP                            ,   //machine external interupt pending
     input                                           MTIP                            ,   //machine timer interupt pending
     input                                           MSIP                             ,   //machine software interupt pending, from external hart
-    output                                          FENCE                          
+    output                                          FENCE                           ,
+    output            [4:0]                        AMO_TO_CACHE                    
     );
     
     `include "PipelineParams.vh"
@@ -100,7 +101,9 @@ module PIPELINE #(
     wire [ 1:0] type_out                    ;
     wire        flush_e                     ;
     wire        fence_out                   ;
-    
+    wire  [4:0]  amo_wire                    ;
+    reg  [4:0]  amo_id_fb                    ;
+    reg  [4:0]  amo_fb_ex                   ;
     reg  [ 1:0] data_cache_control_fb_ex    ;
     reg  [31:0] alu_written_back            ;
     reg  [31:0] wb_data_final               ;
@@ -160,7 +163,8 @@ module PIPELINE #(
         .RS1_TYPE           (rs1_type)                      ,
         .RS2_TYPE           (rs2_type)                  ,
         .RST                (RST)                         ,
-        .FENCE              (fence_out)  
+        .FENCE              (fence_out)  ,
+        .AMO_OP(amo_wire)
         );        
   
     EXSTAGE exstage(
@@ -207,7 +211,9 @@ module PIPELINE #(
         .FLUSH_I(flush_internal)                                    ,              
         .PREDICTED(PREDICTED),
         .RST(RST),
-        .FENCE_OUT(FENCE)
+        .FENCE_OUT(FENCE),
+        .AMO_OP_in(amo_fb_ex),
+        .AMO_OP_out(AMO_TO_CACHE)
         );
    
     Multiplexer #(
@@ -476,7 +482,16 @@ module PIPELINE #(
                 imm_ex_ex2               <= 0           ;  
                 fence_id_fb              <=0;
                 fence_fb_ex              <= 0;  
-            
+                amo_fb_ex <=0;
+
+                amo_id_fb<=0;
+
+
+
+
+
+
+
         end
         else if(CACHE_READY_DATA & CACHE_READY)
         begin  
@@ -485,6 +500,8 @@ module PIPELINE #(
             
             if (stall_enable_id_fb||flush_e_i||flush_e)   
             begin  
+                amo_id_fb                <= amo_wire               ;
+                amo_fb_ex                <= amo_id_fb               ;
                 fence_id_fb              <= fence_out               ;
                 fence_fb_ex              <= fence_id_fb             ;
                 rs1_type_fb              <= rs1_type                ; 
@@ -591,7 +608,9 @@ module PIPELINE #(
                 pc_ex_ex2                <=    0                    ; 
                 imm_ex_ex2               <=    0                    ; 
                  fence_id_fb             <= 0                       ;
-                fence_fb_ex              <= 0                       ;                 
+                fence_fb_ex              <= 0                       ;
+                amo_id_fb               <=0;
+                amo_fb_ex               <=0;                 
             end
             
             rd_fb_ex                 <=    rd_id_fb                 ;                      

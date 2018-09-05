@@ -33,7 +33,9 @@ module CONTROL_UNIT(
     output reg [1:0]        TYPE            ,
     output reg              A_BUS_SEL       ,
     output reg              B_BUS_SEL       ,
-    output reg              FENCE           
+    output reg              FENCE           ,
+    output reg  [4:0]       AMO_OP,
+    input  [31:27]          INS2
     );
     
     `include "PipelineParams.vh"
@@ -43,12 +45,13 @@ module CONTROL_UNIT(
     always@(*)
     begin
         FUN3            = INS[14:12]                            ;
-        D_CACHE_CONTROL = {(INS1[6:0]==store),(INS1[6:0]==load)};     
+        D_CACHE_CONTROL = {((INS1[6:0]==store)|(INS1[6:0]==amos)),(INS1[6:0]==load)};     
         JUMP            = INS1[6:0]==jump                       ;
         JUMPR           = INS1[6:0]==jumpr                      ;
         CBRANCH         = INS1[6:0]==cjump                      ;
         undefined =0   ;
         FENCE           = INS1[6:0] == fence                     ;
+        AMO_OP          = INS1[6:0] ==amos ? INS2[31:27] : 5       ;
        
         
         case (INS1[6:0])
@@ -237,7 +240,14 @@ module CONTROL_UNIT(
                     end
                 endcase
             end
-  
+           amos :
+           begin
+                A_BUS_SEL           = a_bus_imm_sel ;
+                B_BUS_SEL           = b_bus_rs1_sel ;                                
+                ALU_CNT             = alu_b         ;
+                CSR_CNT             = sys_idle      ;
+                TYPE                = ld              ;  
+           end
            default :
             begin
                 A_BUS_SEL           = a_bus_imm_sel ;

@@ -198,6 +198,7 @@ module RISCV_PROCESSOR#(
      wire                               peri_complete;
      reg                                peri_done = 0;
      reg        [3 :0]                  wstrb_to_peri;
+     wire       [4:0]                   amo_op;
              
         wire fence;
      
@@ -305,7 +306,8 @@ module RISCV_PROCESSOR#(
     .MEIP(MEIP),
     .MSIP(MSIP),
     .MTIP(MTIP),
-    .FENCE(fence)
+    .FENCE(fence),
+    .AMO_TO_CACHE(amo_op)
     );
     
 
@@ -654,7 +656,8 @@ myip_v1_0_M00_AXI # (
         .DATA_TO_L2_VALID(data_to_l2_valid)                ,
         .WADDR_TO_L2(waddr_to_l2)    ,
         .WRITE_DONE(write_done),
-        .DATA_TO_L2(data_to_l2)
+        .DATA_TO_L2(data_to_l2),
+        .AMO(amo_op)
 
     );
 

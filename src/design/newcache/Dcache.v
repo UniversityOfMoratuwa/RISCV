@@ -29,9 +29,11 @@ module Dcache
         output reg    [cache_width-1:0]          DATA_TO_L2,
         output reg                    DATA_TO_L2_VALID                ,
         output reg  [address_width - offset_width-1:0] WADDR_TO_L2    ,
-        input                         WRITE_DONE 
+        input                         WRITE_DONE ,
+        input           [4:0]         AMO
 
     );
+    `include "PipelineParams.vh"
     reg  [address_width-1:0] addr_d0             ;
     reg  [address_width-1:0] addr_d1             ;
     reg  [address_width-1:0] addr_d2             ;
@@ -43,6 +45,10 @@ module Dcache
     reg  [1:0]               control_d2          ;
     reg  [1:0]               control_d3          ;
     reg                      state_wdata;
+    reg  [4:0]               amo_d0;
+    reg  [4:0]               amo_d1;
+    reg  [4:0]               amo_d2;
+    reg  [4:0]               amo_d3;
 
     reg  [data_width/8-1:0]               wstrb_d0          ;
     reg  [data_width/8-1:0]               wstrb_d1          ;
@@ -191,6 +197,10 @@ module Dcache
             flush_d2 <=0;
             flush_d3 <=0;
 
+            amo_d0 <= amoidle;
+            amo_d1 <= amoidle;
+            amo_d2 <= amoidle;
+            amo_d3 <= amoidle;
             
         end
         else if (cache_ready & ADDR_VALID) begin
@@ -219,6 +229,11 @@ module Dcache
             flush_d1   <= flush_d0;
             flush_d2   <= flush_d1;
             flush_d3   <= flush_d2;
+
+            amo_d0     <= AMO;
+            amo_d1     <= amo_d0;
+            amo_d2     <= amo_d1;
+            amo_d3     <= amo_d2;
         end
     
     
@@ -357,16 +372,60 @@ module Dcache
  
    always@(*)  
    begin
-       for (i=0;i<data_width/8;i=i+1)
-       begin
-           if(wstrb_d3[i])
+       case(amo_d3)
+           amoidle:
            begin
-               data_to_be_writen[i*8 +: 8] = data_d3[i*8 +: 8];
-           end
-           else begin
-               data_to_be_writen[i*8 +: 8] = data[i*8 +: 8];
-           end
-       end
+               for (i=0;i<data_width/8;i=i+1)
+               begin
+                   if(wstrb_d3[i])
+                   begin
+                       data_to_be_writen[i*8 +: 8] = data_d3[i*8 +: 8];
+                   end
+                   else begin
+                       data_to_be_writen[i*8 +: 8] = data[i*8 +: 8];
+                   end
+               end
+            end
+            amoswap:
+            begin
+                data_to_be_writen= data_d3 ;
+            end
+            amoxor:
+            begin
+                data_to_be_writen= data_d3 ^ data;
+            end
+            amoor:
+            begin
+                data_to_be_writen= data_d3 | data;
+            end
+            amoadd:
+            begin
+                data_to_be_writen= data_d3 + data;
+            end
+            amoand:
+            begin
+                data_to_be_writen= data_d3 & data;
+            end
+            amomin:
+            begin
+                data_to_be_writen= ($signed(data_d3) > $signed(data)) ? data : data_d3;
+            end
+            amomax:
+            begin
+                data_to_be_writen= ($signed(data_d3) > $signed(data)) ? data_d3 : data;
+            end
+            
+            amomaxu:
+            begin
+                data_to_be_writen= (data_d3 > data) ? data_d3 : data;
+            end
+            amominu:
+            begin
+                data_to_be_writen= (data_d3 > data) ? data : data_d3;
+            end
+
+
+        endcase
        for (i = 0; i<cache_width ;i=i+data_width)
        begin
            if (i== {addr_d3[offset_width-1:2],2'b0}*8 )
@@ -378,6 +437,7 @@ module Dcache
             cache_porta_data_in_int[i +:data_width]                 =  cache_porta_data_out[i +:data_width]       ;
            end      
       end
+
    end
     generate
     if (offset_width>2)
@@ -400,6 +460,8 @@ module Dcache
 
 
 endmodule
+
+
 
 
 

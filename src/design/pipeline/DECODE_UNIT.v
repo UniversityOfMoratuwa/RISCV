@@ -50,7 +50,8 @@ module DECODE_UNIT(
     output reg  [ 4:0]  RD_OUT                  ,
     output      [ 1:0]  RS1_TYPE                ,
     output      [ 1:0]  RS2_TYPE                ,
-    output reg          FENCE                   
+    output reg          FENCE                   ,
+    output reg   [4:0]  AMO_OP                  
     );
     
     `include "PipelineParams.vh"
@@ -74,6 +75,7 @@ module DECODE_UNIT(
     wire [ 1:0]     op_type                 ;    
     wire [ 4:0]     rd_out                  ;      
    
+    wire [ 4:0]     amo_op                 ;
     wire [ 4:0]     rs1_sel                 ;
     wire [ 4:0]     rs2_sel                 ;
     wire [ 2:0]     type_w                    ;
@@ -134,7 +136,9 @@ module DECODE_UNIT(
         .TYPE               (op_type)                                               ,
         .A_BUS_SEL          (a_bus_sel)                                             ,
         .B_BUS_SEL          (b_bus_sel)                                             ,
-        .FENCE              (fence_w)
+        .FENCE              (fence_w )                                              ,
+        .INS2               (INSTRUCTION[31:27])                                    ,
+        .AMO_OP             (amo_op)                
         );
                
     Multiplexer #(
@@ -189,7 +193,8 @@ module DECODE_UNIT(
             B_BUS_SEL                 =    b_bus_sel              ;    
             OP_TYPE                   =    op_type                ;         
             RD_OUT                    =    INSTRUCTION[11: 7]     ;   
-            FENCE                     =    fence_w                ;     
+            FENCE                     =    fence_w                ; 
+            AMO_OP                    =    amo_op                 ;    
         end
     end  
                                 
