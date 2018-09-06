@@ -300,7 +300,7 @@ while PC < 1 << 20:
             if( platform.system()=='Windows'):
                 reg_array[rd]=ord(msvcrt.getch())
             else:
-                eg_array[rd]=ord(getch.getch())
+                reg_array[rd]=ord(getch.getch())
             
 
         wb_data = wb_prev
