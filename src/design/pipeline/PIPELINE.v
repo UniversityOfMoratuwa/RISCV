@@ -599,7 +599,6 @@ module PIPELINE #(
                 a_bus_sel_fb_ex          <=    0                    ; 
                 b_bus_sel_fb_ex          <=    0                    ; 
                 imm_out_fb_ex            <=    0                    ; 
-                //pc_fb_ex                 <=    0                 ; 
                 data_cache_control_fb_ex <=    0                    ;
                 rs2_ex_ex2               <=    0                    ; 
                 rs1_ex_ex2               <=    0                    ; 
@@ -609,8 +608,6 @@ module PIPELINE #(
                 imm_ex_ex2               <=    0                    ; 
                  fence_id_fb             <= 0                       ;
                 fence_fb_ex              <= 0                       ;
-                amo_id_fb               <=0;
-                amo_fb_ex               <=0;                 
             end
             
             rd_fb_ex                 <=    rd_id_fb                 ;                      

@@ -19,7 +19,7 @@ module Dcache
         input                    FLUSH                           ,
         input  [address_width-1:0] ADDR                              ,
         input                    ADDR_VALID                      ,
-        output reg [data_width-1:0]  DATA                            ,
+        output  [data_width-1:0]  DATA                            ,
         input      [data_width-1:0]  DATA_in                            ,
         output     reg           CACHE_READY                     ,
         output                   ADDR_TO_L2_VALID                ,
@@ -238,13 +238,13 @@ module Dcache
     
     
     end
-    always@(*)
-    begin
-        DATA    = data ;
-    end
+    
+     assign   DATA    = data ;
+ 
 
-    always@(posedge CLK)
+    always@(posedge CLK) 
     begin
+
         if (RST)
         begin
             addr_to_l2_valid  <=0;
@@ -310,6 +310,7 @@ module Dcache
             dirty_wren           <= 1;
             dirty_waddr          <= dirty_raddr;
             dirty_din            <=1;
+
         end
         else if (DATA_FROM_L2_VALID)
         begin
@@ -330,6 +331,7 @@ module Dcache
                 dirty_waddr        <= dirty_raddr;
                 addr_reg            <= {tag_porta_data_out,addr_d3[address_width-tag_width-1 : offset_width]};
                 state_wdata        <=1;
+
             end      
 
         end
@@ -372,6 +374,8 @@ module Dcache
  
    always@(*)  
    begin
+      if(cache_ready)
+      begin
        case(amo_d3)
            amoidle:
            begin
@@ -426,6 +430,11 @@ module Dcache
 
 
         endcase
+       end
+       else
+       begin
+            data_to_be_writen = data;
+       end
        for (i = 0; i<cache_width ;i=i+data_width)
        begin
            if (i== {addr_d3[offset_width-1:2],2'b0}*8 )
@@ -446,7 +455,7 @@ module Dcache
         assign data                 = cache_porta_data_out                                                        ;
     end
     endgenerate
-    assign cache_porta_data_out = DATA_FROM_L2_VALID ? DATA_FROM_L2 :  ((dirty_wren & addr_d3[offset_width+line_width-1:offset_width]==addr_d4[offset_width+line_width-1:offset_width])? cache_porta_data_in: cache_porta_data_out_i);
+    assign cache_porta_data_out = DATA_FROM_L2_VALID ? DATA_FROM_L2 :  (((dirty_wren & addr_d3[offset_width+line_width-1:offset_width]==addr_d4[offset_width+line_width-1:offset_width]))? cache_porta_data_in: cache_porta_data_out_i);
 
     assign cache_porta_raddr    = ~flush_d3? addr_d3[offset_width+line_width-1:offset_width]: flush_addr           ;
     assign dirty_raddr          = cache_porta_raddr                                         ;
