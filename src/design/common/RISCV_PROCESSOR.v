@@ -52,7 +52,7 @@ module RISCV_PROCESSOR#(
         // Fixed parameters
         localparam ADDR_WIDTH           = 32,
         localparam DATA_WIDTH           = 32,
-        localparam EXT_FIFO_ADDRESS     = 32'h10150,
+        localparam EXT_FIFO_ADDRESS     = 32'he0001030,
    //     localparam EXT_FIFO_ADDRESS     = 32'h10150,
         parameter  PERIPHERAL_BASE_ADDR = 32'h10000000,
                               // Delay of the second level of cache
@@ -366,7 +366,7 @@ module RISCV_PROCESSOR#(
     
     always@(posedge CLK)
     begin
-        if  (addr_from_proc_dat >= PERIPHERAL_BASE_ADDR/* && addr_from_proc_dat!= EXT_FIFO_ADDRESS */&&  control_from_proc_dat != 0 && !stop_dat_cache && cache_ready_ins && cache_ready_dat && counter==0)
+        if  (addr_from_proc_dat >= PERIPHERAL_BASE_ADDR/* && addr_from_proc_dat!= EXT_FIFO_ADDRESS */&&  control_from_proc_dat != 0 && !stop_dat_cache && cache_ready_ins && cache_ready_dat && counter==0 && 0)
         begin
             data_to_peri <= data_from_proc_dat;
             addr_to_peri <= addr_from_proc_dat;
@@ -650,7 +650,7 @@ myip_v1_0_M00_AXI # (
         .ADDR_TO_L2 (addr_to_l2_dat)                    ,
         .DATA_FROM_L2 (data_from_l2_dat)                ,
         .DATA_FROM_L2_VALID (data_from_l2_valid_dat)    ,
-         .CONTROL ((addr_from_proc_dat != EXT_FIFO_ADDRESS & addr_from_proc_dat < PERIPHERAL_BASE_ADDR)? control_from_proc_dat : 2'b0)                         ,   
+         .CONTROL ((addr_from_proc_dat != EXT_FIFO_ADDRESS & addr_from_proc_dat < PERIPHERAL_BASE_ADDR & cache_ready_ins)? control_from_proc_dat : 2'b0)                         ,   
         .WSTRB (byte_enb_proc)                           ,
         .DATA_in(data_from_proc_dat),
         .DATA_TO_L2_VALID(data_to_l2_valid)                ,

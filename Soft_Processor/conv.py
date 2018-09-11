@@ -7,7 +7,7 @@ except:
 filed="test"
 #os.system('make')
 
-os.system('riscv64-unknown-elf-objdump -d RISCV_Test_Benchmark.elf > test.txt')
+#os.system('riscv64-unknown-elf-objdump -d RISCV_Test_Benchmark.elf > test.txt')
 os.system('riscv64-unknown-elf-objdump -s  RISCV_Test_Benchmark.elf > data.txt')
 x=open(str(filed)+".txt","r")
 data=open("data.txt","r")
