@@ -7,11 +7,12 @@ from time import time
 import platform
 
 # create a GUI variable called app
-
-os.system('make clean')
-os.system('make all')
-os.system('python comp.py')
-os.system('python conv.py xx')
+filename="RISCV_Test_Benchmark.hex"
+#filename=str(sys.argv[1])
+#os.system('make clean')
+#os.system('make all')
+#os.system('python comp.py '+filename)
+#os.system('python conv.py xx')
 
 if( platform.system()=='Windows'):
     import msvcrt
@@ -23,6 +24,7 @@ reg_array = []
 memory = []
 fifo_addr = 'e0001030'
 mem_size = 24
+#PC = int('00010000', 16) / 4
 PC = int('00000000', 16) / 4
 
 opcode = {
@@ -37,8 +39,9 @@ opcode = {
     '0110011': 'rops',
     '1110011': 'system',
     '0001111': 'fenc',
-    '0101111': 'rops',
+    '0111011': 'rops',
     '0000000': 'uimp',
+    '0101111': 'amo',
     }
 
 
@@ -162,6 +165,8 @@ n = 0
 pre = 0
 cycle = 0
 pr = ''
+amo_reserve_valid = False
+amo_reserve_addr  = 0
 try:
     mile = \
         open('/home/riscv_group/Desktop/New/Wingle.sim/sim_1/behav/mem_reads.txt'
@@ -503,9 +508,87 @@ while PC < 1 << 20:
         if binary[0:12] == bin(int('c02', 16))[2:]:
             reg_array[rd] = n  # INSRET
         wb_data = reg_array[rd]
-    val = (10 - len(hex(lpc * 4).strip('L'))) * '0' + hex(lpc
-            * 4).strip('L')[2:] + ' ' + (10 - len(hex(wb_data).strip('L'
-            ))) * '0' + hex(wb_data).strip('L')[2:]
+        val = (10 - len(hex(lpc * 4).strip('L'))) * '0' + hex(lpc* 4).strip('L')[2:] + ' ' + (10 - len(hex(wb_data).strip('L'))) * '0' + hex(wb_data).strip('L')[2]
+
+    elif opcode[binary[25:32]] == 'amo':
+        amo_op = binary[0:5]
+        aq = binary[5]
+        rl = binary[6]
+        rs2_data = reg_array[rs2_sel]
+        rs1_addr = reg_array[rs1_sel]
+        #rd_addr = reg_array[int(binary[19:24],2)]
+        
+        data1 = memory[rs1_addr/4]
+        #reg_array[int(rd_sel,2)] = data1
+        #memory[rd_addr/4] = data1
+        #print("AMO OP : " + str(binary[0:5]))
+        #print("rs2 data : "+str(bin(rs2_data)))
+        #print("rs1 data : "+str(bin(data1)))
+
+
+        if amo_op == '00010': #LR
+            data1 = signed(memory[rs1_addr/4])
+            amo_reserve_valid = True
+            amo_reserve_addr  = rs1_addr
+
+        elif amo_op == '00011': #SC
+            if ( amo_reserve_valid and (rs1_addr==amo_reserve_addr)):
+                memory[rs1_addr/4] = rs2_data
+                data1 = 0
+            else :
+                data1 = 1
+            amo_reserve_valid = False
+            amo_reserve_addr  = 0
+
+
+        elif amo_op == '00001': # swap
+           wb_data = rs2_data
+           memory[rs1_addr/4] = wb_data
+
+
+        elif amo_op == '00000': # add
+            wb_data = (rs2_data + data1)%(1 << 32)
+            memory[rs1_addr/4] = wb_data
+
+
+        elif amo_op == '00100': # xor
+            wb_data = rs2_data ^ data1
+            memory[rs1_addr/4] = wb_data
+
+
+        elif amo_op == '01100': # and
+            wb_data = rs2_data & data1
+            memory[rs1_addr/4] = wb_data
+
+
+        elif amo_op == '01000': # or
+            wb_data = rs2_data | data1
+            memory[rs1_addr/4] = wb_data
+
+
+        elif amo_op == '11100': # maxu
+            wb_data = max(rs2_data, data1)
+            memory[rs1_addr/4] = wb_data
+
+
+        elif amo_op == '11000': # minu
+            wb_data = min(rs2_data,data1)
+            memory[rs1_addr/4] = wb_data
+
+
+        elif amo_op == '10100': # max 
+            wb_data = twoscomp32(max(signed(rs2_data), signed(data1)))
+            memory[rs1_addr/4] = wb_data
+
+
+        elif int(amo_op,2) == int('10000',2): # min
+            wb_data = twoscomp32(min(signed(rs2_data),signed(data1)))
+            memory[rs1_addr/4] = wb_data
+
+
+
+        reg_array[rd] = data1
+    
 
     try:
         if val != (nile[n])[:-1]:

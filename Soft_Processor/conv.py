@@ -1,14 +1,14 @@
 import os
 import sys
-try:
-    c_file=sys.argv[1]
-except:
-    c_file=raw_input("input_filename : ")
+# try:
+#     c_file=sys.argv[1]
+# except:
+#     c_file=raw_input("input_filename : ")
 filed="test"
 #os.system('make')
 
-#os.system('riscv64-unknown-elf-objdump -d RISCV_Test_Benchmark.elf > test.txt')
-os.system('riscv64-unknown-elf-objdump -s  RISCV_Test_Benchmark.elf > data.txt')
+os.system('riscv64-unknown-elf-objdump -d RISCV_Test_Benchmark.elf > test.txt')
+os.system('riscv64-unknown-elf-objdump -s RISCV_Test_Benchmark.elf > data.txt')
 x=open(str(filed)+".txt","r")
 data=open("data.txt","r")
 out=open(filed+"_hex.txt","w")
