@@ -1,0 +1,22 @@
+
+Allocating common symbols
+Common symbol       size              file
+
+Microseconds        0x4               ./src/dhrystone/dhry_1.o
+Dhrystones_Per_Second
+                    0x4               ./src/dhrystone/dhry_1.o
+User_Insn           0x4               ./src/dhrystone/dhry_1.o
+User_Time           0x4               ./src/dhrystone/dhry_1.o
+Begin_Time          0x4               ./src/dhrystone/dhry_1.o
+Arr_2_Glob          0x2710            ./src/dhrystone/dhry_1.o
+End_Time            0x4               ./src/dhrystone/dhry_1.o
+Next_Ptr_Glob       0x4               ./src/dhrystone/dhry_1.o
+Int_Glob            0x4               ./src/dhrystone/dhry_1.o
+Ch_1_Glob           0x1               ./src/dhrystone/dhry_1.o
+Ch_2_Glob           0x1               ./src/dhrystone/dhry_1.o
+Ptr_Glob            0x4               ./src/dhrystone/dhry_1.o
+Begin_Insn          0x4               ./src/dhrystone/dhry_1.o
+Arr_1_Glob          0xc8              ./src/dhrystone/dhry_1.o
+Bool_Glob           0x4               ./src/dhrystone/dhry_1.o
+End_Insn            0x4               ./src/dhrystone/dhry_1.o
+heap_memory         0x400             ./src/stdlib.o

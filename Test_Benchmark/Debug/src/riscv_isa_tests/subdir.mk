@@ -49,7 +49,17 @@ S_UPPER_SRCS += \
 ../src/riscv_isa_tests/sub.S \
 ../src/riscv_isa_tests/sw.S \
 ../src/riscv_isa_tests/xor.S \
-../src/riscv_isa_tests/xori.S 
+../src/riscv_isa_tests/xori.S \
+../src/riscv_isa_tests/amoadd_w.S \
+../src/riscv_isa_tests/amoand_w.S \
+../src/riscv_isa_tests/amomaxu_w.S \
+../src/riscv_isa_tests/amomax_w.S \
+../src/riscv_isa_tests/amominu_w.S \
+../src/riscv_isa_tests/amomin_w.S \
+../src/riscv_isa_tests/amoor_w.S \
+../src/riscv_isa_tests/amoswap_w.S \
+../src/riscv_isa_tests/amoxor_w.S \
+../src/riscv_isa_tests/lrsc.S 
 
 OBJS += \
 ./src/riscv_isa_tests/add.o \
@@ -97,7 +107,17 @@ OBJS += \
 ./src/riscv_isa_tests/sub.o \
 ./src/riscv_isa_tests/sw.o \
 ./src/riscv_isa_tests/xor.o \
-./src/riscv_isa_tests/xori.o 
+./src/riscv_isa_tests/xori.o \
+./src/riscv_isa_tests/amoadd_w.o \
+./src/riscv_isa_tests/amoand_w.o \
+./src/riscv_isa_tests/amomaxu_w.o \
+./src/riscv_isa_tests/amomax_w.o \
+./src/riscv_isa_tests/amominu_w.o \
+./src/riscv_isa_tests/amomin_w.o \
+./src/riscv_isa_tests/amoor_w.o \
+./src/riscv_isa_tests/amoswap_w.o \
+./src/riscv_isa_tests/amoxor_w.o \
+./src/riscv_isa_tests/lrsc.o
 
 S_UPPER_DEPS += \
 ./src/riscv_isa_tests/add.d \
@@ -145,14 +165,23 @@ S_UPPER_DEPS += \
 ./src/riscv_isa_tests/sub.d \
 ./src/riscv_isa_tests/sw.d \
 ./src/riscv_isa_tests/xor.d \
-./src/riscv_isa_tests/xori.d 
-
+./src/riscv_isa_tests/xori.d \
+./src/riscv_isa_tests/amoadd_w.d \
+./src/riscv_isa_tests/amoand_w.d \
+./src/riscv_isa_tests/amomaxu_w.d \
+./src/riscv_isa_tests/amomax_w.d \
+./src/riscv_isa_tests/amominu_w.d \
+./src/riscv_isa_tests/amomin_w.d \
+./src/riscv_isa_tests/amoor_w.d \
+./src/riscv_isa_tests/amoswap_w.d \
+./src/riscv_isa_tests/amoxor_w.d \
+./src/riscv_isa_tests/lrsc.d
 
 # Each subdirectory must supply rules for building sources it contributes
 src/riscv_isa_tests/%.o: ../src/riscv_isa_tests/%.S
 	@echo 'Building file: $<'
 	@echo 'Invoking: RISC-V GCC/Newlib Assembler'
-	riscv64-unknown-elf-gcc -mabi=ilp32 -march=rv32im -x assembler-with-cpp -Wall -c -MMD -MP -MF"$(@:%.o=%.d)" -MT"$(@)" -Wa,-march=rv32im -o "$@" "$<"
+	riscv64-unknown-elf-gcc -mabi=ilp32 -march=rv32ima -x assembler-with-cpp -Wall -c -MMD -MP -MF"$(@:%.o=%.d)" -MT"$(@)" -Wa,-march=rv32ima -o "$@" "$<"
 	@echo 'Finished building: $<'
 	@echo ' '
 

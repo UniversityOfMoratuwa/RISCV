@@ -1,0 +1,289 @@
+Building file: ../src/riscv_isa_tests/add.S
+Invoking: RISC-V GCC/Newlib Assembler
+riscv64-unknown-elf-gcc -mabi=ilp32 -march=rv32im -x assembler-with-cpp -Wall -c -MMD -MP -MF"src/riscv_isa_tests/add.d" -MT"src/riscv_isa_tests/add.o" -Wa,-march=rv32im -o "src/riscv_isa_tests/add.o" "../src/riscv_isa_tests/add.S"
+Finished building: ../src/riscv_isa_tests/add.S
+ 
+Building file: ../src/riscv_isa_tests/addi.S
+Invoking: RISC-V GCC/Newlib Assembler
+riscv64-unknown-elf-gcc -mabi=ilp32 -march=rv32im -x assembler-with-cpp -Wall -c -MMD -MP -MF"src/riscv_isa_tests/addi.d" -MT"src/riscv_isa_tests/addi.o" -Wa,-march=rv32im -o "src/riscv_isa_tests/addi.o" "../src/riscv_isa_tests/addi.S"
+Finished building: ../src/riscv_isa_tests/addi.S
+ 
+Building file: ../src/riscv_isa_tests/and.S
+Invoking: RISC-V GCC/Newlib Assembler
+riscv64-unknown-elf-gcc -mabi=ilp32 -march=rv32im -x assembler-with-cpp -Wall -c -MMD -MP -MF"src/riscv_isa_tests/and.d" -MT"src/riscv_isa_tests/and.o" -Wa,-march=rv32im -o "src/riscv_isa_tests/and.o" "../src/riscv_isa_tests/and.S"
+Finished building: ../src/riscv_isa_tests/and.S
+ 
+Building file: ../src/riscv_isa_tests/andi.S
+Invoking: RISC-V GCC/Newlib Assembler
+riscv64-unknown-elf-gcc -mabi=ilp32 -march=rv32im -x assembler-with-cpp -Wall -c -MMD -MP -MF"src/riscv_isa_tests/andi.d" -MT"src/riscv_isa_tests/andi.o" -Wa,-march=rv32im -o "src/riscv_isa_tests/andi.o" "../src/riscv_isa_tests/andi.S"
+Finished building: ../src/riscv_isa_tests/andi.S
+ 
+Building file: ../src/riscv_isa_tests/auipc.S
+Invoking: RISC-V GCC/Newlib Assembler
+riscv64-unknown-elf-gcc -mabi=ilp32 -march=rv32im -x assembler-with-cpp -Wall -c -MMD -MP -MF"src/riscv_isa_tests/auipc.d" -MT"src/riscv_isa_tests/auipc.o" -Wa,-march=rv32im -o "src/riscv_isa_tests/auipc.o" "../src/riscv_isa_tests/auipc.S"
+Finished building: ../src/riscv_isa_tests/auipc.S
+ 
+Building file: ../src/riscv_isa_tests/beq.S
+Invoking: RISC-V GCC/Newlib Assembler
+riscv64-unknown-elf-gcc -mabi=ilp32 -march=rv32im -x assembler-with-cpp -Wall -c -MMD -MP -MF"src/riscv_isa_tests/beq.d" -MT"src/riscv_isa_tests/beq.o" -Wa,-march=rv32im -o "src/riscv_isa_tests/beq.o" "../src/riscv_isa_tests/beq.S"
+Finished building: ../src/riscv_isa_tests/beq.S
+ 
+Building file: ../src/riscv_isa_tests/bge.S
+Invoking: RISC-V GCC/Newlib Assembler
+riscv64-unknown-elf-gcc -mabi=ilp32 -march=rv32im -x assembler-with-cpp -Wall -c -MMD -MP -MF"src/riscv_isa_tests/bge.d" -MT"src/riscv_isa_tests/bge.o" -Wa,-march=rv32im -o "src/riscv_isa_tests/bge.o" "../src/riscv_isa_tests/bge.S"
+Finished building: ../src/riscv_isa_tests/bge.S
+ 
+Building file: ../src/riscv_isa_tests/bgeu.S
+Invoking: RISC-V GCC/Newlib Assembler
+riscv64-unknown-elf-gcc -mabi=ilp32 -march=rv32im -x assembler-with-cpp -Wall -c -MMD -MP -MF"src/riscv_isa_tests/bgeu.d" -MT"src/riscv_isa_tests/bgeu.o" -Wa,-march=rv32im -o "src/riscv_isa_tests/bgeu.o" "../src/riscv_isa_tests/bgeu.S"
+Finished building: ../src/riscv_isa_tests/bgeu.S
+ 
+Building file: ../src/riscv_isa_tests/blt.S
+Invoking: RISC-V GCC/Newlib Assembler
+riscv64-unknown-elf-gcc -mabi=ilp32 -march=rv32im -x assembler-with-cpp -Wall -c -MMD -MP -MF"src/riscv_isa_tests/blt.d" -MT"src/riscv_isa_tests/blt.o" -Wa,-march=rv32im -o "src/riscv_isa_tests/blt.o" "../src/riscv_isa_tests/blt.S"
+Finished building: ../src/riscv_isa_tests/blt.S
+ 
+Building file: ../src/riscv_isa_tests/bltu.S
+Invoking: RISC-V GCC/Newlib Assembler
+riscv64-unknown-elf-gcc -mabi=ilp32 -march=rv32im -x assembler-with-cpp -Wall -c -MMD -MP -MF"src/riscv_isa_tests/bltu.d" -MT"src/riscv_isa_tests/bltu.o" -Wa,-march=rv32im -o "src/riscv_isa_tests/bltu.o" "../src/riscv_isa_tests/bltu.S"
+Finished building: ../src/riscv_isa_tests/bltu.S
+ 
+Building file: ../src/riscv_isa_tests/bne.S
+Invoking: RISC-V GCC/Newlib Assembler
+riscv64-unknown-elf-gcc -mabi=ilp32 -march=rv32im -x assembler-with-cpp -Wall -c -MMD -MP -MF"src/riscv_isa_tests/bne.d" -MT"src/riscv_isa_tests/bne.o" -Wa,-march=rv32im -o "src/riscv_isa_tests/bne.o" "../src/riscv_isa_tests/bne.S"
+Finished building: ../src/riscv_isa_tests/bne.S
+ 
+Building file: ../src/riscv_isa_tests/csr.S
+Invoking: RISC-V GCC/Newlib Assembler
+riscv64-unknown-elf-gcc -mabi=ilp32 -march=rv32im -x assembler-with-cpp -Wall -c -MMD -MP -MF"src/riscv_isa_tests/csr.d" -MT"src/riscv_isa_tests/csr.o" -Wa,-march=rv32im -o "src/riscv_isa_tests/csr.o" "../src/riscv_isa_tests/csr.S"
+Finished building: ../src/riscv_isa_tests/csr.S
+ 
+Building file: ../src/riscv_isa_tests/div.S
+Invoking: RISC-V GCC/Newlib Assembler
+riscv64-unknown-elf-gcc -mabi=ilp32 -march=rv32im -x assembler-with-cpp -Wall -c -MMD -MP -MF"src/riscv_isa_tests/div.d" -MT"src/riscv_isa_tests/div.o" -Wa,-march=rv32im -o "src/riscv_isa_tests/div.o" "../src/riscv_isa_tests/div.S"
+Finished building: ../src/riscv_isa_tests/div.S
+ 
+Building file: ../src/riscv_isa_tests/divu.S
+Invoking: RISC-V GCC/Newlib Assembler
+riscv64-unknown-elf-gcc -mabi=ilp32 -march=rv32im -x assembler-with-cpp -Wall -c -MMD -MP -MF"src/riscv_isa_tests/divu.d" -MT"src/riscv_isa_tests/divu.o" -Wa,-march=rv32im -o "src/riscv_isa_tests/divu.o" "../src/riscv_isa_tests/divu.S"
+Finished building: ../src/riscv_isa_tests/divu.S
+ 
+Building file: ../src/riscv_isa_tests/ecall.S
+Invoking: RISC-V GCC/Newlib Assembler
+riscv64-unknown-elf-gcc -mabi=ilp32 -march=rv32im -x assembler-with-cpp -Wall -c -MMD -MP -MF"src/riscv_isa_tests/ecall.d" -MT"src/riscv_isa_tests/ecall.o" -Wa,-march=rv32im -o "src/riscv_isa_tests/ecall.o" "../src/riscv_isa_tests/ecall.S"
+Finished building: ../src/riscv_isa_tests/ecall.S
+ 
+Building file: ../src/riscv_isa_tests/j.S
+Invoking: RISC-V GCC/Newlib Assembler
+riscv64-unknown-elf-gcc -mabi=ilp32 -march=rv32im -x assembler-with-cpp -Wall -c -MMD -MP -MF"src/riscv_isa_tests/j.d" -MT"src/riscv_isa_tests/j.o" -Wa,-march=rv32im -o "src/riscv_isa_tests/j.o" "../src/riscv_isa_tests/j.S"
+Finished building: ../src/riscv_isa_tests/j.S
+ 
+Building file: ../src/riscv_isa_tests/jal.S
+Invoking: RISC-V GCC/Newlib Assembler
+riscv64-unknown-elf-gcc -mabi=ilp32 -march=rv32im -x assembler-with-cpp -Wall -c -MMD -MP -MF"src/riscv_isa_tests/jal.d" -MT"src/riscv_isa_tests/jal.o" -Wa,-march=rv32im -o "src/riscv_isa_tests/jal.o" "../src/riscv_isa_tests/jal.S"
+Finished building: ../src/riscv_isa_tests/jal.S
+ 
+Building file: ../src/riscv_isa_tests/jalr.S
+Invoking: RISC-V GCC/Newlib Assembler
+riscv64-unknown-elf-gcc -mabi=ilp32 -march=rv32im -x assembler-with-cpp -Wall -c -MMD -MP -MF"src/riscv_isa_tests/jalr.d" -MT"src/riscv_isa_tests/jalr.o" -Wa,-march=rv32im -o "src/riscv_isa_tests/jalr.o" "../src/riscv_isa_tests/jalr.S"
+Finished building: ../src/riscv_isa_tests/jalr.S
+ 
+Building file: ../src/riscv_isa_tests/lb.S
+Invoking: RISC-V GCC/Newlib Assembler
+riscv64-unknown-elf-gcc -mabi=ilp32 -march=rv32im -x assembler-with-cpp -Wall -c -MMD -MP -MF"src/riscv_isa_tests/lb.d" -MT"src/riscv_isa_tests/lb.o" -Wa,-march=rv32im -o "src/riscv_isa_tests/lb.o" "../src/riscv_isa_tests/lb.S"
+Finished building: ../src/riscv_isa_tests/lb.S
+ 
+Building file: ../src/riscv_isa_tests/lbu.S
+Invoking: RISC-V GCC/Newlib Assembler
+riscv64-unknown-elf-gcc -mabi=ilp32 -march=rv32im -x assembler-with-cpp -Wall -c -MMD -MP -MF"src/riscv_isa_tests/lbu.d" -MT"src/riscv_isa_tests/lbu.o" -Wa,-march=rv32im -o "src/riscv_isa_tests/lbu.o" "../src/riscv_isa_tests/lbu.S"
+Finished building: ../src/riscv_isa_tests/lbu.S
+ 
+Building file: ../src/riscv_isa_tests/lh.S
+Invoking: RISC-V GCC/Newlib Assembler
+riscv64-unknown-elf-gcc -mabi=ilp32 -march=rv32im -x assembler-with-cpp -Wall -c -MMD -MP -MF"src/riscv_isa_tests/lh.d" -MT"src/riscv_isa_tests/lh.o" -Wa,-march=rv32im -o "src/riscv_isa_tests/lh.o" "../src/riscv_isa_tests/lh.S"
+Finished building: ../src/riscv_isa_tests/lh.S
+ 
+Building file: ../src/riscv_isa_tests/lhu.S
+Invoking: RISC-V GCC/Newlib Assembler
+riscv64-unknown-elf-gcc -mabi=ilp32 -march=rv32im -x assembler-with-cpp -Wall -c -MMD -MP -MF"src/riscv_isa_tests/lhu.d" -MT"src/riscv_isa_tests/lhu.o" -Wa,-march=rv32im -o "src/riscv_isa_tests/lhu.o" "../src/riscv_isa_tests/lhu.S"
+Finished building: ../src/riscv_isa_tests/lhu.S
+ 
+Building file: ../src/riscv_isa_tests/lui.S
+Invoking: RISC-V GCC/Newlib Assembler
+riscv64-unknown-elf-gcc -mabi=ilp32 -march=rv32im -x assembler-with-cpp -Wall -c -MMD -MP -MF"src/riscv_isa_tests/lui.d" -MT"src/riscv_isa_tests/lui.o" -Wa,-march=rv32im -o "src/riscv_isa_tests/lui.o" "../src/riscv_isa_tests/lui.S"
+Finished building: ../src/riscv_isa_tests/lui.S
+ 
+Building file: ../src/riscv_isa_tests/lw.S
+Invoking: RISC-V GCC/Newlib Assembler
+riscv64-unknown-elf-gcc -mabi=ilp32 -march=rv32im -x assembler-with-cpp -Wall -c -MMD -MP -MF"src/riscv_isa_tests/lw.d" -MT"src/riscv_isa_tests/lw.o" -Wa,-march=rv32im -o "src/riscv_isa_tests/lw.o" "../src/riscv_isa_tests/lw.S"
+Finished building: ../src/riscv_isa_tests/lw.S
+ 
+Building file: ../src/riscv_isa_tests/mul.S
+Invoking: RISC-V GCC/Newlib Assembler
+riscv64-unknown-elf-gcc -mabi=ilp32 -march=rv32im -x assembler-with-cpp -Wall -c -MMD -MP -MF"src/riscv_isa_tests/mul.d" -MT"src/riscv_isa_tests/mul.o" -Wa,-march=rv32im -o "src/riscv_isa_tests/mul.o" "../src/riscv_isa_tests/mul.S"
+Finished building: ../src/riscv_isa_tests/mul.S
+ 
+Building file: ../src/riscv_isa_tests/mulh.S
+Invoking: RISC-V GCC/Newlib Assembler
+riscv64-unknown-elf-gcc -mabi=ilp32 -march=rv32im -x assembler-with-cpp -Wall -c -MMD -MP -MF"src/riscv_isa_tests/mulh.d" -MT"src/riscv_isa_tests/mulh.o" -Wa,-march=rv32im -o "src/riscv_isa_tests/mulh.o" "../src/riscv_isa_tests/mulh.S"
+Finished building: ../src/riscv_isa_tests/mulh.S
+ 
+Building file: ../src/riscv_isa_tests/mulhsu.S
+Invoking: RISC-V GCC/Newlib Assembler
+riscv64-unknown-elf-gcc -mabi=ilp32 -march=rv32im -x assembler-with-cpp -Wall -c -MMD -MP -MF"src/riscv_isa_tests/mulhsu.d" -MT"src/riscv_isa_tests/mulhsu.o" -Wa,-march=rv32im -o "src/riscv_isa_tests/mulhsu.o" "../src/riscv_isa_tests/mulhsu.S"
+Finished building: ../src/riscv_isa_tests/mulhsu.S
+ 
+Building file: ../src/riscv_isa_tests/mulhu.S
+Invoking: RISC-V GCC/Newlib Assembler
+riscv64-unknown-elf-gcc -mabi=ilp32 -march=rv32im -x assembler-with-cpp -Wall -c -MMD -MP -MF"src/riscv_isa_tests/mulhu.d" -MT"src/riscv_isa_tests/mulhu.o" -Wa,-march=rv32im -o "src/riscv_isa_tests/mulhu.o" "../src/riscv_isa_tests/mulhu.S"
+Finished building: ../src/riscv_isa_tests/mulhu.S
+ 
+Building file: ../src/riscv_isa_tests/or.S
+Invoking: RISC-V GCC/Newlib Assembler
+riscv64-unknown-elf-gcc -mabi=ilp32 -march=rv32im -x assembler-with-cpp -Wall -c -MMD -MP -MF"src/riscv_isa_tests/or.d" -MT"src/riscv_isa_tests/or.o" -Wa,-march=rv32im -o "src/riscv_isa_tests/or.o" "../src/riscv_isa_tests/or.S"
+Finished building: ../src/riscv_isa_tests/or.S
+ 
+Building file: ../src/riscv_isa_tests/ori.S
+Invoking: RISC-V GCC/Newlib Assembler
+riscv64-unknown-elf-gcc -mabi=ilp32 -march=rv32im -x assembler-with-cpp -Wall -c -MMD -MP -MF"src/riscv_isa_tests/ori.d" -MT"src/riscv_isa_tests/ori.o" -Wa,-march=rv32im -o "src/riscv_isa_tests/ori.o" "../src/riscv_isa_tests/ori.S"
+Finished building: ../src/riscv_isa_tests/ori.S
+ 
+Building file: ../src/riscv_isa_tests/rem.S
+Invoking: RISC-V GCC/Newlib Assembler
+riscv64-unknown-elf-gcc -mabi=ilp32 -march=rv32im -x assembler-with-cpp -Wall -c -MMD -MP -MF"src/riscv_isa_tests/rem.d" -MT"src/riscv_isa_tests/rem.o" -Wa,-march=rv32im -o "src/riscv_isa_tests/rem.o" "../src/riscv_isa_tests/rem.S"
+Finished building: ../src/riscv_isa_tests/rem.S
+ 
+Building file: ../src/riscv_isa_tests/remu.S
+Invoking: RISC-V GCC/Newlib Assembler
+riscv64-unknown-elf-gcc -mabi=ilp32 -march=rv32im -x assembler-with-cpp -Wall -c -MMD -MP -MF"src/riscv_isa_tests/remu.d" -MT"src/riscv_isa_tests/remu.o" -Wa,-march=rv32im -o "src/riscv_isa_tests/remu.o" "../src/riscv_isa_tests/remu.S"
+Finished building: ../src/riscv_isa_tests/remu.S
+ 
+Building file: ../src/riscv_isa_tests/sb.S
+Invoking: RISC-V GCC/Newlib Assembler
+riscv64-unknown-elf-gcc -mabi=ilp32 -march=rv32im -x assembler-with-cpp -Wall -c -MMD -MP -MF"src/riscv_isa_tests/sb.d" -MT"src/riscv_isa_tests/sb.o" -Wa,-march=rv32im -o "src/riscv_isa_tests/sb.o" "../src/riscv_isa_tests/sb.S"
+Finished building: ../src/riscv_isa_tests/sb.S
+ 
+Building file: ../src/riscv_isa_tests/sh.S
+Invoking: RISC-V GCC/Newlib Assembler
+riscv64-unknown-elf-gcc -mabi=ilp32 -march=rv32im -x assembler-with-cpp -Wall -c -MMD -MP -MF"src/riscv_isa_tests/sh.d" -MT"src/riscv_isa_tests/sh.o" -Wa,-march=rv32im -o "src/riscv_isa_tests/sh.o" "../src/riscv_isa_tests/sh.S"
+Finished building: ../src/riscv_isa_tests/sh.S
+ 
+Building file: ../src/riscv_isa_tests/sll.S
+Invoking: RISC-V GCC/Newlib Assembler
+riscv64-unknown-elf-gcc -mabi=ilp32 -march=rv32im -x assembler-with-cpp -Wall -c -MMD -MP -MF"src/riscv_isa_tests/sll.d" -MT"src/riscv_isa_tests/sll.o" -Wa,-march=rv32im -o "src/riscv_isa_tests/sll.o" "../src/riscv_isa_tests/sll.S"
+Finished building: ../src/riscv_isa_tests/sll.S
+ 
+Building file: ../src/riscv_isa_tests/slli.S
+Invoking: RISC-V GCC/Newlib Assembler
+riscv64-unknown-elf-gcc -mabi=ilp32 -march=rv32im -x assembler-with-cpp -Wall -c -MMD -MP -MF"src/riscv_isa_tests/slli.d" -MT"src/riscv_isa_tests/slli.o" -Wa,-march=rv32im -o "src/riscv_isa_tests/slli.o" "../src/riscv_isa_tests/slli.S"
+Finished building: ../src/riscv_isa_tests/slli.S
+ 
+Building file: ../src/riscv_isa_tests/slt.S
+Invoking: RISC-V GCC/Newlib Assembler
+riscv64-unknown-elf-gcc -mabi=ilp32 -march=rv32im -x assembler-with-cpp -Wall -c -MMD -MP -MF"src/riscv_isa_tests/slt.d" -MT"src/riscv_isa_tests/slt.o" -Wa,-march=rv32im -o "src/riscv_isa_tests/slt.o" "../src/riscv_isa_tests/slt.S"
+Finished building: ../src/riscv_isa_tests/slt.S
+ 
+Building file: ../src/riscv_isa_tests/slti.S
+Invoking: RISC-V GCC/Newlib Assembler
+riscv64-unknown-elf-gcc -mabi=ilp32 -march=rv32im -x assembler-with-cpp -Wall -c -MMD -MP -MF"src/riscv_isa_tests/slti.d" -MT"src/riscv_isa_tests/slti.o" -Wa,-march=rv32im -o "src/riscv_isa_tests/slti.o" "../src/riscv_isa_tests/slti.S"
+Finished building: ../src/riscv_isa_tests/slti.S
+ 
+Building file: ../src/riscv_isa_tests/sra.S
+Invoking: RISC-V GCC/Newlib Assembler
+riscv64-unknown-elf-gcc -mabi=ilp32 -march=rv32im -x assembler-with-cpp -Wall -c -MMD -MP -MF"src/riscv_isa_tests/sra.d" -MT"src/riscv_isa_tests/sra.o" -Wa,-march=rv32im -o "src/riscv_isa_tests/sra.o" "../src/riscv_isa_tests/sra.S"
+Finished building: ../src/riscv_isa_tests/sra.S
+ 
+Building file: ../src/riscv_isa_tests/srai.S
+Invoking: RISC-V GCC/Newlib Assembler
+riscv64-unknown-elf-gcc -mabi=ilp32 -march=rv32im -x assembler-with-cpp -Wall -c -MMD -MP -MF"src/riscv_isa_tests/srai.d" -MT"src/riscv_isa_tests/srai.o" -Wa,-march=rv32im -o "src/riscv_isa_tests/srai.o" "../src/riscv_isa_tests/srai.S"
+Finished building: ../src/riscv_isa_tests/srai.S
+ 
+Building file: ../src/riscv_isa_tests/srl.S
+Invoking: RISC-V GCC/Newlib Assembler
+riscv64-unknown-elf-gcc -mabi=ilp32 -march=rv32im -x assembler-with-cpp -Wall -c -MMD -MP -MF"src/riscv_isa_tests/srl.d" -MT"src/riscv_isa_tests/srl.o" -Wa,-march=rv32im -o "src/riscv_isa_tests/srl.o" "../src/riscv_isa_tests/srl.S"
+Finished building: ../src/riscv_isa_tests/srl.S
+ 
+Building file: ../src/riscv_isa_tests/srli.S
+Invoking: RISC-V GCC/Newlib Assembler
+riscv64-unknown-elf-gcc -mabi=ilp32 -march=rv32im -x assembler-with-cpp -Wall -c -MMD -MP -MF"src/riscv_isa_tests/srli.d" -MT"src/riscv_isa_tests/srli.o" -Wa,-march=rv32im -o "src/riscv_isa_tests/srli.o" "../src/riscv_isa_tests/srli.S"
+Finished building: ../src/riscv_isa_tests/srli.S
+ 
+Building file: ../src/riscv_isa_tests/sub.S
+Invoking: RISC-V GCC/Newlib Assembler
+riscv64-unknown-elf-gcc -mabi=ilp32 -march=rv32im -x assembler-with-cpp -Wall -c -MMD -MP -MF"src/riscv_isa_tests/sub.d" -MT"src/riscv_isa_tests/sub.o" -Wa,-march=rv32im -o "src/riscv_isa_tests/sub.o" "../src/riscv_isa_tests/sub.S"
+Finished building: ../src/riscv_isa_tests/sub.S
+ 
+Building file: ../src/riscv_isa_tests/sw.S
+Invoking: RISC-V GCC/Newlib Assembler
+riscv64-unknown-elf-gcc -mabi=ilp32 -march=rv32im -x assembler-with-cpp -Wall -c -MMD -MP -MF"src/riscv_isa_tests/sw.d" -MT"src/riscv_isa_tests/sw.o" -Wa,-march=rv32im -o "src/riscv_isa_tests/sw.o" "../src/riscv_isa_tests/sw.S"
+Finished building: ../src/riscv_isa_tests/sw.S
+ 
+Building file: ../src/riscv_isa_tests/xor.S
+Invoking: RISC-V GCC/Newlib Assembler
+riscv64-unknown-elf-gcc -mabi=ilp32 -march=rv32im -x assembler-with-cpp -Wall -c -MMD -MP -MF"src/riscv_isa_tests/xor.d" -MT"src/riscv_isa_tests/xor.o" -Wa,-march=rv32im -o "src/riscv_isa_tests/xor.o" "../src/riscv_isa_tests/xor.S"
+Finished building: ../src/riscv_isa_tests/xor.S
+ 
+Building file: ../src/riscv_isa_tests/xori.S
+Invoking: RISC-V GCC/Newlib Assembler
+riscv64-unknown-elf-gcc -mabi=ilp32 -march=rv32im -x assembler-with-cpp -Wall -c -MMD -MP -MF"src/riscv_isa_tests/xori.d" -MT"src/riscv_isa_tests/xori.o" -Wa,-march=rv32im -o "src/riscv_isa_tests/xori.o" "../src/riscv_isa_tests/xori.S"
+Finished building: ../src/riscv_isa_tests/xori.S
+ 
+Building file: ../src/dhrystone/dhry_1.c
+Invoking: RISC-V GCC/Newlib C Compiler
+riscv64-unknown-elf-gcc -mabi=ilp32 -march=rv32im -DTIME -DUSE_MYSTDLIB -DRISCV -O2 -Wall -ffreestanding -nostdlib  -c -MMD -MP -MF"src/dhrystone/dhry_1.d" -MT"src/dhrystone/dhry_1.o" -o "src/dhrystone/dhry_1.o" "../src/dhrystone/dhry_1.c"
+Finished building: ../src/dhrystone/dhry_1.c
+ 
+Building file: ../src/dhrystone/dhry_2.c
+Invoking: RISC-V GCC/Newlib C Compiler
+riscv64-unknown-elf-gcc -mabi=ilp32 -march=rv32im -DTIME -DUSE_MYSTDLIB -DRISCV -O2 -Wall -ffreestanding -nostdlib  -c -MMD -MP -MF"src/dhrystone/dhry_2.d" -MT"src/dhrystone/dhry_2.o" -o "src/dhrystone/dhry_2.o" "../src/dhrystone/dhry_2.c"
+Finished building: ../src/dhrystone/dhry_2.c
+ 
+Building file: ../src/coremark/core_list_join.c
+Invoking: RISC-V GCC/Newlib C Compiler
+riscv64-unknown-elf-gcc -mabi=ilp32 -march=rv32im -DTIME -DUSE_MYSTDLIB -DRISCV -O2 -Wall -ffreestanding -nostdlib  -c -MMD -MP -MF"src/coremark/core_list_join.d" -MT"src/coremark/core_list_join.o" -o "src/coremark/core_list_join.o" "../src/coremark/core_list_join.c"
+Finished building: ../src/coremark/core_list_join.c
+ 
+Building file: ../src/coremark/core_main.c
+Invoking: RISC-V GCC/Newlib C Compiler
+riscv64-unknown-elf-gcc -mabi=ilp32 -march=rv32im -DTIME -DUSE_MYSTDLIB -DRISCV -O2 -Wall -ffreestanding -nostdlib  -c -MMD -MP -MF"src/coremark/core_main.d" -MT"src/coremark/core_main.o" -o "src/coremark/core_main.o" "../src/coremark/core_main.c"
+Finished building: ../src/coremark/core_main.c
+ 
+Building file: ../src/coremark/core_matrix.c
+Invoking: RISC-V GCC/Newlib C Compiler
+riscv64-unknown-elf-gcc -mabi=ilp32 -march=rv32im -DTIME -DUSE_MYSTDLIB -DRISCV -O2 -Wall -ffreestanding -nostdlib  -c -MMD -MP -MF"src/coremark/core_matrix.d" -MT"src/coremark/core_matrix.o" -o "src/coremark/core_matrix.o" "../src/coremark/core_matrix.c"
+Finished building: ../src/coremark/core_matrix.c
+ 
+Building file: ../src/coremark/core_portme.c
+Invoking: RISC-V GCC/Newlib C Compiler
+riscv64-unknown-elf-gcc -mabi=ilp32 -march=rv32im -DTIME -DUSE_MYSTDLIB -DRISCV -O2 -Wall -ffreestanding -nostdlib  -c -MMD -MP -MF"src/coremark/core_portme.d" -MT"src/coremark/core_portme.o" -o "src/coremark/core_portme.o" "../src/coremark/core_portme.c"
+Finished building: ../src/coremark/core_portme.c
+ 
+Building file: ../src/coremark/core_state.c
+Invoking: RISC-V GCC/Newlib C Compiler
+riscv64-unknown-elf-gcc -mabi=ilp32 -march=rv32im -DTIME -DUSE_MYSTDLIB -DRISCV -O2 -Wall -ffreestanding -nostdlib  -c -MMD -MP -MF"src/coremark/core_state.d" -MT"src/coremark/core_state.o" -o "src/coremark/core_state.o" "../src/coremark/core_state.c"
+Finished building: ../src/coremark/core_state.c
+ 
+Building file: ../src/coremark/core_util.c
+Invoking: RISC-V GCC/Newlib C Compiler
+riscv64-unknown-elf-gcc -mabi=ilp32 -march=rv32im -DTIME -DUSE_MYSTDLIB -DRISCV -O2 -Wall -ffreestanding -nostdlib  -c -MMD -MP -MF"src/coremark/core_util.d" -MT"src/coremark/core_util.o" -o "src/coremark/core_util.o" "../src/coremark/core_util.c"
+Finished building: ../src/coremark/core_util.c
+ 
+Building file: ../src/init.c
+Invoking: RISC-V GCC/Newlib C Compiler
+riscv64-unknown-elf-gcc -mabi=ilp32 -march=rv32im -DTIME -DUSE_MYSTDLIB -DRISCV -O2 -Wall -ffreestanding -nostdlib  -c -MMD -MP -MF"src/init.d" -MT"src/init.o" -o "src/init.o" "../src/init.c"
+Finished building: ../src/init.c
+ 
+Building file: ../src/start.S
+Invoking: RISC-V GCC/Newlib Assembler
+riscv64-unknown-elf-gcc -mabi=ilp32 -march=rv32im -x assembler-with-cpp -Wall -c -MMD -MP -MF"src/start.d" -MT"src/start.o" -Wa,-march=rv32im -o "src/start.o" "../src/start.S"
+Finished building: ../src/start.S
+ 
+Building file: ../src/stdlib.c
+Invoking: RISC-V GCC/Newlib C Compiler
+riscv64-unknown-elf-gcc -mabi=ilp32 -march=rv32im -DTIME -DUSE_MYSTDLIB -DRISCV -O2 -Wall -ffreestanding -nostdlib  -c -MMD -MP -MF"src/stdlib.d" -MT"src/stdlib.o" -o "src/stdlib.o" "../src/stdlib.c"
+Finished building: ../src/stdlib.c
+ 
+Building target: RISCV_Test_Benchmark.elf
+Invoking: RISC-V GCC/Newlib C Linker
+riscv64-unknown-elf-gcc -mabi=ilp32 -march=rv32im -T"../src/link.ld" -nostartfiles -Wl,-Map,RISCV_Test_Benchmark.map -o "RISCV_Test_Benchmark.elf"  ./src/riscv_isa_tests/add.o ./src/riscv_isa_tests/addi.o ./src/riscv_isa_tests/and.o ./src/riscv_isa_tests/andi.o ./src/riscv_isa_tests/auipc.o ./src/riscv_isa_tests/beq.o ./src/riscv_isa_tests/bge.o ./src/riscv_isa_tests/bgeu.o ./src/riscv_isa_tests/blt.o ./src/riscv_isa_tests/bltu.o ./src/riscv_isa_tests/bne.o ./src/riscv_isa_tests/csr.o ./src/riscv_isa_tests/div.o ./src/riscv_isa_tests/divu.o ./src/riscv_isa_tests/ecall.o ./src/riscv_isa_tests/j.o ./src/riscv_isa_tests/jal.o ./src/riscv_isa_tests/jalr.o ./src/riscv_isa_tests/lb.o ./src/riscv_isa_tests/lbu.o ./src/riscv_isa_tests/lh.o ./src/riscv_isa_tests/lhu.o ./src/riscv_isa_tests/lui.o ./src/riscv_isa_tests/lw.o ./src/riscv_isa_tests/mul.o ./src/riscv_isa_tests/mulh.o ./src/riscv_isa_tests/mulhsu.o ./src/riscv_isa_tests/mulhu.o ./src/riscv_isa_tests/or.o ./src/riscv_isa_tests/ori.o ./src/riscv_isa_tests/rem.o ./src/riscv_isa_tests/remu.o ./src/riscv_isa_tests/sb.o ./src/riscv_isa_tests/sh.o ./src/riscv_isa_tests/sll.o ./src/riscv_isa_tests/slli.o ./src/riscv_isa_tests/slt.o ./src/riscv_isa_tests/slti.o ./src/riscv_isa_tests/sra.o ./src/riscv_isa_tests/srai.o ./src/riscv_isa_tests/srl.o ./src/riscv_isa_tests/srli.o ./src/riscv_isa_tests/sub.o ./src/riscv_isa_tests/sw.o ./src/riscv_isa_tests/xor.o ./src/riscv_isa_tests/xori.o  ./src/dhrystone/dhry_1.o ./src/dhrystone/dhry_2.o  ./src/coremark/core_list_join.o ./src/coremark/core_main.o ./src/coremark/core_matrix.o ./src/coremark/core_portme.o ./src/coremark/core_state.o ./src/coremark/core_util.o  ./src/init.o ./src/start.o ./src/stdlib.o   -lc
+makefile:45: recipe for target 'RISCV_Test_Benchmark.elf' failed

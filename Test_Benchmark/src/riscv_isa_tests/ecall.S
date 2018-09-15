@@ -11,7 +11,7 @@
 
 #define TEST_FUNC_NAME ecall
 #define TEST_FUNC_TXT "ecall \t"
-#define TEST_FUNC_RET isaTestEnd
+#define TEST_FUNC_RET amoaddw
 
 #include "riscv_test.h"
 #include "test_macros.h"

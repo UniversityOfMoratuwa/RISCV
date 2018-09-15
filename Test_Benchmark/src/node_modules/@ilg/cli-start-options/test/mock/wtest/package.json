@@ -1,0 +1,10 @@
+{
+  "name": "test",
+  "version": "3.4.5",
+  "description": "Mock WTest",
+  "author": {
+    "name": "Liviu Ionescu",
+    "email": "ilg@livius.net",
+    "url": "http://liviusdotnet.wordpress.com"
+  }
+}

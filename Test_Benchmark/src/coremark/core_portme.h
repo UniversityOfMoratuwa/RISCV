@@ -15,7 +15,7 @@
 #ifdef RISCV
  #include "../stdlib.h"
  #define ee_printf printf
- #define CORE_DEBUG 0
+ #define CORE_DEBUG 1
  #define HAS_FLOAT 0
  #define HAS_STDIO 0
  #define HAS_PRINTF 0

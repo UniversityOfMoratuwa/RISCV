@@ -1,0 +1,39 @@
+# AppVeyor CI configuration file.
+# https://www.appveyor.com/docs/
+
+# https://www.appveyor.com/docs/lang/nodejs-iojs/
+# async/await supported since v7.x
+environment:
+  matrix:
+    - nodejs_version: "9"
+    - nodejs_version: "8"
+
+# set clone depth
+clone_depth: 3  # clone entire repository history if not defined
+
+version: "{branch}.{build}"
+
+# Do not build on tags (GitHub and BitBucket)
+skip_tags: true
+
+cache:
+  - node_modules # NPM packages
+
+# Install scripts. (runs after repo cloning)
+install:
+  # Get the latest stable version of Node.js or io.js
+  - ps: Install-Product node $env:nodejs_version
+  # install modules
+  - npm install
+
+# Post-install test scripts.
+test_script:
+  # Output useful info for debugging.
+  - node --version
+  - npm --version
+  # run tests
+  - npm test
+
+# Don't actually build.
+build: off
+

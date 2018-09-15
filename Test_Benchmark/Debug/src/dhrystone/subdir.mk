@@ -20,7 +20,7 @@ C_DEPS += \
 src/dhrystone/%.o: ../src/dhrystone/%.c
 	@echo 'Building file: $<'
 	@echo 'Invoking: RISC-V GCC/Newlib C Compiler'
-	riscv64-unknown-elf-gcc -mabi=ilp32 -march=rv32im -DTIME -DUSE_MYSTDLIB -DRISCV -O2 -Wall -ffreestanding -nostdlib  -c -MMD -MP -MF"$(@:%.o=%.d)" -MT"$(@)" -o "$@" "$<"
+	riscv64-unknown-elf-gcc -mabi=ilp32 -march=rv32ima -DTIME -DUSE_MYSTDLIB -DRISCV -O2 -Wall -ffreestanding -nostdlib  -c -MMD -MP -MF"$(@:%.o=%.d)" -MT"$(@)" -o "$@" "$<"
 	@echo 'Finished building: $<'
 	@echo ' '
 

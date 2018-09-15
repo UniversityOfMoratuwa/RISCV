@@ -1,13 +1,29 @@
-SECTIONS
-{
-  . = 0x80000000;
-  .text.init : { *(.text.init) }
-  . = ALIGN(0x1000);
-  .tohost : { *(.tohost) }
-  . = ALIGN(0x1000);
-  .text : { *(.text) }
-  . = ALIGN(0x1000);
-  .data : { *(.data) }
-  .bss : { *(.bss) }
-  _end = .;
+OUTPUT_ARCH( "riscv" )
+ ENTRY( "_start" )
+
+SECTIONS{
+
+	/* text: test code section */
+	. = 0x00000000;
+	.text :{
+		*(.text.boot)
+		. = 0x00010000;
+		*(.text)
+	} 
+	
+	/* data: ReadOnly data segment */
+	.rodata :{
+    	*(.rodata)
+    } 
+
+	/* data: Initialized data segment */
+	.data :{
+		*(.data)
+	}
+
+	/* data: Uninitialized data segment */
+	.bss  :{
+		*(.bss) 
+	} 
+	
 }
