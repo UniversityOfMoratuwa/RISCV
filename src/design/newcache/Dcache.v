@@ -102,6 +102,11 @@ module Dcache
     wire       [data_width-1:0]            data ;
     wire                   full_state;
     reg [line_width-1:0]   flush_addr   ;
+    reg                     reservation;
+    reg        [address_width-1:0] reserved_address;
+    reg write_reserve;
+    reg clear_reserve;
+    reg write_allowed;
 
 
         MEMORY  
@@ -201,6 +206,7 @@ module Dcache
             amo_d1 <= amoidle;
             amo_d2 <= amoidle;
             amo_d3 <= amoidle;
+            reservation <=0;
             
         end
         else if (cache_ready & ADDR_VALID) begin
@@ -239,7 +245,7 @@ module Dcache
     
     end
     
-     assign   DATA    = data ;
+     assign   DATA    = clear_reserve?!write_allowed: data ;
  
 
     always@(posedge CLK) 
@@ -302,7 +308,7 @@ module Dcache
             cache_porta_data_in     <= 0        ;
             flush_addr              <= -1        ;
         end
-        else if (cache_ready & control_d3 == 2'b10)
+        else if (cache_ready & control_d3 == 2'b10 )
         begin
             cache_porta_wren      <= 1;
             cache_porta_data_in  <=  cache_porta_data_in_int;
@@ -363,6 +369,15 @@ module Dcache
         if (~dirty_reg & ~writing)
             flush_addr         <=  -1            ;
         end
+        if(write_reserve & (control_d3 ==2'b10))
+        begin
+            reserved_address <= addr_d3;
+            reservation <=1;
+        end
+        else if(clear_reserve & (control_d3 ==2'b10))
+        begin
+            reservation<=0;
+        end
     end
 
     
@@ -374,9 +389,23 @@ module Dcache
  
    always@(*)  
    begin
+      write_reserve=0;
+      clear_reserve=0;
+      write_allowed=1;
       if(cache_ready)
       begin
        case(amo_d3)
+           amolr:
+           begin
+                data_to_be_writen= data ;
+                write_reserve=1;
+           end
+           amosc:
+           begin
+                data_to_be_writen= write_allowed? data_d3: data;
+                write_allowed  = (reservation & (addr_d3==reserved_address));
+                clear_reserve    = 1;
+           end
            amoidle:
            begin
                for (i=0;i<data_width/8;i=i+1)
@@ -462,7 +491,7 @@ module Dcache
     assign tag_porta_raddr      = cache_porta_raddr                                         ;
     assign state_raddr          = cache_porta_raddr                                         ;
     assign tag_addr             = addr_d3[address_width-1:offset_width+line_width]          ;
-    assign cache_ready          =  ((((tag_porta_data_out == tag_addr) & state  & ~writing) | (control_d3!==2'b01 & control_d3!==2'b10) )) & (~flush_d3| ~full_state)   ;
+    assign cache_ready          =  ((((tag_porta_data_out == tag_addr) & state  & ~writing) | (control_d3!==2'b01 & control_d3!==2'b10) )) & (~flush_d3| ~full_state)  & ~writing  ;
     assign ADDR_TO_L2_VALID     = addr_to_l2_valid                                          ;
     assign ADDR_TO_L2           = addr_to_l2                                                ;
     
