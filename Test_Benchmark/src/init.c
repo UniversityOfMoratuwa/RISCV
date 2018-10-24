@@ -32,7 +32,7 @@ void init(void){
 		//printf("Please Select a Choice\t:\t");
 		//char c = scanf_c();
 		//if(c=='1'){
-		printf("\n\n------------------------ RISC-V ISA Test's Begins ------------------------\n");
+		//printf("\n\n------------------------ RISC-V ISA Test's Begins ------------------------\n");
 
 			isaTest();
 		//}
