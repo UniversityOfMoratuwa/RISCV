@@ -73,6 +73,10 @@ for i in range(32):
     else:
         reg_array.append(0)
 
+csr_size = 12
+csr_mem = []
+for i in xrange(1 << csr_size):
+    csr_mem.append(0)
 
 for i in xrange(1 << mem_size):
     memory.append(0)
@@ -516,13 +520,55 @@ while PC < 1 << 20:
                 wb_data = reg_array[rs1_sel] & reg_array[rs2_sel]
         reg_array[rd] = wb_data
     elif opcode[binary[25:32]] == 'system':
-
+	
 ##################################################previledge instructions#####################################################
-        if binary[0:12] == bin(int('c00', 16))[2:]:
+        """        
+if binary[0:12] == bin(int('c00', 16))[2:]:
             reg_array[rd] = n#int(clocks[n])  # rd_CYCLE
         if binary[0:12] == bin(int('c02', 16))[2:]:
             reg_array[rd] = n  # INSRET
         wb_data = reg_array[rd]
+        """
+        csr_reg = conv(binary[0:12])
+        if   function == '001': #CSRRW
+            #print("1")
+            #print(csr_file[hex(csr_reg)])
+            wb_data = csr_mem[csr_reg]
+            csr_mem[csr_reg] = reg_array[rs1_sel]
+            reg_array[rd] = wb_data
+
+        elif function == '010': #CSRRS
+            #print("2")
+            wb_data = csr_mem[csr_reg]
+            csr_mem[csr_reg] = csr_mem[csr_reg] | reg_array[rs1_sel]
+            reg_array[rd] = wb_data
+
+        elif function == '011': #CSRRC
+            #print("3")
+            wb_data = csr_mem[csr_reg]
+            csr_mem[csr_reg] = csr_mem[csr_reg] & (~reg_array[rs1_sel])
+            reg_array[rd] = wb_data
+        elif function == '101': #CSRRWI
+            #print("4")
+            wb_data = csr_mem[csr_reg]
+            csr_mem[csr_reg] = rs1_sel
+            reg_array[rd] = wb_data
+
+        elif function == '110': #CSRRSI
+            #print("5")
+            wb_data = csr_mem[csr_reg]
+            csr_mem[csr_reg] = csr_mem[csr_reg] | rs1_sel
+            reg_array[rd] = wb_data
+
+        elif function == '111': #CSRRCI	
+            #print("6")
+            wb_data = csr_mem[csr_reg]
+            csr_mem[csr_reg] = csr_mem[csr_reg] & (~rs1_sel)
+            reg_array[rd] = wb_data
+
+        elif function == '000' and csr_reg == 0:
+            print("hello")
+
 ##################################################atomic instructions#####################################################
     elif opcode[binary[25:32]] == 'amo':
         amo_op = binary[0:5]
