@@ -617,8 +617,8 @@ myip_v1_0_M00_AXI # (
         .CLK(CLK)                                   ,
         .RST(~RSTN)                                   ,
         .FLUSH(fence)                               ,
-        .ADDR(prd_addr)                                 ,
-        .ADDR_VALID(proc_ready_ins & !exstage_stalled  & !stop_ins_cache)                     ,
+        .ADDR(PHY_ADDR)                                 ,
+        .ADDR_VALID(PHY_ADDR_VALID)                     ,
         .DATA (data_to_proc_ins)                                ,
         .CACHE_READY(cache_ready_ins)                   ,
         .ADDR_TO_L2_VALID(addr_to_l2_valid)         ,
@@ -659,6 +659,23 @@ myip_v1_0_M00_AXI # (
         .DATA_TO_L2(data_to_l2),
         .AMO(amo_op)
 
+    );
+    Itlb
+    #(.virt_addr_init(32'h0000_0000) )                                                      
+    dut (
+        .CLK(CLK),
+        .RST(~RSTN),
+    .TLB_FLUSH(0),
+    .VIRT_ADDR(prd_addr),
+    .VIRT_ADDR_VALID(proc_ready_ins & !exstage_stalled  & !stop_ins_cache),
+    .CURR_ADDR(pc),
+    .PHY_ADDR_VALID(PHY_ADDR_VALID),
+    .PHY_ADDR(PHY_ADDR),
+    .ADDR_TO_AXIM_VALID(ADDR_TO_AXIM_VALID),
+    .ADDR_TO_AXIM(ADDR_TO_AXIM),
+    .DATA_FROM_AXIM_VALID(DATA_FROM_AXIM_VALID),
+    .DATA_FROM_AXIM(DATA_FROM_AXIM)             
+            
     );
 
 endmodule

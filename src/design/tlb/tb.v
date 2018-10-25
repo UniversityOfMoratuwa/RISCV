@@ -6,7 +6,7 @@ wire [31:0] CURR_ADDR,PHY_ADDR,ADDR_TO_AXIM;
 wire PHY_ADDR_VALID,ADDR_TO_AXIM_VALID;
 
  Itlb
-    #(.virt_addr_init(32'h0001_0000) )                   	                                
+    #(.virt_addr_init(32'h0000_0000) )                   	                                
     dut (
         .CLK(CLK),
         .RST(RST),

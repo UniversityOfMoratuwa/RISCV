@@ -125,7 +125,7 @@ module Itlb
 
     always@(*)
     begin
-        PHY_ADDR_VALID = tlb_addr_valid;
+        PHY_ADDR_VALID = tlb_addr_valid & VIRT_ADDR_VALID;
     end
 
     always @(posedge CLK) begin
