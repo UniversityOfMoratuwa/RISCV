@@ -6,7 +6,6 @@
 ./src/design/newcache/Dcache.v
 ./src/design/newcache/cache.v
 ./src/design/newcache/memory.v
-./src/design/newcache/myip_v1_0.v
 ./src/design/newcache/myip_v1_0_M00_AXI.v
 ./src/design/newcache/myip_v1_0_S00_AXI.v
 ./src/design/newcache/state_mem.v
