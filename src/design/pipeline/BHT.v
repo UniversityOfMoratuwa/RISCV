@@ -94,7 +94,7 @@ module BHT #(
             branch_count    <=       0 ;
             predicted_count <=       0 ;
             branch_taken    <=       0 ;
-            predicted       <=       0 ;
+            predicted       <=       1 ;
             branch_addr     <=       0 ;
                                       
             ex_line_add     <=       0 ;
@@ -158,6 +158,7 @@ module BHT #(
 	    end
        
     end
+    reg l;
     always @(*)
     begin 
         PRD_VALID   = 1					;
@@ -175,8 +176,9 @@ module BHT #(
 
         else 
         begin
-           PRD_ADDR = /*( ( tag[pc_line_add] == PC[ADDR_WIDTH-1:H_ADDR_WIDTH+2]) & return_reg[pc_line_add]) ? RETURN_ADDR :*/  ((( history[pc_line_add][1] & ( tag[pc_line_add] == PC[ADDR_WIDTH-1:H_ADDR_WIDTH+2]) & state[pc_line_add] ) ?   target[pc_line_add] : PC + (1<<2)) );
+           PRD_ADDR = /*( history[pc_line_add][1] & ( tag[pc_line_add] == PC[ADDR_WIDTH-1:H_ADDR_WIDTH+2]) & state[pc_line_add] ) ?   target[pc_line_add] : */PC + 4;
         end
+        l=( history[pc_line_add][1] & ( tag[pc_line_add] == PC[ADDR_WIDTH-1:H_ADDR_WIDTH+2]) & state[pc_line_add] );
     end
     
     function integer logb2;

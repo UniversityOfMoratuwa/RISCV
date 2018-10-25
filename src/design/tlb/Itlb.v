@@ -23,13 +23,14 @@ module Itlb
 	input 				VIRT_ADDR_VALID			,
 	output wire [ADDR_WIDTH-1 : 0]	CURR_ADDR			,
 	//Signals to I-Cache
-	output reg 			PHY_ADDR_VALID			,
-	output reg [ADDR_WIDTH-1 : 0]	PHY_ADDR			,
+	output  reg			PHY_ADDR_VALID			,
+	output   [ADDR_WIDTH-1 : 0]	PHY_ADDR			,
 	//Signals to/from AXI Master
 	output  			ADDR_TO_AXIM_VALID		,
 	output     [ADDR_WIDTH-1 : 0]	ADDR_TO_AXIM			,
 	input  				DATA_FROM_AXIM_VALID		,
-	input      [DATA_WIDTH-1 : 0]	DATA_FROM_AXIM				
+	input      [DATA_WIDTH-1 : 0]	DATA_FROM_AXIM,
+	input              CACHE_READY				
 			
     );
     localparam TLB_ADDR_WIDTH = logb2(TLB_DEPTH);
@@ -125,14 +126,14 @@ module Itlb
 
     always@(*)
     begin
-        PHY_ADDR_VALID = tlb_addr_valid & VIRT_ADDR_VALID;
+        PHY_ADDR_VALID = tlb_addr_valid ;
     end
 
     always @(posedge CLK) begin
         if (RST) begin
             virt_addr <=   virt_addr_init;
         end
-        else if (tlb_addr_valid & VIRT_ADDR_VALID) begin
+        else if (tlb_addr_valid & VIRT_ADDR_VALID &  CACHE_READY) begin
 	    virt_addr <=   VIRT_ADDR; 
         end    
     end

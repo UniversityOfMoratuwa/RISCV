@@ -296,7 +296,7 @@ module EXSTAGE(
         if (CACHE_READY)
         begin
              cache_ready_fb <= 1                ;
-             cache_ready_ex <= cache_ready_fb   ;
+             cache_ready_ex <= 1   ;
              cache_ready_ex2<= cache_ready_ex   ;
              
              if (JUMP_FINAL)
@@ -340,9 +340,9 @@ module EXSTAGE(
     
     always@(*)
     begin
-        if (JUMP_FINAL & CACHE_READY)
+        if (JUMP_FINAL & CACHE_READY & cache_ready_ex2 )
         begin
-            PREDICTED=PC_ID_FB==JUMP_ADDR & ~FENCE;
+            PREDICTED=(PC_ID_FB==JUMP_ADDR) & ~FENCE;
         end
         else if (STALL_ENABLE_EX & !flush_internal & cache_ready_ex2 & CACHE_READY)
         begin

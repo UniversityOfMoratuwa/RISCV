@@ -336,9 +336,7 @@ module CSR_FILE (
             minsret_reg <= 0;
             TSR            <= 0     ;                                                                                             
             TVM            <= 0     ;                                                                                             
-            TW             <= 0     ;                                                                                             
-                                                                                                     
-                                                                                                                              
+            TW             <= 0     ;                                                                                                                                                                                              
             {sd,mxr,sum,mprv,mpp,spp,mpie,spie,upie,m_ie,s_ie,u_ie}           <= 13'b011000011101        ;                        
             {heip,seip,ueip,htip,stip,utip,hsip,ssip,usip}                    <= 9'd0                    ;                        
             {meie,heie,seie,ueie,mtie,htie,stie,utie,msie,hsie,ssie,usie}     <= 12'd0                   ;                        

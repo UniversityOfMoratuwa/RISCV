@@ -187,6 +187,10 @@ module RISCV_PROCESSOR#(
      
      // Peripheral signals
      reg                                p_flag = 0;
+     wire                               tlb_ready;
+     reg                                tlb_ready_d1;
+     reg                                tlb_ready_d2;
+     reg                                tlb_ready_d3;
      reg                                stop_dat_cache = 0;
      reg                                stop_ins_cache = 0;
      integer                            counter = 0;
@@ -261,6 +265,10 @@ module RISCV_PROCESSOR#(
         wire                      write_done;
         wire  [cache_width-1:0]   data_to_l2                    ;
         wire addr_to_l2_valid_dat;
+        reg DATA_FROM_AXIM_VALID;
+        reg [31:0] VIRT_ADDR,DATA_FROM_AXIM;
+        wire [31:0] PHY_ADDR,ADDR_TO_AXIM;
+        wire PHY_ADDR_VALID,ADDR_TO_AXIM_VALID;
         
      //reg [63:0]     mtime;
      //reg [63:0]     mtimecmp;
@@ -282,7 +290,7 @@ module RISCV_PROCESSOR#(
     .CLK(CLK),
     .RST(~RSTN),
     // Towards instruction cache
-    .CACHE_READY(cache_ready_ins & !exstage_stalled  & !stop_ins_cache),
+    .CACHE_READY(cache_ready_ins & !exstage_stalled  & !stop_ins_cache & PHY_ADDR_VALID & tlb_ready_d3),
     .PIPELINE_STALL(proc_ready_ins),
     .BRANCH_TAKEN(branch_taken),
     .BYTE_ENB_TO_CACHE( byte_enb_proc),
@@ -324,7 +332,7 @@ module RISCV_PROCESSOR#(
     .PRD_VALID (prd_valid)                 ,
     .PRD_ADDR  (prd_addr)                  ,
     .FLUSH(flush_w)                          ,
-    .CACHE_READY(cache_ready_ins & !exstage_stalled  & !stop_ins_cache)          ,
+    .CACHE_READY(cache_ready_ins & !exstage_stalled  & !stop_ins_cache & PHY_ADDR_VALID & tlb_ready_d3)          ,
     .CACHE_READY_DATA(cache_ready_dat & !stop_dat_cache),
     .RETURN_ADDR(return_addr),
     .RETURN(return_w),
@@ -420,7 +428,7 @@ module RISCV_PROCESSOR#(
     always @ (posedge CLK) begin 
 //         EXT_FIFO_WR_ENB  <=P0_INIT_AXI_TXN & cache_ready_dat & cache_ready_ins ;//<= data_to_proc_ins;
 //         EXT_FIFO_WR_DATA <= {ex_pc[31:2],cache_ready_dat,cache_ready_ins};
-         if (((addr_from_proc_dat == EXT_FIFO_ADDRESS) & (control_from_proc_dat == 2)  & cache_ready_dat & cache_ready_ins ))
+         if (((addr_from_proc_dat == EXT_FIFO_ADDRESS) & (control_from_proc_dat == 2)  & cache_ready_dat & cache_ready_ins & tlb_ready_d3 & PHY_ADDR_VALID))
          begin
              EXT_FIFO_WR_ENB  <= 1;
              EXT_FIFO_WR_DATA <= data_from_proc_dat;
@@ -618,18 +626,20 @@ myip_v1_0_M00_AXI # (
         .RST(~RSTN)                                   ,
         .FLUSH(fence)                               ,
         .ADDR(PHY_ADDR)                                 ,
-        .ADDR_VALID(PHY_ADDR_VALID)                     ,
+        .ADDR_vir(pc)                             ,
+        .ADDR_VALID(PHY_ADDR_VALID& proc_ready_ins & !exstage_stalled  & !stop_ins_cache)                     ,
         .DATA (data_to_proc_ins)                                ,
-        .CACHE_READY(cache_ready_ins)                   ,
+        .CACHE_READY(cache_ready_ins )                   ,
         .ADDR_TO_L2_VALID(addr_to_l2_valid)         ,
         .ADDR_TO_L2 (addr_to_l2)                    ,
         .DATA_FROM_L2 (data_from_l2)                ,
         .DATA_FROM_L2_VALID (data_from_l2_valid)     ,
-        .CURR_ADDR(pc)        ,
+//        .CURR_ADDR(pc)        ,
         .ADDR_OUT(pc_to_proc_ins)
+        
 
     ); 
-
+   
    Dcache
     #(
         .data_width     (data_width)                                        ,
@@ -650,7 +660,7 @@ myip_v1_0_M00_AXI # (
         .ADDR_TO_L2 (addr_to_l2_dat)                    ,
         .DATA_FROM_L2 (data_from_l2_dat)                ,
         .DATA_FROM_L2_VALID (data_from_l2_valid_dat)    ,
-         .CONTROL ((addr_from_proc_dat != EXT_FIFO_ADDRESS & addr_from_proc_dat < PERIPHERAL_BASE_ADDR & cache_ready_ins)? control_from_proc_dat : 2'b0)                         ,   
+         .CONTROL ((addr_from_proc_dat != EXT_FIFO_ADDRESS & addr_from_proc_dat < PERIPHERAL_BASE_ADDR & cache_ready_ins & PHY_ADDR_VALID & tlb_ready_d3)? control_from_proc_dat : 2'b0)                         ,   
         .WSTRB (byte_enb_proc)                           ,
         .DATA_in(data_from_proc_dat),
         .DATA_TO_L2_VALID(data_to_l2_valid)                ,
@@ -674,8 +684,32 @@ myip_v1_0_M00_AXI # (
     .ADDR_TO_AXIM_VALID(ADDR_TO_AXIM_VALID),
     .ADDR_TO_AXIM(ADDR_TO_AXIM),
     .DATA_FROM_AXIM_VALID(DATA_FROM_AXIM_VALID),
-    .DATA_FROM_AXIM(DATA_FROM_AXIM)             
+    .DATA_FROM_AXIM(DATA_FROM_AXIM),
+    .CACHE_READY(cache_ready_ins)
+            
             
     );
-
+    always@(posedge CLK)
+    begin
+        if(~RSTN)
+        begin
+            tlb_ready_d1    <=0;
+            tlb_ready_d2    <=0;
+            tlb_ready_d3    <=0;
+        end
+        else if(cache_ready_ins & !exstage_stalled  & !stop_ins_cache & PHY_ADDR_VALID )
+        begin
+            tlb_ready_d1  <=1;
+            tlb_ready_d2  <= tlb_ready_d1;
+            tlb_ready_d3  <= tlb_ready_d2;
+        end
+    end
+    always @(posedge CLK) begin
+        
+        if(ADDR_TO_AXIM_VALID)begin
+            DATA_FROM_AXIM_VALID <= 1;
+            DATA_FROM_AXIM       <= (ADDR_TO_AXIM-32'h0000_0000) >> 2;
+        end
+        else DATA_FROM_AXIM_VALID <= 0;
+    end
 endmodule

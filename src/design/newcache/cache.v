@@ -17,6 +17,7 @@ module Icache
         input                    RST                             ,
         input                    FLUSH                           ,
         input  [address_width-1:0] ADDR                              ,
+        input  [address_width-1:0] ADDR_vir                              ,
         input                    ADDR_VALID                      ,
         output reg [data_width-1:0]  DATA                            ,
         output     reg           CACHE_READY                     ,
@@ -33,7 +34,12 @@ module Icache
     reg  [address_width-1:0] addr_d1             ;
     reg  [address_width-1:0] addr_d2             ;
     reg  [address_width-1:0] addr_d3             ;
-    reg  [address_width-1:0] addr_d4             ;
+    reg  [address_width-1:0] addr_d4             ;    
+    
+    reg  [address_width-1:0] addr_d1_vir             ;
+    reg  [address_width-1:0] addr_d2_vir             ;
+    reg  [address_width-1:0] addr_d3_vir             ;
+    reg  [address_width-1:0] addr_d4_vir             ;
     reg                     flag                ;
     reg                     addr_to_l2_valid    ;
     reg [address_width- offset_width -1:0] addr_to_l2          ;
@@ -71,7 +77,12 @@ module Icache
             addr_d1 <=   addr_init_val+12;
             addr_d2 <=   addr_init_val+8;
             addr_d3 <=   addr_init_val+4;      
-            addr_d4 <=   addr_init_val;      
+            addr_d4 <=   addr_init_val;            
+            
+            addr_d1_vir <=   addr_init_val+12;
+            addr_d2_vir <=   addr_init_val+8;
+            addr_d3_vir <=   addr_init_val+4;      
+            addr_d4_vir <=   addr_init_val;      
             flush_d1 <= 0;
             flush_d2 <= 0;
             flush_d3 <= 0;
@@ -80,10 +91,15 @@ module Icache
         end
         else if (cache_ready & ADDR_VALID) begin
             addr_d1  <= ADDR;
-            addr_d2  <= addr_d1 ;
+            addr_d2  <= ADDR ;
             addr_d3  <= addr_d2 ;
             addr_d4 <= addr_d3;
-
+            addr_d1_vir  <= ADDR_vir;
+            addr_d2_vir  <= ADDR_vir  ;
+            addr_d3_vir  <= addr_d2_vir ;
+            addr_d4_vir <= addr_d3_vir;
+            
+        
             flush_d1 <= FLUSH;
             flush_d2 <= flush_d1;
             flush_d3 <= flush_d2;
@@ -162,7 +178,7 @@ module Icache
     assign cache_ready          =  (tag_porta_data_out == tag_addr) & state                  ;
     assign ADDR_TO_L2_VALID     = addr_to_l2_valid                                          ;
     assign ADDR_TO_L2           = addr_to_l2                                                ;
-    assign ADDR_OUT             = addr_d4                                                   ;
+    assign ADDR_OUT             = addr_d4_vir                                                   ;
     assign CURR_ADDR            = addr_d1                                                   ;
 endmodule
 
