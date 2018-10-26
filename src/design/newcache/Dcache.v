@@ -479,7 +479,7 @@ module Dcache
    end
     generate
     if (offset_width>2)
-        assign data                 = cache_porta_data_out[{addr_d3[offset_width-1:2],2'b0}*8 +:data_width];
+        assign data                 = (addr_d3==32'he000102c) ? 0:cache_porta_data_out[{addr_d3[offset_width-1:2],2'b0}*8 +:data_width];
     else begin
         assign data                 = cache_porta_data_out                                                        ;
     end
