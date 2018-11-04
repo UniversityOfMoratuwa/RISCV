@@ -597,15 +597,18 @@ if binary[0:12] == bin(int('c00', 16))[2:]:
             reg_array[rd] = wb_data
 
         elif function == '000' and csr_reg == 0: #ecall
-            print("hello")
+            #print("PC : "+'{:032b}'.format(PC))
             minterrupt = 0
-            mepc_reg = PC
+            mepc_reg = (PC-1)*4
             mpp = mmode
             mecode_reg = 11
             csr_mem[int(csr_file.keys()[csr_file.values().index('mepc')],16)] = mepc_reg
             mtvec_r = csr_mem[int(csr_file.keys()[csr_file.values().index('mtvec')],16)] 
+
             mt_mode = mtvec_r & 0b11
             mt_base = mtvec_r >>2
+            #print("mepc value (current PC) : " +'{:032b}'.format(mepc_reg))
+            #print("mtvec addr              : " +'{:032b}'.format(mt_base))
             if curr_privilage == umode :
                 #PC = utvec_r
                 print "umode Not supported yet"
@@ -620,6 +623,7 @@ if binary[0:12] == bin(int('c00', 16))[2:]:
                 else :
                     print "Illegel mt_mode"
                 csr_mem[int(csr_file.keys()[csr_file.values().index('mcause')],16)] = (minterrupt<<31)+mecode_reg
+                #print('{:032b}'.format((minterrupt<<31)+mecode_reg))
 
         elif function == '000' and csr_reg == 1: #ebreak
             minterrupt  = 0
@@ -647,6 +651,9 @@ if binary[0:12] == bin(int('c00', 16))[2:]:
             csr_mem[int(csr_file.keys()[csr_file.values().index('mstatus')],16)] = csr_mem[int(csr_file.keys()[csr_file.values().index('mstatus')],16)] & ~(1<<7) ## setting mpie to 0
 
 
+        #print("t0 value = "+'{:032b}'.format(reg_array[5]))
+        #print("t1 value = "+'{:032b}'.format(reg_array[6]))
+        #print("t2 value = "+'{:032b}'.format(reg_array[7]))
     
 
 
