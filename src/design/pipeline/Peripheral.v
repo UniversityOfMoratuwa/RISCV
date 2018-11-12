@@ -23,7 +23,7 @@
 module Peripheral(
     
     input                           CLK,
-    input                           RESETN,
+    input                           RSTN,
     input                           START,
     input           [31:0]          ADDRESS,
     input                           WRITE,
@@ -72,6 +72,15 @@ module Peripheral(
     
     always@(posedge CLK)
     begin
+        if(~RSTN)
+        begin
+            DONE<=0;
+            DATA_TO_PERI <=0;
+            DATA_FROM_PERI_READY <=0;
+            DATA_TO_PERI <=0;
+            WR_TO_PERI_VALID <=0;
+            RD_ADDR_TO_PERI_VALID <= 0;
+        end
         if(START & !DONE)
             begin
             if (WRITE)

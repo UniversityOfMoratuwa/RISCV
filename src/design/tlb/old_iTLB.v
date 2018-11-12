@@ -20,7 +20,7 @@
 //////////////////////////////////////////////////////////////////////////////////
 
 
-module iTLB #(
+module iTLB_asha #(
         parameter   DATA_WIDTH        = 32				,
         parameter   ADDR_WIDTH        = 32                              ,
 	parameter   MODE_LEN          = 1				,

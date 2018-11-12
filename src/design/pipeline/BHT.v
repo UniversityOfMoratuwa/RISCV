@@ -50,7 +50,6 @@ module BHT #(
     reg     [HISTORY_DEPTH - 1 : 0  ]                     state         ;
     reg     [HISTORY_DEPTH - 1 : 0  ]                     return_reg        ;
 
-    reg                          prd_valid_reg                          ;
     reg     [ADDR_WIDTH - 1 : 0] prd_addr_reg                           ;
     
     wire    [H_ADDR_WIDTH-1 : 0] pc_line_add  =PC   [H_ADDR_WIDTH+1:2]  ;
@@ -65,17 +64,17 @@ module BHT #(
     
     integer i;
     
-    initial
-    begin
+//    initial
+//    begin
     
         
-        for(i=0;i<HISTORY_DEPTH;i=i+1)                      
-        begin                                               
-            target[i]   <= {ADDR_WIDTH{1'b0}}   ;           
-            tag[i]      <= {TAG_WIDTH{1'b0}}    ;           
-            history[i]  <= 2'b01                ;           
-        end                                                 
-    end                                         
+//        for(i=0;i<HISTORY_DEPTH;i=i+1)                      
+//        begin                                               
+//            target[i]   <= {ADDR_WIDTH{1'b0}}   ;           
+//            tag[i]      <= {TAG_WIDTH{1'b0}}    ;           
+//            history[i]  <= 2'b01                ;           
+//        end                                                 
+//    end                                         
     
     
     
@@ -118,7 +117,6 @@ module BHT #(
         end
         if (RST)
         begin
-            prd_valid_reg   <= 1'b0                 ;           
             prd_addr_reg    <= {ADDR_WIDTH{1'b0}}   ;           
                
             state<=0;                                            
@@ -176,7 +174,7 @@ module BHT #(
 
         else 
         begin
-           PRD_ADDR = /*( history[pc_line_add][1] & ( tag[pc_line_add] == PC[ADDR_WIDTH-1:H_ADDR_WIDTH+2]) & state[pc_line_add] ) ?   target[pc_line_add] : */PC + 4;
+           PRD_ADDR = ( history[pc_line_add][1] & ( tag[pc_line_add] == PC[ADDR_WIDTH-1:H_ADDR_WIDTH+2]) & state[pc_line_add] ) ?   target[pc_line_add] : PC + 4;
         end
         l=( history[pc_line_add][1] & ( tag[pc_line_add] == PC[ADDR_WIDTH-1:H_ADDR_WIDTH+2]) & state[pc_line_add] );
     end

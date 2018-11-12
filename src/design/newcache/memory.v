@@ -2,7 +2,7 @@
 module MEMORY
     #(
         parameter data_width    = 32,
-        parameter address_width = 32,
+        parameter address_width = 9,
         parameter depth         = 512
 
         )
@@ -12,7 +12,7 @@ module MEMORY
         input [address_width-1: 0] PORTA_RADDR      ,
         input [address_width-1: 0] PORTA_WADDR      ,
         input [data_width-1   : 0] PORTA_DATA_IN    ,
-        input [data_width-1   : 0] PORTA_DATA_OUT   
+        output [data_width-1   : 0] PORTA_DATA_OUT   
 
 
         );

@@ -33,6 +33,11 @@ module Test_RISCV_PROCESSOR
  localparam tag_width     = address_width - line_width -  offset_width   ,
  localparam cache_width   = block_size*data_width                        ,
  parameter  C_M00_AXI_TARGET_SLAVE_BASE_ADDR    = 32'h00000000,
+           parameter  C_Peripheral_Interface_START_DATA_VALUE              = 32'h00000000,
+parameter  C_Peripheral_Interface_TARGET_SLAVE_BASE_ADDR        = 32'h00000000,
+parameter integer C_Peripheral_Interface_ADDR_WIDTH             = 32,
+parameter integer C_Peripheral_Interface_DATA_WIDTH             = 32,
+parameter integer C_Peripheral_Interface_TRANSACTIONS_NUM       = 4,
  parameter integer C_M00_AXI_BURST_LEN    = block_size,
  parameter integer C_M00_AXI_ID_WIDTH    = 1,
  parameter integer C_M00_AXI_ADDR_WIDTH    = 32,
@@ -162,11 +167,37 @@ module Test_RISCV_PROCESSOR
     wire [C_M00_AXI_RUSER_WIDTH-1 : 0] m01_axi_ruser;           
     wire  m01_axi_rvalid;                                       
     wire  m01_axi_rready; 
+     wire                                             peripheral_interface_init_axi_txn;       
+    wire                                             peripheral_interface_error;             
+    wire                                             peripheral_interface_txn_done;           
+    wire                                             peripheral_interface_aclk;               
+    wire                                             peripheral_interface_aresetn;         
+    wire [C_Peripheral_Interface_ADDR_WIDTH-1 : 0]   peripheral_interface_awaddr;             
+    wire [2 : 0]                                     peripheral_interface_awprot;             
+    wire                                             peripheral_interface_awvalid;            
+    wire                                             peripheral_interface_awready;            
+    wire [C_Peripheral_Interface_DATA_WIDTH-1 : 0]   peripheral_interface_wdata;              
+    wire [C_Peripheral_Interface_DATA_WIDTH/8-1 : 0] peripheral_interface_wstrb;              
+    wire                                             peripheral_interface_wvalid;             
+    wire                                             peripheral_interface_wready;             
+    wire [1 : 0]                                     peripheral_interface_bresp;              
+    wire                                             peripheral_interface_bvalid;             
+    wire                                             peripheral_interface_bready;             
+    wire [C_Peripheral_Interface_ADDR_WIDTH-1 : 0]   peripheral_interface_araddr;             
+    wire [2 : 0]                                     peripheral_interface_arprot;             
+    wire                                             peripheral_interface_arvalid;            
+    wire                                             peripheral_interface_arready;            
+    wire [C_Peripheral_Interface_DATA_WIDTH-1 : 0]   peripheral_interface_rdata;            
+    wire [1 : 0]                                     peripheral_interface_rresp;              
+    wire                                             peripheral_interface_rvalid;             
+    wire                                             peripheral_interface_rready;              
+                                                                                              
    RISCV_PROCESSOR # (
    ) uut (
        // Standard inputs
        .CLK(CLK),
        .RSTN(RSTN),
+       .peripheral_interface_aclk(CLK),
        // Output address bus from Instruction Cache to Memory               
        //axi interface
        .m00_axi_aclk(m00_axi_aclk),
@@ -256,7 +287,28 @@ module Test_RISCV_PROCESSOR
         .m01_axi_rlast(m01_axi_rlast),
         .m01_axi_ruser(m01_axi_ruser),
         .m01_axi_rvalid(m01_axi_rvalid),
-        .m01_axi_rready(m01_axi_rready)
+        .m01_axi_rready(m01_axi_rready),
+      .peripheral_interface_error    (peripheral_interface_error),   
+      .peripheral_interface_txn_done(peripheral_interface_txn_done),
+      .peripheral_interface_awaddr  (peripheral_interface_awaddr),  
+      .peripheral_interface_awprot  (peripheral_interface_awprot),  
+      .peripheral_interface_awvalid(peripheral_interface_awvalid), 
+      .peripheral_interface_awready(peripheral_interface_awready), 
+      .peripheral_interface_wdata   (peripheral_interface_wdata),   
+      .peripheral_interface_wstrb   (peripheral_interface_wstrb),   
+      .peripheral_interface_wvalid  (peripheral_interface_wvalid),  
+      .peripheral_interface_wready (peripheral_interface_wready),  
+      .peripheral_interface_bresp   (peripheral_interface_bresp),   
+      .peripheral_interface_bvalid  (peripheral_interface_bvalid),  
+      .peripheral_interface_bready  (peripheral_interface_bready),  
+      .peripheral_interface_araddr  (peripheral_interface_araddr),  
+      .peripheral_interface_arprot  (peripheral_interface_arprot),  
+      .peripheral_interface_arvalid (peripheral_interface_arvalid), 
+      .peripheral_interface_arready (peripheral_interface_arready), 
+      .peripheral_interface_rdata  (peripheral_interface_rdata),   
+      .peripheral_interface_rresp   (peripheral_interface_rresp),   
+      .peripheral_interface_rvalid  (peripheral_interface_rvalid),  
+      .peripheral_interface_rready  (peripheral_interface_rready)
     );
             
 
@@ -412,4 +464,31 @@ module Test_RISCV_PROCESSOR
             end
         end
     end
+    
+    myip11_v1_0_S00_AXI # ( 
+            .C_S_AXI_DATA_WIDTH(C_S00_AXI_DATA_WIDTH),
+            .C_S_AXI_ADDR_WIDTH(C_S00_AXI_ADDR_WIDTH)
+        ) myip11_v1_0_S00_AXI_inst (
+            .S_AXI_ACLK(CLK),
+            .S_AXI_ARESETN(RSTN),
+            .S_AXI_AWADDR(peripheral_interface_awaddr),
+            .S_AXI_AWPROT(peripheral_interface_awprot),
+            .S_AXI_AWVALID(peripheral_interface_awvalid),
+            .S_AXI_AWREADY(peripheral_interface_awready),
+            .S_AXI_WDATA(peripheral_interface_wdata),
+            .S_AXI_WSTRB(peripheral_interface_wstrb),
+            .S_AXI_WVALID(peripheral_interface_wvalid),
+            .S_AXI_WREADY(peripheral_interface_wready),
+            .S_AXI_BRESP(peripheral_interface_bresp),
+            .S_AXI_BVALID(peripheral_interface_bvalid),
+            .S_AXI_BREADY(peripheral_interface_bready),
+            .S_AXI_ARADDR(peripheral_interface_araddr),
+            .S_AXI_ARPROT(peripheral_interface_arprot),
+            .S_AXI_ARVALID(peripheral_interface_arvalid),
+            .S_AXI_ARREADY(peripheral_interface_arready),
+            .S_AXI_RDATA(peripheral_interface_rdata),
+            .S_AXI_RRESP(peripheral_interface_rresp),
+            .S_AXI_RVALID(peripheral_interface_rvalid),
+            .S_AXI_RREADY(peripheral_interface_rready)
+        );
 endmodule

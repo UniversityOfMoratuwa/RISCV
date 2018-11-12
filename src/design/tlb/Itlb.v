@@ -81,7 +81,7 @@ module Itlb
     pa_memory
     (
         .CLK(CLK),
-        .RST(RST)               ,
+//        .RST(RST)               ,
         .PORTA_WREN(pa_mem_wren)           ,
         .PORTA_RADDR(pa_mem_raddr)         ,
         .PORTA_WADDR(pa_mem_waddr)         ,
@@ -98,7 +98,7 @@ module Itlb
     vaddr_tag_memory
     (
         .CLK(CLK)                             ,
-        .RST(RST)               ,
+//        .RST(RST)               ,
         .PORTA_WREN(tag_mem_wren)             ,
         .PORTA_RADDR(tag_mem_raddr)           ,
         .PORTA_WADDR(tag_mem_waddr)           ,

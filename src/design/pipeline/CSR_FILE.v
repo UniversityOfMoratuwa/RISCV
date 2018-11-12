@@ -308,7 +308,7 @@ module CSR_FILE (
                         umode   : PRIV_JUMP_ADD  = utvec_r    ;
                         smode   : PRIV_JUMP_ADD  = stvec_r    ;
                         mmode   : PRIV_JUMP_ADD  = mtvec_r    ;
-                        default : ;
+                        default : PRIV_JUMP_ADD  = mtvec_r;
                     endcase
                     
                     sys_uret    :   PRIV_JUMP_ADD = uepc_reg  ;

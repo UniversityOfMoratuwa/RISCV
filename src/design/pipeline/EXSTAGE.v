@@ -65,7 +65,7 @@ module EXSTAGE(
     input                   FENCE          ,
     output                  FENCE_OUT             ,
     input        [4:0]      AMO_OP_in,
-    input        [4:0]      AMO_OP_out
+    output        [4:0]      AMO_OP_out
     
     );
     //     reg        comp_out;

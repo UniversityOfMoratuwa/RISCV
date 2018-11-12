@@ -9,7 +9,7 @@
         .CLK(CLK),
         .PORTA_WREN(cache_porta_wren)           ,
         .PORTA_RADDR(cache_porta_raddr)         ,
-        .PORTA_WADDR(cache_porta_waddr)         ,
+        .PORTA_WADDR(cache_porta_raddr)         ,
         .PORTA_DATA_IN(cache_porta_data_in)     ,
         .PORTA_DATA_OUT(cache_porta_data_out)
 
@@ -25,7 +25,7 @@
         .CLK(CLK)                               ,
         .PORTA_WREN(tag_porta_wren)             ,
         .PORTA_RADDR(tag_porta_raddr)           ,
-        .PORTA_WADDR(tag_porta_waddr)           ,
+        .PORTA_WADDR(cache_porta_raddr)           ,
         .PORTA_DATA_IN(tag_porta_data_in)       ,
         .PORTA_DATA_OUT(tag_porta_data_out)
 
@@ -42,7 +42,7 @@
         .RST(RST)               ,
         .FLUSH(flush_d3 & ADDR_VALID)        ,
         .WREN(state_wren)       ,
-        .WADDR (state_waddr)    ,
+        .WADDR (cache_porta_raddr)    ,
         .RADDR(state_raddr)     ,
         .STATE(state) ,
         .DATA(1'b1)  

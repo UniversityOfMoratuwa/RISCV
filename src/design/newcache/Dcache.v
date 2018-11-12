@@ -206,7 +206,7 @@ module Dcache
             amo_d1 <= amoidle;
             amo_d2 <= amoidle;
             amo_d3 <= amoidle;
-            reservation <=0;
+         
             
         end
         else if (cache_ready & ADDR_VALID) begin
@@ -369,6 +369,8 @@ module Dcache
         if (~dirty_reg & ~writing)
             flush_addr         <=  -1            ;
         end
+	if (RST)
+	    reservation<=0;
         if(write_reserve & (control_d3 ==2'b10))
         begin
             reserved_address <= addr_d3;
@@ -491,7 +493,7 @@ module Dcache
     assign tag_porta_raddr      = cache_porta_raddr                                         ;
     assign state_raddr          = cache_porta_raddr                                         ;
     assign tag_addr             = addr_d3[address_width-1:offset_width+line_width]          ;
-    assign cache_ready          =  ((((tag_porta_data_out == tag_addr) & state  & ~writing) | (control_d3!==2'b01 & control_d3!==2'b10) )) & (~flush_d3| ~full_state)  & ~writing  ;
+    assign cache_ready          =  ((((tag_porta_data_out == tag_addr) & state  & ~writing ) | (control_d3!==2'b01 & control_d3!==2'b10) )) & (~flush_d3| ~full_state)  & ~writing  ;
     assign ADDR_TO_L2_VALID     = addr_to_l2_valid                                          ;
     assign ADDR_TO_L2           = addr_to_l2                                                ;
     

@@ -235,6 +235,7 @@ module CONTROL_UNIT(
                     end
                     default              :
                     begin
+                        TYPE       =idle;
                         undefined   = 1'b1      ;
                         CSR_CNT     = sys_idle  ;
                     end

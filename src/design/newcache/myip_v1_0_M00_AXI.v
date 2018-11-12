@@ -11,7 +11,7 @@
 		// Base address of targeted slave
 		parameter  C_M_TARGET_SLAVE_BASE_ADDR	= 32'h00010000,
 		// Burst Length. Supports 1, 2, 4, 8, 16, 32, 64, 128, 256 burst lengths
-		parameter integer C_M_AXI_BURST_LEN	= 16,
+		parameter integer C_M_AXI_BURST_LEN	= 8,
 		// Thread ID Width
 		parameter integer C_M_AXI_ID_WIDTH	= 1,
 		// Width of Address Bus
@@ -37,6 +37,7 @@
 		// Do not modify the ports beyond this line
 
 		// Initiate AXI transactions
+		input wire  RSTN,
 		input wire  INIT_AXI_TXN,
 		// Asserts when transaction is complete
 		output wire  TXN_DONE,
@@ -295,7 +296,7 @@
 	reg [C_M_AXI_ADDR_WIDTH-1:0]			  	addr_w 				;
 	always @(posedge M_AXI_ACLK)                                   
 	begin                                                                  
-		if (M_AXI_ARESETN == 0  )                                           
+		if ((M_AXI_ARESETN == 0 )| (RSTN == 0 ))                                           
 		begin
 			addr_w  			<=		0				;
 		end
@@ -308,7 +309,7 @@
 	end
 	always @(posedge M_AXI_ACLK)                                   
 	begin                                                                  
-		if (M_AXI_ARESETN == 0  )                                           
+		if ((M_AXI_ARESETN == 0 )| (RSTN == 0 ))                                           
 		begin
 			data_w  			<=		0;
 		end
@@ -322,7 +323,7 @@
 
 	always @(posedge M_AXI_ACLK)                                   
 	begin                                                                  
-		if (M_AXI_ARESETN == 0  )                                           
+		if ((M_AXI_ARESETN == 0 )| (RSTN == 0 ) )                                           
 		begin
 			initiate_write  	<=		0;
 		end
@@ -343,7 +344,7 @@
 	always @(posedge M_AXI_ACLK)                                   
 	begin                           
 		                                                           
-		if (M_AXI_ARESETN == 0 )                                           
+		if ((M_AXI_ARESETN == 0 )| (RSTN == 0 ) )                                           
 		begin                                                            
 			axi_awvalid <= 1'b0;                                           
 		end                                                              
@@ -366,7 +367,7 @@
 	// Next address after AWREADY indicates previous address acceptance    
 	always @(posedge M_AXI_ACLK)                                         
 	begin                                                                
-		if (M_AXI_ARESETN == 0 )                                            
+		if ((M_AXI_ARESETN == 0 )| (RSTN == 0 ))                                            
 		begin                                                            
 			axi_awaddr <= 'b0;                                             
 		end                                                              
@@ -387,7 +388,7 @@
 	// WVALID logic, similar to the axi_awvalid always block above                      
 	always @(posedge M_AXI_ACLK)                                                      
 	begin                                                                             
-		if (M_AXI_ARESETN == 0 )                                                        
+		if ((M_AXI_ARESETN == 0 )| (RSTN == 0 ) )                                                        
 		begin                                                                         
 			axi_wvalid <= 1'b0;                                                         
 		end                                                                           
@@ -404,7 +405,7 @@
 	                                                                                                       
 	always @(posedge M_AXI_ACLK)                                                      
 	begin                                                                             
-		if (M_AXI_ARESETN == 0 )                                                        
+		if ((M_AXI_ARESETN == 0 )| (RSTN == 0 ))                                                        
 		begin                                                                         
 			axi_wlast <= 1'b0;                                                          
 		end                                                                          
@@ -422,7 +423,7 @@
 	                                                                                                                                   
 	always @(posedge M_AXI_ACLK)                                                      
 	begin                                                                             
-		if (M_AXI_ARESETN == 0 || initiate_write)    
+		if (M_AXI_ARESETN == 0 || initiate_write|| (RSTN == 0 ))    
 		begin                                                                         
 			write_index <= 					0		;  
 			axi_wdata   <=                  data_w[0 +: 32]       ;                                                            
@@ -451,7 +452,7 @@
 
 	always @(posedge M_AXI_ACLK)                                     
 	begin                                                                 
-		if (M_AXI_ARESETN == 0 || init_txn_pulse == 1'b1 )                                            
+		if ((M_AXI_ARESETN == 0 )| (RSTN == 0 ))                                            
 		begin                                                             
 			axi_bready <= 1'b0;  
 		                                        
@@ -477,7 +478,7 @@
 	always @(posedge M_AXI_ACLK)                                 
 	begin                                                              
 	                                                             
-		if (M_AXI_ARESETN == 0 )                                         
+		if ((M_AXI_ARESETN == 0 )| (RSTN == 0 ))                                         
 		begin
 			initiate_read  <=0;
 		end
@@ -494,7 +495,7 @@
 	end
 	always @(posedge M_AXI_ACLK)                                 
 	begin                                                                                                                         
-		if (M_AXI_ARESETN == 0 )                                         
+		if ((M_AXI_ARESETN == 0 )| (RSTN == 0 ))                                         
 		begin
 			raddr  <=0;
 		end
@@ -509,7 +510,7 @@
 	always @(posedge M_AXI_ACLK)                                 
 	begin                                                              
 	                                                             
-	if (M_AXI_ARESETN == 0 )                                         
+	if ((M_AXI_ARESETN == 0 )| (RSTN == 0 ) )                                         
 	begin                                                          
 		axi_arvalid 	<= 1'b0;                                         
 	end                                                            
@@ -530,7 +531,7 @@
 	// Next address after ARREADY indicates previous address acceptance  
 	always @(posedge M_AXI_ACLK)                                       
 	begin                                                              
-		if (M_AXI_ARESETN == 0 )                                          
+		if ((M_AXI_ARESETN == 0 )| (RSTN == 0 ) )                                          
 		begin                                                          
 			axi_araddr <= 'b0;                                           
 		end                                                            
@@ -547,7 +548,7 @@
 	
 	always @(posedge M_AXI_ACLK)                                          
 	begin                                                                 
-		if (M_AXI_ARESETN == 0  || initiate_read)                  
+		if (M_AXI_ARESETN == 0  || initiate_read ||  (RSTN == 0 ))                  
 		begin                                                             
 			read_index <= 0;                                                
 		end                                                               
@@ -562,7 +563,7 @@
 	reg data_valid;                                                      
 	always @(posedge M_AXI_ACLK)                                          
 	begin                                                                 
-		if (M_AXI_ARESETN == 0  )                  
+		if ((M_AXI_ARESETN == 0 )| (RSTN == 0 ) )                  
 		begin                                                             
 			axi_rready 							<= 1'b0; 
 			data_valid 							<=0;                                            
@@ -593,7 +594,7 @@
                                    
 	always @(posedge M_AXI_ACLK)                                                                              
 	begin                                                                                                     
-		if (M_AXI_ARESETN == 0 )                                                                                 
+		if ((M_AXI_ARESETN == 0 )| (RSTN == 0 ))                                                                                 
 			burst_write_active <= 1'b0;                                                                           
 		else if (initiate_write)                                                                      
 			burst_write_active <= 1'b1;                                                                           
@@ -603,7 +604,7 @@
                                                                                                                            
 	always @(posedge M_AXI_ACLK)                                                                              
 	begin                                                                                                     
-		if (M_AXI_ARESETN == 0 )                                                                                 
+		if ((M_AXI_ARESETN == 0 )| (RSTN == 0 ))                                                                                 
 			burst_read_active <= 1'b0;                                                                                            
 		else if (start_single_burst_read)                                                                       
 			burst_read_active <= 1'b1;                                                                            

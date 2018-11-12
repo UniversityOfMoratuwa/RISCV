@@ -309,7 +309,7 @@ module PERIPHERAL_INTERFACE #
 	      end                                                                           
 	    // If previously not valid, start next transaction                              
 	    else begin
-			ready_wd <= addr_transaction_done && ((M_AXI_WVALID && M_AXI_WREADY) || ~M_AXI_WVALID);  /*addr_transaction_done && ((M_AXI_WVALID && M_AXI_WREADY && ~wlast_valid) || ~M_AXI_WVALID);*/       
+			ready_wd <= /*addr_transaction_done &&*/ ((M_AXI_WVALID && M_AXI_WREADY) || ~M_AXI_WVALID);  /*addr_transaction_done && ((M_AXI_WVALID && M_AXI_WREADY && ~wlast_valid) || ~M_AXI_WVALID);*/       
 		end
 	  end
 

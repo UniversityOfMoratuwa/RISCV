@@ -24,8 +24,8 @@ module RISCV_PROCESSOR#(
     localparam ram_depth     = 2**ram_addr_width                            ,
     parameter data_width     = 32                                          ,
     parameter address_width  = 32                                           ,
-    parameter block_size     = 8                                           ,
-    parameter cache_depth    = 512                                          ,
+    parameter block_size     = 4                                           ,
+    parameter cache_depth    = 256                                          ,
     parameter l2_delay_read  = 10                                           ,
     localparam line_width    = $clog2(cache_depth)                          ,
     localparam offset_width  = $clog2(data_width*block_size/8 )               ,
@@ -49,6 +49,11 @@ module RISCV_PROCESSOR#(
     parameter integer C_S00_AXI_WUSER_WIDTH    = 0,
     parameter integer C_S00_AXI_RUSER_WIDTH    = 0,
     parameter integer C_S00_AXI_BUSER_WIDTH    = 0,
+          parameter  C_Peripheral_Interface_START_DATA_VALUE              = 32'h00000000,
+        parameter  C_Peripheral_Interface_TARGET_SLAVE_BASE_ADDR        = 32'h00000000,
+        parameter integer C_Peripheral_Interface_ADDR_WIDTH             = 32,
+        parameter integer C_Peripheral_Interface_DATA_WIDTH             = 32,
+        parameter integer C_Peripheral_Interface_TRANSACTIONS_NUM       = 4,
         // Fixed parameters
         localparam ADDR_WIDTH           = 32,
         localparam DATA_WIDTH           = 32,
@@ -70,18 +75,18 @@ module RISCV_PROCESSOR#(
         //    DATA PERIPHERAL    //
         ///////////////////////////
         
-        output      [31:0]          RD_ADDR_TO_PERI,
-        output                      RD_ADDR_TO_PERI_VALID,
-        input                       RD_ADDR_TO_PERI_READY,
-        output      [31:0]          WR_ADDR_TO_PERI,
-        output                      WR_TO_PERI_VALID,
-        input                       WR_TO_PERI_READY,
-        output      [31:0]          DATA_TO_PERI,
-        input       [31:0]          DATA_FROM_PERI,
-        output                      DATA_FROM_PERI_READY,
-        input                       DATA_FROM_PERI_VALID,
-        input                       TRANSACTION_COMPLETE_PERI,
-        output  [3:0]                      WSTRB_OUT,
+        // output      [31:0]          RD_ADDR_TO_PERI,
+        // output                      RD_ADDR_TO_PERI_VALID,
+        // input                       RD_ADDR_TO_PERI_READY,
+        // output      [31:0]          WR_ADDR_TO_PERI,
+        // output                      WR_TO_PERI_VALID,
+        // input                       WR_TO_PERI_READY,
+        // output      [31:0]          DATA_TO_PERI,
+        // input       [31:0]          DATA_FROM_PERI,
+        // output                      DATA_FROM_PERI_READY,
+        // input                       DATA_FROM_PERI_VALID,
+        // input                       TRANSACTION_COMPLETE_PERI,
+        // output  [3:0]                      WSTRB_OUT,
         input                                           MEIP                            ,   //machine external interupt pending
         input                                           MTIP                            ,   //machine timer interupt pending
         input                                           MSIP                   ,
@@ -180,11 +185,46 @@ module RISCV_PROCESSOR#(
         input wire  m01_axi_rlast,
         input wire [C_M00_AXI_RUSER_WIDTH-1 : 0] m01_axi_ruser,
         input wire  m01_axi_rvalid,
-        output wire  m01_axi_rready
+        output wire  m01_axi_rready,
+        input  wire                                             peripheral_interface_init_axi_txn,
+        output wire                                             peripheral_interface_error,
+        output wire                                             peripheral_interface_txn_done,
+        input  wire                                             peripheral_interface_aclk,
+        input  wire                                             peripheral_interface_aresetn,
+        output wire [C_Peripheral_Interface_ADDR_WIDTH-1 : 0]   peripheral_interface_awaddr,
+        output wire [2 : 0]                                     peripheral_interface_awprot,
+        output wire                                             peripheral_interface_awvalid,
+        input  wire                                             peripheral_interface_awready,
+        output wire [C_Peripheral_Interface_DATA_WIDTH-1 : 0]   peripheral_interface_wdata,
+        output wire [C_Peripheral_Interface_DATA_WIDTH/8-1 : 0] peripheral_interface_wstrb,
+        output wire                                             peripheral_interface_wvalid,
+        input  wire                                             peripheral_interface_wready,
+        input  wire [1 : 0]                                     peripheral_interface_bresp,
+        input  wire                                             peripheral_interface_bvalid,
+        output wire                                             peripheral_interface_bready,
+        output wire [C_Peripheral_Interface_ADDR_WIDTH-1 : 0]   peripheral_interface_araddr,
+        output wire [2 : 0]                                     peripheral_interface_arprot,
+        output wire                                             peripheral_interface_arvalid,
+        input  wire                                             peripheral_interface_arready,
+        input  wire [C_Peripheral_Interface_DATA_WIDTH-1 : 0]   peripheral_interface_rdata,
+        input  wire [1 : 0]                                     peripheral_interface_rresp,
+        input  wire                                             peripheral_interface_rvalid,
+        output wire                                             peripheral_interface_rready 
         
         
     );
-     
+    wire [ADDR_WIDTH      - 1 : 0]  RD_ADDR_TO_PERI;
+    wire                            RD_ADDR_TO_PERI_VALID;
+    wire                            RD_ADDR_TO_PERI_READY;
+    wire [ADDR_WIDTH      - 1 : 0]  WR_ADDR_TO_PERI;
+    wire                            WR_TO_PERI_VALID;
+    wire                            WR_TO_PERI_READY;
+    wire [DATA_WIDTH      - 1 : 0]  DATA_TO_PERI;
+    wire [DATA_WIDTH      - 1 : 0]  DATA_FROM_PERI;
+    wire                            DATA_FROM_PERI_READY;
+    wire                            DATA_FROM_PERI_VALID;
+    wire                            TRANSACTION_COMPLETE_PERI;
+    wire [3:0]                      wstrb;
      // Peripheral signals
      reg                                p_flag = 0;
      wire                               tlb_ready;
@@ -269,7 +309,7 @@ module RISCV_PROCESSOR#(
         reg [31:0] VIRT_ADDR,DATA_FROM_AXIM;
         wire [31:0] PHY_ADDR,ADDR_TO_AXIM;
         wire PHY_ADDR_VALID,ADDR_TO_AXIM_VALID;
-        
+        wire [3:0] WSTRB_OUT;
      //reg [63:0]     mtime;
      //reg [63:0]     mtimecmp;
      //reg            timer_interrupt;
@@ -342,7 +382,7 @@ module RISCV_PROCESSOR#(
     Peripheral peripheral
     (
     .CLK(CLK),
-    .RESETN(RSTN),
+    .RSTN(RSTN),
     .START(peri_start),
     .ADDRESS(addr_to_peri),
     .WRITE(control_to_peri),
@@ -374,7 +414,17 @@ module RISCV_PROCESSOR#(
     
     always@(posedge CLK)
     begin
-        if  (addr_from_proc_dat >= PERIPHERAL_BASE_ADDR/* && addr_from_proc_dat!= EXT_FIFO_ADDRESS */&&  control_from_proc_dat != 0 && !stop_dat_cache && cache_ready_ins && cache_ready_dat && counter==0 && 0)
+        if (~RSTN)
+        begin
+            peri_start<=0;
+            control_to_peri <=0;
+            counter <=0;
+            stop_ins_cache<=0;
+            stop_dat_cache<=0;
+            peri_done <=0;
+            
+        end
+        else if  (addr_from_proc_dat >= PERIPHERAL_BASE_ADDR &&  control_from_proc_dat != 0 && !stop_dat_cache && cache_ready_ins && cache_ready_dat && counter==0 )
         begin
             data_to_peri <= data_from_proc_dat;
             addr_to_peri <= addr_from_proc_dat;
@@ -484,6 +534,7 @@ myip_v1_0_M00_AXI # (
         .C_M_AXI_BUSER_WIDTH(C_M00_AXI_BUSER_WIDTH),
         .cache_width(cache_width)
     ) myip_v1_0_M00_AXI_inst (
+        .RSTN(RSTN),
         .INIT_AXI_TXN(m00_axi_init_axi_txn),
         .TXN_DONE(m00_axi_txn_done),
         .ERROR(m00_axi_error),
@@ -551,6 +602,7 @@ myip_v1_0_M00_AXI # (
         .C_M_AXI_BUSER_WIDTH(C_M00_AXI_BUSER_WIDTH),
         .cache_width(cache_width)
     ) myip_v1_0_M01_AXI_inst (
+        .RSTN(RSTN),
         .INIT_AXI_TXN(m01_axi_init_axi_txn),
         .TXN_DONE(m01_axi_txn_done),
         .ERROR(m01_axi_error),
@@ -689,6 +741,48 @@ myip_v1_0_M00_AXI # (
             
             
     );
+      PERIPHERAL_INTERFACE # ( 
+
+       ) peripheral_interface (
+       .INIT_AXI_TXN(RSTN),
+       .ERROR                           (peripheral_interface_error),
+       .TXN_DONE                        (peripheral_interface_txn_done),
+       .M_AXI_ACLK                      (peripheral_interface_aclk),
+       .M_AXI_ARESETN                   (RSTN),
+       .M_AXI_AWADDR                    (peripheral_interface_awaddr),
+       .M_AXI_AWPROT                    (peripheral_interface_awprot),
+       .M_AXI_AWVALID                   (peripheral_interface_awvalid),
+       .M_AXI_AWREADY                   (peripheral_interface_awready),
+       .M_AXI_WDATA                     (peripheral_interface_wdata),
+       .M_AXI_WSTRB                     (peripheral_interface_wstrb),
+       .M_AXI_WVALID                    (peripheral_interface_wvalid),
+       .M_AXI_WREADY                    (peripheral_interface_wready),
+       .M_AXI_BRESP                     (peripheral_interface_bresp),
+       .M_AXI_BVALID                    (peripheral_interface_bvalid),
+       .M_AXI_BREADY                    (peripheral_interface_bready),
+       .M_AXI_ARADDR                    (peripheral_interface_araddr),
+       .M_AXI_ARPROT                    (peripheral_interface_arprot),
+       .M_AXI_ARVALID                   (peripheral_interface_arvalid),
+       .M_AXI_ARREADY                   (peripheral_interface_arready),
+       .M_AXI_RDATA                     (peripheral_interface_rdata),
+       .M_AXI_RRESP                     (peripheral_interface_rresp),
+       .M_AXI_RVALID                    (peripheral_interface_rvalid),
+       .M_AXI_RREADY                    (peripheral_interface_rready),
+       .wstrb(          WSTRB_OUT                                       ),
+       //Peripheral Side Ports
+       .dout_ra                         (RD_ADDR_TO_PERI),
+       .valid_ra                        (RD_ADDR_TO_PERI_VALID),
+       .ready_ra                        (RD_ADDR_TO_PERI_READY),
+       .dout_wa                         (WR_ADDR_TO_PERI),
+       .valid_wa                        (WR_TO_PERI_VALID),
+       .ready_wa                        (WR_TO_PERI_READY),
+       .dout_wd                         (DATA_TO_PERI),
+       .dout                            (DATA_FROM_PERI),
+       .ready_rd                        (DATA_FROM_PERI_READY),
+       .valid_rd                        (DATA_FROM_PERI_VALID),
+       .ack                             (TRANSACTION_COMPLETE_PERI)
+       );
+
     always@(posedge CLK)
     begin
         if(~RSTN)
@@ -708,7 +802,7 @@ myip_v1_0_M00_AXI # (
         
         if(ADDR_TO_AXIM_VALID)begin
             DATA_FROM_AXIM_VALID <= 1;
-            DATA_FROM_AXIM       <= (ADDR_TO_AXIM-32'h0000_0000) >> 2;
+            DATA_FROM_AXIM       <= (ADDR_TO_AXIM) >> 2;
         end
         else DATA_FROM_AXIM_VALID <= 0;
     end
