@@ -178,7 +178,34 @@ def rashift(num, n):
         return int('1' * n + bin(num)[2:34 - n], 2)
     else:
         return num >> n
+##################################CSR Related Variables ###############################
+#machine mode specific
+mmode          =    0b11
+hmode          =    0b10
+smode          =    0b01
+umode          =    0b00
 
+heip=seip=ueip=htip=stip=utip=hsip=ssip=usip = 0              
+meie=heie=seie=ueie=mtie=htie=stie=utie=msie=hsie=ssie=usie = 0
+sd=mxr=sum1=mprv=spp=mpie=spie=upie=m_ie=s_ie=u_ie = 0    
+
+curr_privilage = mmode
+mpp = 0
+mt_base       =0 
+mt_mode       =0 
+medeleg_reg   =0
+mideleg_reg   =0
+mcycle_reg    =0
+minsret_reg   =0
+mir=mtm=mcy   =0
+mscratch_reg  =0
+mepc_reg      =0
+mtval_reg     =0
+mecode_reg    =0
+minterrupt    =0  
+
+
+##################################CSR Related Variables End###############################
 
 x = 0
 n = 0
@@ -520,7 +547,7 @@ while PC < 1 << 20:
                 wb_data = reg_array[rs1_sel] & reg_array[rs2_sel]
         reg_array[rd] = wb_data
     elif opcode[binary[25:32]] == 'system':
-	
+    
 ##################################################previledge instructions#####################################################
         """        
 if binary[0:12] == bin(int('c00', 16))[2:]:
@@ -529,45 +556,106 @@ if binary[0:12] == bin(int('c00', 16))[2:]:
             reg_array[rd] = n  # INSRET
         wb_data = reg_array[rd]
         """
+
+        """
+        Values of curr_privilage
+        localparam     mmode          =    2'b11        ;
+        localparam     hmode          =    2'b10        ;
+        localparam     smode          =    2'b01        ;
+        localparam     umode          =    2'b00        ;
+        """
+
         csr_reg = conv(binary[0:12])
         if   function == '001': #CSRRW
-            #print("1")
-            #print(csr_file[hex(csr_reg)])
             wb_data = csr_mem[csr_reg]
             csr_mem[csr_reg] = reg_array[rs1_sel]
             reg_array[rd] = wb_data
 
         elif function == '010': #CSRRS
-            #print("2")
             wb_data = csr_mem[csr_reg]
             csr_mem[csr_reg] = csr_mem[csr_reg] | reg_array[rs1_sel]
             reg_array[rd] = wb_data
 
         elif function == '011': #CSRRC
-            #print("3")
             wb_data = csr_mem[csr_reg]
             csr_mem[csr_reg] = csr_mem[csr_reg] & (~reg_array[rs1_sel])
             reg_array[rd] = wb_data
+
         elif function == '101': #CSRRWI
-            #print("4")
             wb_data = csr_mem[csr_reg]
             csr_mem[csr_reg] = rs1_sel
             reg_array[rd] = wb_data
 
         elif function == '110': #CSRRSI
-            #print("5")
             wb_data = csr_mem[csr_reg]
             csr_mem[csr_reg] = csr_mem[csr_reg] | rs1_sel
             reg_array[rd] = wb_data
 
         elif function == '111': #CSRRCI	
-            #print("6")
             wb_data = csr_mem[csr_reg]
             csr_mem[csr_reg] = csr_mem[csr_reg] & (~rs1_sel)
             reg_array[rd] = wb_data
 
-        elif function == '000' and csr_reg == 0:
-            print("hello")
+        elif function == '000' and csr_reg == 0: #ecall
+            #print("PC : "+'{:032b}'.format(PC))
+            minterrupt = 0
+            mepc_reg = (PC-1)*4
+            mpp = mmode
+            mecode_reg = 11
+            csr_mem[int(csr_file.keys()[csr_file.values().index('mepc')],16)] = mepc_reg
+            mtvec_r = csr_mem[int(csr_file.keys()[csr_file.values().index('mtvec')],16)] 
+
+            mt_mode = mtvec_r & 0b11
+            mt_base = mtvec_r >>2
+            #print("mepc value (current PC) : " +'{:032b}'.format(mepc_reg))
+            #print("mtvec addr              : " +'{:032b}'.format(mt_base))
+            if curr_privilage == umode :
+                #PC = utvec_r
+                print "umode Not supported yet"
+            elif curr_privilage == smode :
+                #PC = stvec_r
+                print "smode Not supported yet"
+            elif curr_privilage == mmode :
+                if mt_mode == 0:
+                    PC = mt_base
+                elif mt_mode == 1:
+                    PC = mt_base + 4*mecode_reg
+                else :
+                    print "Illegel mt_mode"
+                csr_mem[int(csr_file.keys()[csr_file.values().index('mcause')],16)] = (minterrupt<<31)+mecode_reg
+                #print('{:032b}'.format((minterrupt<<31)+mecode_reg))
+
+        elif function == '000' and csr_reg == 1: #ebreak
+            minterrupt  = 0
+            mecode_reg = 3
+            if   curr_privilage == umode :
+                uepc_reg = PC
+                csr_mem[int(csr_file.keys()[csr_file.values().index('uepc')],16)] = uepc_reg
+            elif curr_privilage == smode :
+                sepc_reg = PC
+                csr_mem[int(csr_file.keys()[csr_file.values().index('sepc')],16)] = sepc_reg
+            elif curr_privilage == mmode :
+                mepc_reg = PC
+                csr_mem[int(csr_file.keys()[csr_file.values().index('mepc')],16)] = mepc_reg
+            csr_mem[int(csr_file.keys()[csr_file.values().index('mcause')],16)] = (minterrupt<<31)+mecode_reg
+        
+
+
+        elif function == '000' and csr_reg == 24 and rs2_sel == 2: #mret
+            mepc_reg = csr_mem[int(csr_file.keys()[csr_file.values().index('mepc')],16)]
+            PC = mepc_reg
+            curr_privilage = mpp
+            mpie = (csr_mem[int(csr_file.keys()[csr_file.values().index('mstatus')],16)]>>7) & 1
+            m_ie = mpie
+            mpie = 0
+            csr_mem[int(csr_file.keys()[csr_file.values().index('mstatus')],16)] = csr_mem[int(csr_file.keys()[csr_file.values().index('mstatus')],16)] & ~(1<<7) ## setting mpie to 0
+
+
+        #print("t0 value = "+'{:032b}'.format(reg_array[5]))
+        #print("t1 value = "+'{:032b}'.format(reg_array[6]))
+        #print("t2 value = "+'{:032b}'.format(reg_array[7]))
+    
+
 
 ##################################################atomic instructions#####################################################
     elif opcode[binary[25:32]] == 'amo':
@@ -706,4 +794,4 @@ if binary[0:12] == bin(int('c00', 16))[2:]:
     if lpc == PC:  # #BREAKS AT INFINITE LOOP
         break
 
-			
+            

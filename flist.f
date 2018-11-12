@@ -21,3 +21,4 @@
 ./src/design/pipeline/REG_ARRAY.v
 ./src/design/pipeline/STATE_REG.v
 ./src/simulation/TEST_RISCV_PROCESSOR.v
+./src/design/tlb/Itlb.v
