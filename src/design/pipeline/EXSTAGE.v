@@ -65,7 +65,9 @@ module EXSTAGE(
     input                   FENCE          ,
     output                  FENCE_OUT             ,
     input        [4:0]      AMO_OP_in,
-    output        [4:0]      AMO_OP_out
+    output        [4:0]      AMO_OP_out,
+    input        [31:0]     INS_FB_EX,
+    input                   ILEGAL
     
     );
     //     reg        comp_out;
@@ -226,7 +228,9 @@ module EXSTAGE(
         .MEIP(MEIP),   
         .MTIP(MTIP),   
         .MSIP(MSIP)  ,
-        .RST(RST)                      
+        .RST(RST)   ,
+        .INS_FB_EX(INS_FB_EX),
+        .ILEGAL_INS(ILEGAL)                  
         );
         
     RV32M rv32m(
@@ -293,9 +297,18 @@ module EXSTAGE(
     
     always@(posedge CLK)
     begin
+        if(RST)
+        begin
+            FLUSH <=0;
+            flush_internal<=0;
+            counter_1<=0;
+            counter_2 <=0;
+            
+        end
         if (CACHE_READY)
         begin
-             cache_ready_fb <= 1                ;
+
+             // cache_ready_fb <= 1                ;
              cache_ready_ex <= 1   ;
              cache_ready_ex2<= cache_ready_ex   ;
              

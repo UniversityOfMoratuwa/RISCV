@@ -129,6 +129,10 @@ module PIPELINE #(
     reg  [31:0] pc_mem2_mem3                ;
     reg  [31:0] pc_mem3_wb                  ;
     reg  [31:0] rs2_ex_ex2                  ;
+    wire ilegal_wire;
+    reg ilegal_id_fb;
+    reg ilegal_fb_ex;
+    
     
     assign ins_if_id = INS_IF_ID            ;
    
@@ -164,7 +168,8 @@ module PIPELINE #(
         .RS2_TYPE           (rs2_type)                  ,
         .RST                (RST)                         ,
         .FENCE              (fence_out)  ,
-        .AMO_OP(amo_wire)
+        .AMO_OP(amo_wire),
+        .ILEGAL(ilegal_wire)
         );        
   
     EXSTAGE exstage(
@@ -213,7 +218,9 @@ module PIPELINE #(
         .RST(RST),
         .FENCE_OUT(FENCE),
         .AMO_OP_in(amo_fb_ex),
-        .AMO_OP_out(AMO_TO_CACHE)
+        .AMO_OP_out(AMO_TO_CACHE),
+        .INS_FB_EX(ins_fb_ex),
+        .ILEGAL(ilegal_fb_ex)
         );
    
     Multiplexer #(
@@ -429,6 +436,8 @@ module PIPELINE #(
         // cache_ready_data            <= CACHE_READY_DATA             ;//dummy
         if(RST)
         begin
+                flush_e_i                  <=0;
+
                 rs1_type_fb              <= 0                ; 
                 rs2_type_fb              <= 0                ; 
                 stall_enable_id_fb       <= 1            ;
@@ -452,9 +461,9 @@ module PIPELINE #(
                 data_cache_control_id_fb <= 0    ;
                 ins_id_fb                <= 0               ;            
                 ins_fb_ex                <= 0               ;
-                alu_cnt_fb_ex            <= 0           ;                   
-                fun3_fb_ex               <= 0              ;
-                csr_cnt_fb_ex            <= 0           ;
+                alu_cnt_fb_ex            <= alu_idle           ;                   
+                fun3_fb_ex               <= no_branch            ;
+                csr_cnt_fb_ex            <= sys_idle           ;
                 zimm_fb_ex               <= 0              ;    
                 type_fb_ex               <= 0              ;    
                 jump1_fb_ex              <= 0             ;  
@@ -485,6 +494,9 @@ module PIPELINE #(
                 amo_fb_ex <=0;
 
                 amo_id_fb<=0;
+                rd_ex_mem1<=0;
+                ilegal_id_fb <=0;
+                ilegal_fb_ex <=0;
 
 
 
@@ -554,7 +566,9 @@ module PIPELINE #(
                 rd_ex_ex2                <= rd_id_fb                ;   
                 op_type_ex_ex2           <= fun3_id_fb              ;     
                 pc_ex_ex2                <= pc_id_fb                ;   
-                imm_ex_ex2               <= imm_out_id_fb           ;        
+                imm_ex_ex2               <= imm_out_id_fb           ;   
+                ilegal_id_fb             <=ilegal_wire;
+                ilegal_fb_ex             <=ilegal_id_fb;     
             end  
             else
             begin     
@@ -608,6 +622,8 @@ module PIPELINE #(
                 imm_ex_ex2               <=    0                    ; 
                  fence_id_fb             <= 0                       ;
                 fence_fb_ex              <= 0                       ;
+                ilegal_id_fb <=0;
+                ilegal_fb_ex <=0;
             end
             
             rd_fb_ex                 <=    rd_id_fb                 ;                      

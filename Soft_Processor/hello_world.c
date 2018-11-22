@@ -4,9 +4,14 @@ char* hscanf();
 void hprintf(const char *format, ...);
 
 int main()
-{	
+{		float y,z;
+		int x;
+		y=1.234;
+		z=1.432;
 
-		hprintf("hello_world\n");
+		x= y*z*1000;
+
+		hprintf("hello_world  %d\n",x);
 
 		while (1);
 }
@@ -16,9 +21,11 @@ int main()
 void hprintf_c(int c){
 	// volatile char* serial_base = (char*) OUTPORT;
 	// *serial_base = c;
-	volatile int *x = (int *)0xe000102c;
-	while ((*x&16)==16);
-	 *(int*) 0xe0001030= c;
+	  asm("li a7, 1");
+  	  asm("ecall");
+// 	volatile int *x = (int *)0xe000102c;
+// 	while ((*x&16)==16);
+// 	 *(int*) 0xe0001030= c;
 }
 
 void hprintf_s(char *s){
@@ -102,7 +109,7 @@ char hscanf_c(){
 	volatile int *x = (int*)0xe000102c;
 	while ((*x&2)==2);
 	volatile char c =*(int*)0xe0001030;
-	printf_c(c);
+	hprintf_c(c);
 	return c;
 }
 

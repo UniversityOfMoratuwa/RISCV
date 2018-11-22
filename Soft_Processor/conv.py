@@ -7,8 +7,8 @@ import sys
 filed="test"
 #os.system('make')
 
-os.system('riscv64-unknown-elf-objdump -d RISCV_Test_Benchmark.elf > test.txt')
-os.system('riscv64-unknown-elf-objdump -s RISCV_Test_Benchmark.elf > data.txt')
+os.system('riscv64-unknown-elf-objdump -d K_1.elf > test.txt')
+os.system('riscv64-unknown-elf-objdump -s K_1.elf > data.txt')
 x=open(str(filed)+".txt","r")
 data=open("data.txt","r")
 out=open(filed+"_hex.txt","w")
@@ -46,9 +46,9 @@ for dat in datas:
 i=0
 j=0
 try:
-    while (i<addr_array[j]):
-        out2.write("00000000\n")
-        i=i+4
+    # while (i<addr_array[j]):
+    #     out2.write("00000000\n")
+    #     i=i+4
     for values in dat_array:
         valt=""
         if(len(values)):
@@ -57,8 +57,13 @@ try:
             out2.write(valt+"\n")
         else:
             out2.write("00000000\n")
-                    
+        j=j+1
+    while (j<(int('0x10000',16)/4)):
+        out2.write("00000000\n")
+        j=j+1
+
 except:
+    print "error"
     pass
     
 ##for i in xrange (2**14-len(y)+1):

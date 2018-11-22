@@ -50,7 +50,9 @@ module CSR_FILE (
     
     output reg          TSR             ,
     output reg          TVM             ,
-    output reg          TW              
+    output reg          TW              ,
+    input [31:0] INS_FB_EX,
+    input ILEGAL_INS
                       
     );  
     
@@ -101,12 +103,13 @@ module CSR_FILE (
     reg     [30     :0]     uecode_reg    =0                            ;
     reg                     uinterrupt    =0                            ;
     reg                     umode_reg     =0                            ;
+    reg  [1:0]             fs=1;
     //reg     [63     :0]     timer_reg     =0                            ; 
    
     // machine mode wires
     wire    [31 : 0] mip_r       = {20'b0,MEIP,1'b0,seip,ueip,MTIP,1'b0,stip,utip,MSIP,1'b0,ssip,usip}                          ;  //hardwired 0 for hypervisor specs
     wire    [31 : 0] mie_r       = {20'b0,meie,1'b0,seie,ueie,mtie,1'b0,stie,utie,msie,1'b0,ssie,usie}                          ;  
-    wire    [31 : 0] mstatus_r   = {sd,8'b0,TSR,TW,TVM,mxr,sum,mprv,4'b0,mpp,2'b0,spp,mpie,1'b0,spie,upie,m_ie,1'b0,s_ie,u_ie}  ;
+    wire    [31 : 0] mstatus_r   = {sd,8'b0,TSR,TW,TVM,mxr,sum,mprv,2'b0,fs,mpp,2'b0,spp,mpie,1'b0,spie,upie,m_ie,1'b0,s_ie,u_ie}  ;
     wire    [31 : 0] mtvec_r     = {mt_base,mt_mode}                                                                            ;
     wire    [31 : 0] medeleg_r   = medeleg_reg                                                                                  ;
     wire    [31 : 0] mideleg_r   = mideleg_reg                                                                                  ;
@@ -300,16 +303,26 @@ module CSR_FILE (
                 else if(MSIP)    PRIV_JUMP_ADD = {mt_base,2'b0} ;
                 else             PRIV_JUMP_ADD = {mt_base,2'b0};
             end
-            else
+            else if(ILEGAL_INS)
+            begin
+                PRIV_JUMP_ADD  = {mt_base,2'b0};
+                if (!PROC_IDLE)
+                begin
+//                    $display("ilegal %x",INS_FB_EX);
+//                    $finish;
+                end
+            end
+            else 
             begin
                 case (CSR_CNT)
                     sys_ecall   :  //exception
                     case(curr_prev)
-                        umode   : PRIV_JUMP_ADD  = utvec_r    ;
-                        smode   : PRIV_JUMP_ADD  = stvec_r    ;
-                        mmode   : PRIV_JUMP_ADD  = mtvec_r    ;
-                        default : PRIV_JUMP_ADD  = mtvec_r;
+                        umode   : PRIV_JUMP_ADD  = {mt_base,2'b0}    ;
+                        smode   : PRIV_JUMP_ADD  = {mt_base,2'b0}    ;
+                        mmode   : PRIV_JUMP_ADD  ={mt_base,2'b0}   ;
+                        default : PRIV_JUMP_ADD  = {mt_base,2'b0};
                     endcase
+                    
                     
                     sys_uret    :   PRIV_JUMP_ADD = uepc_reg  ;
                     sys_sret    :   PRIV_JUMP_ADD = sepc_reg  ;
@@ -333,6 +346,7 @@ module CSR_FILE (
 
         if(RST)
         begin
+            curr_prev <=mmode;
             minsret_reg <= 0;
             TSR            <= 0     ;                                                                                             
             TVM            <= 0     ;                                                                                             
@@ -340,7 +354,8 @@ module CSR_FILE (
             {sd,mxr,sum,mprv,mpp,spp,mpie,spie,upie,m_ie,s_ie,u_ie}           <= 13'b011000011101        ;                        
             {heip,seip,ueip,htip,stip,utip,hsip,ssip,usip}                    <= 9'd0                    ;                        
             {meie,heie,seie,ueie,mtie,htie,stie,utie,msie,hsie,ssie,usie}     <= 12'd0                   ;                        
-            mpp             <=2'b11                      ;                                                                    
+            mpp             <=2'b11                      ;   
+            fs             <=1;                                                                 
             mt_base       <=0                            ;    
             mt_mode       <=0                            ;    
             medeleg_reg   <=0                            ;    
@@ -398,6 +413,14 @@ module CSR_FILE (
                 mpie           <=   m_ie                                        ;
                 m_ie           <=   1'b0                                        ;
                 //case for others - this for m only
+            end
+            else if(ILEGAL_INS)
+            begin
+                mepc_reg    <= PC      ;
+                mpp         <= mmode    ;
+                mecode_reg  <= 31'd2   ;
+                mtval_reg   <= INS_FB_EX;
+                minterrupt  <= 0    ;
             end
             else
             begin
@@ -513,13 +536,13 @@ module CSR_FILE (
                     satp           :    {smode_reg,
                                          asid,ppn}          <=  input_data_final            ;
                     mstatus        :    {sd,TSR,TW,TVM,
-                                        mxr,sum,mprv,mpp,
+                                        mxr,sum,mprv,fs,mpp,
                                         spp,mpie,spie,
                                         upie,m_ie,
                                         s_ie,u_ie}          <=  {
                                                                 input_data_final[31]        ,
                                                                 input_data_final[22:17]     ,
-                                                                input_data_final[12:11]     ,
+                                                                input_data_final[14:11]     ,
                                                                 input_data_final[8:7]       ,
                                                                 input_data_final[5:3]       ,
                                                                 input_data_final[1:0]
@@ -559,7 +582,7 @@ module CSR_FILE (
      
     end
     
-    assign  PRIV_JUMP       = (CSR_CNT==sys_ecall) | (CSR_CNT==sys_uret) | (CSR_CNT==sys_sret) | (CSR_CNT==sys_mret) | (interrupt)  ;
+    assign  PRIV_JUMP       = (CSR_CNT==sys_ecall) | (CSR_CNT==sys_uret) | (CSR_CNT==sys_sret) | (CSR_CNT==sys_mret) | (interrupt) | ILEGAL_INS  ;
         
 endmodule
 

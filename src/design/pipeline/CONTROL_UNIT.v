@@ -35,7 +35,8 @@ module CONTROL_UNIT(
     output reg              B_BUS_SEL       ,
     output reg              FENCE           ,
     output reg  [4:0]       AMO_OP,
-    input  [31:27]          INS2
+    input  [31:27]          INS2,
+    output ILEGAL
     );
     
     `include "PipelineParams.vh"
@@ -256,7 +257,7 @@ module CONTROL_UNIT(
                 ALU_CNT             = alu_idle      ;
                 CSR_CNT             = sys_idle      ;
                 TYPE                = idle          ;
-                undefined=INS!=32'd0;
+                undefined=1;
             end 
                      
 //            mops    :   TYPE=rtype;
@@ -265,4 +266,5 @@ module CONTROL_UNIT(
 //            default :   TYPE=ntype;
         endcase
     end
+    assign ILEGAL = undefined & !FENCE;
 endmodule

@@ -472,55 +472,14 @@ module RISCV_PROCESSOR#(
         end
     end
     
-    //Simulation Code/////////////////////////////////////////////////////////////////////////////////////////////////////////
-    //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    
-    always @ (posedge CLK) begin 
-//         EXT_FIFO_WR_ENB  <=P0_INIT_AXI_TXN & cache_ready_dat & cache_ready_ins ;//<= data_to_proc_ins;
-//         EXT_FIFO_WR_DATA <= {ex_pc[31:2],cache_ready_dat,cache_ready_ins};
-         if (((addr_from_proc_dat == EXT_FIFO_ADDRESS) & (control_from_proc_dat == 2)  & cache_ready_dat & cache_ready_ins & tlb_ready_d3 & PHY_ADDR_VALID))
-         begin
-             EXT_FIFO_WR_ENB  <= 1;
-             EXT_FIFO_WR_DATA <= data_from_proc_dat;
-         end      
-         else
-         begin
-             EXT_FIFO_WR_ENB  <= 0;
-         end
-    end
-    
+
     function integer logb2;
         input integer depth;
         for (logb2 = 0; depth > 1; logb2 = logb2 + 1)
             depth = depth >> 1;
     endfunction
     
-    localparam FIFO_BUFFER_DEPTH  = 32;
-    
-    reg [DATA_WIDTH - 1 : 0] EXIT_FIFO_BUFFER [0:FIFO_BUFFER_DEPTH - 1] ;
-    
-    integer vk;
-    integer writeFiles;
-    initial
-    begin
-        writeFiles = $fopen("prints.txt", "w");
-        $fclose(writeFiles);  
-    end
-    always@(posedge CLK)
-    begin
-        writeFiles = $fopen("prints.txt", "a");
-        if(EXT_FIFO_WR_ENB)
-        begin                 
-            $fwrite(writeFiles,"%c",EXT_FIFO_WR_DATA);   
-            $write("%c",EXT_FIFO_WR_DATA);   
-            EXIT_FIFO_BUFFER[0]<=EXT_FIFO_WR_DATA;
-            for(vk=0;vk<FIFO_BUFFER_DEPTH-1;vk=vk+1)
-            begin
-                EXIT_FIFO_BUFFER[vk+1]<=EXIT_FIFO_BUFFER[vk];
-            end
-        end
-        $fclose(writeFiles);
-    end
+
 myip_v1_0_M00_AXI # ( 
         .C_M_TARGET_SLAVE_BASE_ADDR(C_M00_AXI_TARGET_SLAVE_BASE_ADDR),
         .C_M_AXI_BURST_LEN(C_M00_AXI_BURST_LEN),
@@ -799,8 +758,12 @@ myip_v1_0_M00_AXI # (
         end
     end
     always @(posedge CLK) begin
-        
-        if(ADDR_TO_AXIM_VALID)begin
+        if (~RSTN)
+        begin
+            DATA_FROM_AXIM_VALID <=0;
+            DATA_FROM_AXIM<=0;
+        end
+        else if(ADDR_TO_AXIM_VALID)begin
             DATA_FROM_AXIM_VALID <= 1;
             DATA_FROM_AXIM       <= (ADDR_TO_AXIM) >> 2;
         end

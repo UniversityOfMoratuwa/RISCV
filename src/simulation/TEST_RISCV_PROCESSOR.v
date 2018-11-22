@@ -455,8 +455,8 @@ parameter integer C_Peripheral_Interface_TRANSACTIONS_NUM       = 4,
 
     always@(negedge RSTN)
     begin
-        $readmemh("data_hex.txt",word_ram);
-        for (int j=0; j < (1<<24_); j=j+1)
+        $readmemh("/home/vithurson/Desktop/riscv/RISCV/Soft_Processor/data_hex.txt",word_ram);
+        for (int j=0; j < (1<<24); j=j+1)
         begin
             for (int i=0; i<4; i=i+1)
             begin

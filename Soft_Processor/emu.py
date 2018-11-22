@@ -12,7 +12,7 @@ filename="RISCV_Test_Benchmark.hex"
 #os.system('make clean')
 #os.system('make all')
 #os.system('python comp.py '+filename)
-#os.system('python conv.py xx')
+# os.system('python conv.py xx')
 
 if( platform.system()=='Windows'):
     import msvcrt
@@ -25,7 +25,7 @@ memory = []
 fifo_addr = 'e0001030'
 mem_size = 24
 #PC = int('00010000', 16) / 4
-PC = int('00000000', 16) / 4
+PC = (int('0000000', 16) / 4 )
 
 opcode = {
     '0110111': 'lui',
@@ -40,8 +40,15 @@ opcode = {
     '1110011': 'system',
     '0001111': 'fenc',
     '0111011': 'rops',
-    '0000000': 'uimp',
+    # '0000000': 'uimp',
     '0101111': 'amo',
+    '0000111': 'f1',
+    '0100111' : 'f2',
+    '1000011' : 'f3',
+    '1000011' :'f4',
+    '1001011' :'f5',
+    '1001111':'f6',
+    '1010011':'f7'
     }
 
 csr_file = {
@@ -67,9 +74,11 @@ def convert(i):
 
 for i in range(32):
     if i == 2:
-        reg_array.append(int('400',16))
+        reg_array.append(int('0040000',16))
     elif i == 3:
         reg_array.append(0)
+    elif i == 11:
+        reg_array.append(int('0x10000',16))
     else:
         reg_array.append(0)
 
@@ -230,12 +239,16 @@ except:
     pass
 flag=0
 
-while PC < 1 << 20:
-##    print hex(PC*4)
+# print hex(memory[int('4005e0',16)/4])
+csr_mem[int(csr_file.keys()[csr_file.values().index('mstatus')],16)] = 1<<13
+while PC < 1 << 23:
+    
     sub = []
     imm = 32 * '0'
     wb_data = 0
     instruction = memory[PC]
+    # if (PC*4>= int('400000',16)):
+    #     print hex(PC*4),hex(instruction),hex(reg_array[2]),hex(memory[reg_array[2]/4])
 
     binary = bin(instruction)[2:]
     binary = (32 - len(binary)) * '0' + binary
@@ -570,6 +583,7 @@ if binary[0:12] == bin(int('c00', 16))[2:]:
             wb_data = csr_mem[csr_reg]
             csr_mem[csr_reg] = reg_array[rs1_sel]
             reg_array[rd] = wb_data
+            # print hex(csr_reg),hex(int(csr_file.keys()[csr_file.values().index('mtvec')],16)), hex(reg_array[rs1_sel])
 
         elif function == '010': #CSRRS
             wb_data = csr_mem[csr_reg]
@@ -597,6 +611,7 @@ if binary[0:12] == bin(int('c00', 16))[2:]:
             reg_array[rd] = wb_data
 
         elif function == '000' and csr_reg == 0: #ecall
+            # print "ecall"
             #print("PC : "+'{:032b}'.format(PC))
             minterrupt = 0
             mepc_reg = (PC-1)*4
@@ -607,8 +622,8 @@ if binary[0:12] == bin(int('c00', 16))[2:]:
 
             mt_mode = mtvec_r & 0b11
             mt_base = mtvec_r >>2
-            #print("mepc value (current PC) : " +'{:032b}'.format(mepc_reg))
-            #print("mtvec addr              : " +'{:032b}'.format(mt_base))
+            # print "mepc value (current PC) : " +hex(mepc_reg)
+            # print "mtvec addr              : " +hex(mt_base)
             if curr_privilage == umode :
                 #PC = utvec_r
                 print "umode Not supported yet"
@@ -619,10 +634,11 @@ if binary[0:12] == bin(int('c00', 16))[2:]:
                 if mt_mode == 0:
                     PC = mt_base
                 elif mt_mode == 1:
-                    PC = mt_base + 4*mecode_reg
+                    PC = mt_base + mecode_reg
                 else :
                     print "Illegel mt_mode"
                 csr_mem[int(csr_file.keys()[csr_file.values().index('mcause')],16)] = (minterrupt<<31)+mecode_reg
+                # print "e",
                 #print('{:032b}'.format((minterrupt<<31)+mecode_reg))
 
         elif function == '000' and csr_reg == 1: #ebreak
@@ -641,9 +657,10 @@ if binary[0:12] == bin(int('c00', 16))[2:]:
         
 
 
-        elif function == '000' and csr_reg == 24 and rs2_sel == 2: #mret
+        elif function == '000' and csr_reg == 770: #mret
+            # print "mret"
             mepc_reg = csr_mem[int(csr_file.keys()[csr_file.values().index('mepc')],16)]
-            PC = mepc_reg
+            PC = mepc_reg/4
             curr_privilage = mpp
             mpie = (csr_mem[int(csr_file.keys()[csr_file.values().index('mstatus')],16)]>>7) & 1
             m_ie = mpie
@@ -658,6 +675,38 @@ if binary[0:12] == bin(int('c00', 16))[2:]:
 
 
 ##################################################atomic instructions#####################################################
+    elif opcode[binary[25:32]] == 'f1' or opcode[binary[25:32]] == 'f2' or opcode[binary[25:32]] == 'f3' or opcode[binary[25:32]] == 'f4' or opcode[binary[25:32]] == 'f5' or opcode[binary[25:32]] == 'f6' or opcode[binary[25:32]] == 'f7':
+        minterrupt = 0
+        mepc_reg = (PC-1)*4
+        mpp = mmode
+        mecode_reg = 2
+        csr_mem[int(csr_file.keys()[csr_file.values().index('mepc')],16)] = mepc_reg
+        mtvec_r = csr_mem[int(csr_file.keys()[csr_file.values().index('mtvec')],16)] 
+
+        mt_mode = mtvec_r & 0b11
+        mt_base = mtvec_r >>2
+        # print "mepc value (current PC) : " +hex(mepc_reg)
+        # print "mtvec addr              : " +hex(mt_base)
+        if curr_privilage == umode :
+            #PC = utvec_r
+            print "umode Not supported yet"
+        elif curr_privilage == smode :
+            #PC = stvec_r
+            print "smode Not supported yet"
+        elif curr_privilage == mmode :
+            if mt_mode == 0:
+                PC = mt_base
+            elif mt_mode == 1:
+                PC = mt_base + mecode_reg
+            else :
+                print "Illegel mt_mode"
+            csr_mem[int(csr_file.keys()[csr_file.values().index('mcause')],16)] = (minterrupt<<31)+mecode_reg
+            # csr_mem[int(csr_file.keys()[csr_file.values().index('mtval')],16)] = int(binary,2)
+            # print hex(csr_mem[int(csr_file.keys()[csr_file.values().index('mtval')],16)] )
+            # break
+
+
+
     elif opcode[binary[25:32]] == 'amo':
         amo_op = binary[0:5]
         aq = binary[5]
@@ -737,7 +786,7 @@ if binary[0:12] == bin(int('c00', 16))[2:]:
 
         reg_array[rd] = data1
     
-
+    # print hex(reg_array[rd])
     try:
         if val != (nile[n])[:-1]:
             print prev

@@ -150,7 +150,7 @@ module STATE_REG(
     always @(posedge CLK)
     begin
         //feed back mux select
-    for(i=0;i<32;i=i+1)
+    for(i=1;i<32;i=i+1)
     begin
         if(RST)
             reg_state[i] <= direct;
